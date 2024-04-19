@@ -78,7 +78,7 @@
     (expresion ("si" expresion "entonces" expresion "sino" expresion "finSI")
                 if-exp)
     
-    (expresion ("let" (arbno identifier "=" expresion) "in" expresion)
+    (expresion ("declarar" "(" (arbno identifier "=" expresion ";") ")" "{" expresion "}")
                 let-exp)
     
     (expresion ("proc" "(" (arbno identifier) ")" expresion)
