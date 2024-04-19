@@ -74,7 +74,7 @@
     (expresion (primitiva-unaria "(" expresion ")")
                primapp-un-exp)
     
-    (expresion ("si" expresion "entonces" expresion "sino" expresion "finSI")
+    (expresion ("Si" expresion "entonces" expresion "sino" expresion "finSI")
                 condicional-exp)
     
     (expresion ("declarar" "(" (arbno identificador "=" expresion ";") ")" "{" expresion "}")
@@ -83,9 +83,9 @@
     (expresion ("procedimiento" "(" (separated-list identificador ",") ")" "haga" expresion "finProc")
                 procedimiento-ex)
     
-    (expresion ( "evaluar" expresion (arbno expresion ",") "finEval")
+    (expresion ( "evaluar" expresion "(" (separated-list expresion ",") ")" "finEval")
                 app-exp)
-    
+
     
     ; características adicionales
     (expresion ("letrec" (arbno identificador "(" (separated-list identificador ",") ")" "=" expresion)  "in" expresion) 
@@ -187,7 +187,7 @@
       (procedimiento-ex (ids body)
                 (cerradura ids body env))
       (app-exp (rator rands)
-               (display)
+               ;(display rator)
                (let ((proc (eval-expresion rator env))
                      (args (eval-rands rands env)))
                  (if (procval? proc)
