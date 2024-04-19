@@ -1,5 +1,6 @@
 #lang eopl
 
+
 ;******************************************************************************************
 ;;;;; Interpretador para lenguaje con condicionales, ligadura local, procedimientos y 
 ;;;;; procedimientos recursivos
@@ -53,6 +54,9 @@
   (identifier
    ("@" letter (arbno (or letter digit "?"))) symbol)
 
+  (text
+   ("\"" any "\"") string)
+
   ))
 
 ;Especificación Sintáctica (gramática)
@@ -60,12 +64,15 @@
 (define grammar-simple-interpreter
   '((programa (expresion) un-program)
     (expresion (number) numero-lit)
+
+    (expresion (text) texto-lit)
+    
     (expresion (identifier) var-exp)
     
     (expresion ("(" expresion primitiva-binaria expresion ")" )
                primapp-bin-exp)
 
-    (expresion (primitiva-unaria expresion)
+    (expresion (primitiva-unaria "(" expresion ")")
                primapp-un-exp)
     
     (expresion ("si" expresion "entonces" expresion "sino" expresion "finSI")
@@ -91,9 +98,9 @@
     (primitiva-binaria ("~") primitiva-resta)
     (primitiva-binaria ("/") primitiva-div)
     (primitiva-binaria ("*") primitiva-multi)
-    ;(primitiva-binaria (concat) primitiva-concat)
+    (primitiva-binaria ("concat") primitiva-concat)
 
-    ;(primitiva-unaria (longitud) primitiva-longitud)
+    (primitiva-unaria ("longitud") primitiva-longitud)
     (primitiva-unaria ("add1") primitiva-add1)
     (primitiva-unaria ("sub1") primitiva-sub1)))
 
@@ -152,6 +159,10 @@
   (lambda (exp env)
     (cases expresion exp
       (numero-lit (datum) datum)
+
+      (texto-lit (tx) tx)
+
+      
       (var-exp (id) (buscar-variable env id))
 
 
@@ -160,8 +171,10 @@
                          (args (eval-rands (list val1 val2) env)))
                          (apply-primitive prim args)))
 
-      (primapp-un-exp (prim arg)
-                   (display arg))
+      (primapp-un-exp (prim rand)
+                  (let (
+                         (args (eval-rands (list rand) env)))
+                         (apply-primitive-unario prim args)))
 
  
       (if-exp (test-exp true-exp false-exp)
@@ -203,8 +216,18 @@
       (primitiva-resta () (- (car args) (cadr args)))
       (primitiva-div () (/ (car args) (cadr args)))
       (primitiva-multi () (* (car args) (cadr args)))
-      ;(incr-prim () (+ (car args) 1))
-      ;(decr-prim () (- (car args) 1))
+      (primitiva-concat () (string-append (car args) (cadr args)))
+
+      
+      )))
+
+
+(define apply-primitive-unario
+  (lambda (prim args)
+    (cases primitiva-unaria prim
+      (primitiva-longitud () (string-length (car args)))
+      (primitiva-add1 () (+ (car args) 1))
+      (primitiva-sub1 () (- (car args) 1))
       )))
 
 ;true-value?: determina si un valor dado corresponde a un valor booleano falso o verdadero
