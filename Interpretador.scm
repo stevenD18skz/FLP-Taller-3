@@ -58,18 +58,22 @@
 ;Especificación Sintáctica (gramática)
 
 (define grammar-simple-interpreter
-  '((program (expresion) a-program)
+  '((programa (expresion) un-program)
     (expresion (number) numero-lit)
     (expresion (identifier) var-exp)
-    ;(expresion (primitive "(" (separated-list expresion ",")")") primapp-exp)
+    
+    (expresion ("(" expresion primitiva-binaria expresion ")" )
+               primapp-bin-exp)
 
-    (expresion ("(" expresion primitiva-binaria expresion ")" ) primapp-bin-exp)
-
-
-    (expresion ("si" expresion "entonces" expresion "sino" expresion "finSi")
+    (expresion (primitiva-unaria expresion)
+               primapp-un-exp)
+    
+    (expresion ("si" expresion "entonces" expresion "sino" expresion "finSI")
                 if-exp)
+    
     (expresion ("let" (arbno identifier "=" expresion) "in" expresion)
                 let-exp)
+    
     (expresion ("proc" "(" (arbno identifier) ")" expresion)
                 proc-exp)
     
@@ -80,13 +84,18 @@
     ; características adicionales
     (expresion ("letrec" (arbno identifier "(" (separated-list identifier ",") ")" "=" expresion)  "in" expresion) 
                 letrec-exp)
-    ;;;;;;
+    
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-    (primitiva-binaria ("+") add-prim)
-    (primitiva-binaria ("~") substract-prim)
-    (primitiva-binaria ("*") mult-prim)
-    (primitiva-binaria ("add1") incr-prim)
-    (primitiva-binaria ("sub1") decr-prim)))
+    (primitiva-binaria ("+") primitiva-suma)
+    (primitiva-binaria ("~") primitiva-resta)
+    (primitiva-binaria ("/") primitiva-div)
+    (primitiva-binaria ("*") primitiva-multi)
+    ;(primitiva-binaria (concat) primitiva-concat)
+
+    ;(primitiva-unaria (longitud) primitiva-longitud)
+    (primitiva-unaria ("add1") primitiva-add1)
+    (primitiva-unaria ("sub1") primitiva-sub1)))
 
 
 ;Construidos automáticamente: (NO TOCAR)
@@ -126,8 +135,8 @@
 
 (define eval-program
   (lambda (pgm)
-    (cases program pgm
-      (a-program (body)
+    (cases programa pgm
+      (un-program (body)
                  (eval-expresion body (init-env))))))
 
 (define init-env
@@ -143,13 +152,16 @@
   (lambda (exp env)
     (cases expresion exp
       (numero-lit (datum) datum)
-      (var-exp (id) (apply-env env id))
+      (var-exp (id) (buscar-variable env id))
 
 
       (primapp-bin-exp (val1 prim val2)
                    (let (
                          (args (eval-rands (list val1 val2) env)))
                          (apply-primitive prim args)))
+
+      (primapp-un-exp (prim arg)
+                   (display arg))
 
  
       (if-exp (test-exp true-exp false-exp)
@@ -187,11 +199,12 @@
 (define apply-primitive
   (lambda (prim args)
     (cases primitiva-binaria prim
-      (add-prim () (+ (car args) (cadr args)))
-      (substract-prim () (- (car args) (cadr args)))
-      (mult-prim () (* (car args) (cadr args)))
-      (incr-prim () (+ (car args) 1))
-      (decr-prim () (- (car args) 1))
+      (primitiva-suma () (+ (car args) (cadr args)))
+      (primitiva-resta () (- (car args) (cadr args)))
+      (primitiva-div () (/ (car args) (cadr args)))
+      (primitiva-multi () (* (car args) (cadr args)))
+      ;(incr-prim () (+ (car args) 1))
+      ;(decr-prim () (- (car args) 1))
       )))
 
 ;true-value?: determina si un valor dado corresponde a un valor booleano falso o verdadero
@@ -252,23 +265,23 @@
 
 
 ;función que busca un símbolo en un ambiente
-(define apply-env
+(define buscar-variable
   (lambda (env sym)
     (cases environment env
       (empty-env-record ()
-                        (eopl:error 'empty-env "No binding for ~s" sym))
+                        (eopl:error 'empty-env "Error, la variable ~s ~s"  sym " no existe"))
       (extended-env-record (syms vals old-env)
                            (let ((pos (list-find-position sym syms)))
                              (if (number? pos)
                                  (list-ref vals pos)
-                                 (apply-env old-env sym))))
+                                 (buscar-variable old-env sym))))
       (recursively-extended-env-record (proc-names idss bodies old-env)
                                        (let ((pos (list-find-position sym proc-names)))
                                          (if (number? pos)
                                              (closure (list-ref idss pos)
                                                       (list-ref bodies pos)
                                                       env)
-                                             (apply-env old-env sym)))))))
+                                             (buscar-variable old-env sym)))))))
 
 
 ;****************************************************************************************
