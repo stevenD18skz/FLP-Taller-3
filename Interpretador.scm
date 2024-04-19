@@ -20,14 +20,14 @@
 ;;                  ::= <primitiva-unaria> ({<expresion>}*(,))
 ;;                      <primapp-exp (prim-unaria rands)>
 ;;                  ::= if <expresion> then <expresion> else <expresion>
-;;                      <if-exp (exp1 exp2 exp23)>
-;;                  ::= let {identifier = <expresion>}* in <expresion>
-;;                      <let-exp (ids rands body)>
+;;                      <condicional-exp (exp1 exp2 exp23)>
+;;                  ::= let {identificador = <expresion>}* in <expresion>
+;;                      <variableLocal-exp (ids rands body)>
 ;;                  ::= proc({<identificador>}*(,)) <expresion>
-;;                      <proc-exp (ids body)>
+;;                      <procedimiento-ex (ids body)>
 ;;                  ::= (<expresion> {<expresion>}*)
 ;;                      <app-exp proc rands>
-;;                  ::= letrec  {identifier ({identifier}*(,)) = <expresion>}* in <expresion>
+;;                  ::= letrec  {identificador ({identificador}*(,)) = <expresion>}* in <expresion>
 ;;                     <letrec-exp proc-names idss bodies bodyletrec>
 ;;  <primitiva-binaria>   ::= | + | ~  | * | / | concat |
 ;;  <primitiva-unaria>    ::= | longitud | add1 () | sub1 |
@@ -42,19 +42,19 @@
    (whitespace) skip)
   (comment
    ("%" (arbno (not #\newline))) skip)
-  (number
+  (numero
    (digit (arbno digit)) number)
-  (number
+  (numero
    (digit (arbno digit) "." digit (arbno digit)) number)
-  (number
+  (numero
    ("-" digit (arbno digit) "." digit (arbno digit)) number)
-  (number
+  (numero
    ("-" digit (arbno digit)) number)
   
-  (identifier
+  (identificador
    ("@" letter (arbno (or letter digit "?"))) symbol)
 
-  (text
+  (texto
    ("\"" any "\"") string)
 
   ))
@@ -63,11 +63,11 @@
 
 (define grammar-simple-interpreter
   '((programa (expresion) un-program)
-    (expresion (number) numero-lit)
+    (expresion (numero) numero-lit)
 
-    (expresion (text) texto-lit)
+    (expresion (texto) texto-lit)
     
-    (expresion (identifier) var-exp)
+    (expresion (identificador) var-exp)
     
     (expresion ("(" expresion primitiva-binaria expresion ")" )
                primapp-bin-exp)
@@ -76,20 +76,20 @@
                primapp-un-exp)
     
     (expresion ("si" expresion "entonces" expresion "sino" expresion "finSI")
-                if-exp)
+                condicional-exp)
     
-    (expresion ("declarar" "(" (arbno identifier "=" expresion ";") ")" "{" expresion "}")
-                let-exp)
+    (expresion ("declarar" "(" (arbno identificador "=" expresion ";") ")" "{" expresion "}")
+                variableLocal-exp)
     
-    (expresion ("proc" "(" (arbno identifier) ")" expresion)
-                proc-exp)
+    (expresion ("procedimiento" "(" (arbno identificador ",") ")" "haga" expresion "finProc")
+                procedimiento-ex)
     
     (expresion ( "evaluar" expresion (arbno expresion) "finEval")
                 app-exp)
     
     
     ; características adicionales
-    (expresion ("letrec" (arbno identifier "(" (separated-list identifier ",") ")" "=" expresion)  "in" expresion) 
+    (expresion ("letrec" (arbno identificador "(" (separated-list identificador ",") ")" "=" expresion)  "in" expresion) 
                 letrec-exp)
     
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -177,15 +177,15 @@
                          (apply-primitive-unario prim args)))
 
  
-      (if-exp (test-exp true-exp false-exp)
+      (condicional-exp (test-exp true-exp false-exp)
               (if (true-value? (eval-expresion test-exp env))
                   (eval-expresion true-exp env)
                   (eval-expresion false-exp env)))
-      (let-exp (ids rands body)
+      (variableLocal-exp (ids rands body)
                (let ((args (eval-rands rands env)))
                  (eval-expresion body
                                   (extend-env ids args env))))
-      (proc-exp (ids body)
+      (procedimiento-ex (ids body)
                 (closure ids body env))
       (app-exp (rator rands)
                (let ((proc (eval-expresion rator env))
