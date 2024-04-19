@@ -330,3 +330,20 @@
 ;******************************************************************************************
 ;Pruebas
 (interpretador)
+
+; Punto A
+;declarar (
+;  @radio=2.5;
+;  @areaCirculo= procedimiento (@r) haga 
+;    declarar (
+;      @pi=3.1415;
+;    )
+;    {
+;      (@pi*(@r*@r))
+;    } finProc ;
+;  )
+;    
+;  {
+;    evaluar @areaCirculo (@radio) finEval
+;  }
+
