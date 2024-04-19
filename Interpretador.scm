@@ -159,7 +159,7 @@
     (cases expresion exp
       (numero-lit (datum) datum)
 
-      (texto-lit (tx) tx)
+      (texto-lit (string) string)
 
       
       (var-exp (id) (buscar-variable env id))
@@ -331,7 +331,12 @@
 ;Pruebas
 (interpretador)
 
-; Punto A
+
+;///////////////////////////////////////////////////////////
+;           ==>  SOLUCIONES DE PUNTOS   <==
+;///////////////////////////////////////////////////////////
+
+;************************************************************
 ;declarar (
 ;  @radio=2.5;
 ;  @areaCirculo= procedimiento (@r) haga 
