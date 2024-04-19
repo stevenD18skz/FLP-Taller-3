@@ -1,6 +1,5 @@
 #lang eopl
 
-
 ;******************************************************************************************
 ;;;;; Interpretador para lenguaje con condicionales, ligadura local, procedimientos y 
 ;;;;; procedimientos recursivos
@@ -42,6 +41,7 @@
    (whitespace) skip)
   (comment
    ("%" (arbno (not #\newline))) skip)
+  
   (numero
    (digit (arbno digit)) number)
   (numero
@@ -55,8 +55,7 @@
    ("@" letter (arbno (or letter digit "?"))) symbol)
 
   (texto
-   ("\"" any "\"") string)
-
+  ((or letter "-") (arbno (or letter digit "-" ":"))) string)
   ))
 
 ;Especificación Sintáctica (gramática)
@@ -65,7 +64,7 @@
   '((programa (expresion) un-program)
     (expresion (numero) numero-lit)
 
-    (expresion (texto) texto-lit)
+    (expresion ("\""texto"\"") texto-lit)
     
     (expresion (identificador) var-exp)
     
@@ -81,10 +80,10 @@
     (expresion ("declarar" "(" (arbno identificador "=" expresion ";") ")" "{" expresion "}")
                 variableLocal-exp)
     
-    (expresion ("procedimiento" "(" (arbno identificador ",") ")" "haga" expresion "finProc")
+    (expresion ("procedimiento" "(" (separated-list identificador ",") ")" "haga" expresion "finProc")
                 procedimiento-ex)
     
-    (expresion ( "evaluar" expresion (arbno expresion) "finEval")
+    (expresion ( "evaluar" expresion (arbno expresion ",") "finEval")
                 app-exp)
     
     
@@ -186,8 +185,9 @@
                  (eval-expresion body
                                   (extend-env ids args env))))
       (procedimiento-ex (ids body)
-                (closure ids body env))
+                (cerradura ids body env))
       (app-exp (rator rands)
+               (display)
                (let ((proc (eval-expresion rator env))
                      (args (eval-rands rands env)))
                  (if (procval? proc)
@@ -238,7 +238,7 @@
 ;*******************************************************************************************
 ;Procedimientos
 (define-datatype procval procval?
-  (closure
+  (cerradura
    (ids (list-of symbol?))
    (body expresion?)
    (env environment?)))
@@ -247,7 +247,7 @@
 (define apply-procedure
   (lambda (proc args)
     (cases procval proc
-      (closure (ids body env)
+      (cerradura (ids body env)
                (eval-expresion body (extend-env ids args env))))))
 
 ;*******************************************************************************************
@@ -301,7 +301,7 @@
       (recursively-extended-env-record (proc-names idss bodies old-env)
                                        (let ((pos (list-find-position sym proc-names)))
                                          (if (number? pos)
-                                             (closure (list-ref idss pos)
+                                             (cerradura (list-ref idss pos)
                                                       (list-ref bodies pos)
                                                       env)
                                              (buscar-variable old-env sym)))))))
