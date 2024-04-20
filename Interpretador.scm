@@ -88,7 +88,7 @@
 
     
     ; características adicionales
-    (expresion ("letrec" (arbno identificador "(" (separated-list identificador ",") ")" "=" expresion)  "in" expresion) 
+    (expresion ("funRecursiva:" (arbno identificador "(" (separated-list identificador ",") ")" "=" expresion ";")  "{" expresion "}")
                 letrec-exp)
     
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
