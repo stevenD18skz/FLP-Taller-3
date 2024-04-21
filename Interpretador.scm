@@ -523,6 +523,21 @@
 
 
 
+; declarar(
+;   @integrantes  = procedimiento () haga "Steven-Miguel" finProc;
+;   @saludar      = procedimiento (@funcion) haga procedimiento () haga ("Hola:" concat evaluar @funcion () finEval) finProc finProc                
+;   ) {
+;   declarar (
+;     @decorate  = evaluar @saludar(@integrantes) finEval
+;   ) {
+;    evaluar @decorate()  finEval
+;    }
+;   }
+
+
+
+
+
 
 
 
