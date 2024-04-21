@@ -193,7 +193,7 @@
 
       (primapp-un-exp (prim-unaria exp)
                   (let (
-                        (args (eval-rands (list exp) env))
+                        (args (eval-rand exp env))
                          )
                          (apply-primitive-un prim-unaria args)
                     ))
@@ -254,9 +254,9 @@
 (define apply-primitive-un
   (lambda (prim args)
     (cases primitiva-unaria prim
-      (primitiva-add1     () (+ (car args) 1))
-      (primitiva-sub1     () (- (car args) 1))
-      (primitiva-longitud () (string-length (car args)))
+      (primitiva-add1     () (+ args 1))
+      (primitiva-sub1     () (- args 1))
+      (primitiva-longitud () (string-length args))
       )))
 
 ;valor-verdadero?: determina si un valor dado corresponde a un valor booleano falso o verdadero
@@ -380,10 +380,6 @@
 ;    } finProc ;
 ;  )
 ;    
-;  {
-;    evaluar @areaCirculo (@radio) finEval
-;  }
-
 ;  {
 ;    evaluar @areaCirculo (@radio) finEval
 ;  }
