@@ -98,7 +98,7 @@
                 app-exp)
 
     (expresion ("funRecursiva:" (arbno identificador "(" (separated-list identificador ",") ")" "=" expresion ";")  "{" expresion "}")
-                letrec-exp)
+                rec-exp)
     
     ;
 
@@ -184,18 +184,18 @@
       
       (var-exp (id) (buscar-variable env id))
       
-      (primapp-bin-exp (val1 prim val2)
+      (primapp-bin-exp (exp1 prim-binaria exp2)
                    (let (
-                         (args (eval-rands (list val1 val2) env))
+                         (args (eval-rands (list exp1 exp2) env))
                          )
-                         (apply-primitive prim args)
+                         (apply-primitive-bin prim-binaria args)
                      ))
 
-      (primapp-un-exp (prim rand)
+      (primapp-un-exp (prim-unaria exp)
                   (let (
-                        (args (eval-rands (list rand) env))
+                        (args (eval-rands (list exp) env))
                          )
-                         (apply-primitive-unario prim args)
+                         (apply-primitive-un prim-unaria args)
                     ))
 
       (condicional-exp (test-exp true-exp false-exp)
@@ -224,7 +224,7 @@
                      )
                  ))
       
-      (letrec-exp (proc-names idss bodies letrec-body)
+      (rec-exp (proc-names idss bodies letrec-body)
                   (eval-expresion letrec-body (extend-env-recursively proc-names idss bodies env)))
       )))
 
@@ -238,8 +238,8 @@
   (lambda (rand env)
     (eval-expresion rand env)))
 
-;apply-primitive: <primitiva> <list-of-expresion> -> numero
-(define apply-primitive
+;apply-primitive-bin: <primitiva-binaria> <lista-de-expresiones> -> numero
+(define apply-primitive-bin
   (lambda (prim args)
     (cases primitiva-binaria prim
       (primitiva-suma   () (+ (car args) (cadr args)))
@@ -250,7 +250,8 @@
       )))
 
 
-(define apply-primitive-unario
+;apply-primitive-un: <primitiva-unaria> <lista-de-expresiones> -> numero
+(define apply-primitive-un
   (lambda (prim args)
     (cases primitiva-unaria prim
       (primitiva-add1     () (+ (car args) 1))
@@ -363,7 +364,6 @@
 (interpretador)
 
 
-
 ;///////////////////////////////////////////////////////////
 ;           ==>  SOLUCIONES DE PUNTOS   <==
 ;///////////////////////////////////////////////////////////
@@ -380,6 +380,10 @@
 ;    } finProc ;
 ;  )
 ;    
+;  {
+;    evaluar @areaCirculo (@radio) finEval
+;  }
+
 ;  {
 ;    evaluar @areaCirculo (@radio) finEval
 ;  }
