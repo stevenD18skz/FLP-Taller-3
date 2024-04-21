@@ -463,6 +463,25 @@
 ;************************************************************************************************************************
 ;---------------------------------------------------> PUNTO D <----------------------------------------------------------
 ;************************************************************************************************************************
+;; resta:
+;
+;  Proposito:
+;    @a x @b -> N ; Resta dos números enteros de forma recursiva, haciendo uso de add1 y sub1    ;
+;
+;  Args:
+;    @a: El primer número entero.
+;    @b: El segundo número entero.
+;
+;  Returns:
+;    La diferencia entre @x e @y
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; funRecursiva:
+;   @restar(@a, @b) = Si @b
+;                         entonces evaluar @restar(sub1(@a) , sub1(@b)) finEval
+;                         sino @a
+;                       finSI ;
+;   { evaluar @restar(10, 3) finEval }
+
 
 
 
