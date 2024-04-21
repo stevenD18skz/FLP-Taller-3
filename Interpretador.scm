@@ -222,9 +222,6 @@
                 (cerradura ids body env))
 
       (app-exp (rator rands)
-               (display rator)
-               (display rands)
-               (display '========)
                (let (
                      (proc (eval-expresion rator env))
                      (args (eval-rands rands env))
@@ -389,6 +386,7 @@
 ;---------------------------------------------------> PUNTO A <----------------------------------------------------------
 ;************************************************************************************************************************
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                                        ;
 ;  areaCirculo (numero -> numero):                                                      ;
 ;                                                                                       ;
 ;  Proposito:                                                                           ;
@@ -399,10 +397,8 @@
 ;                                                                                       ;
 ;  Returns:                                                                             ;
 ;    a: el valor del area del ciruclo                                                   ;
+;                                                                                        ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-
 ; declarar (
 ;   @radio=2.5;
 ;   @areaCirculo=procedimiento(@r) haga 
@@ -426,6 +422,7 @@
 ;---------------------------------------------------> PUNTO B <----------------------------------------------------------
 ;************************************************************************************************************************
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                                        ;
 ;; factorial (numero -> numero):                                                        ;
 ;                                                                                       ;
 ;  Proposito:                                                                           ;
@@ -436,6 +433,7 @@
 ;                                                                                       ;
 ;  Returns:                                                                             ;
 ;    El valor del factorial de @n                                                       ;
+;                                                                                        ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; funRecursiva:
 ;   @factorial(@n)=Si @n
@@ -466,6 +464,7 @@
 ;---------------------------------------------------> PUNTO C <----------------------------------------------------------
 ;************************************************************************************************************************
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                                        ;
 ;; sumar (numero * numero -> numero):                                                   ;
 ;                                                                                       ;
 ;  Proposito:;                                                                          ;
@@ -477,12 +476,13 @@
 ;                                                                                       ;                                                                                      ;
 ;  Returns:;                                                                            ;
 ;    La suma de a y b                                                                   ;
+;                                                                                        ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; funRecursiva:
-;   @sumar(@a, @b) = Si  @a
-;                         entonces  add1(evaluar @sumar(sub1(@a),@b) finEval)
-;                         sino @b
-;                       finSI;
+;   @sumar(@a, @b) = Si @a
+;                       entonces  add1(evaluar @sumar(sub1(@a),@b) finEval)
+;                       sino @b
+;                     finSI;
 ;   { evaluar @sumar(4, 5) finEval }
                                                                                                                                                                                              
 
@@ -493,19 +493,21 @@
 ;************************************************************************************************************************
 ;---------------------------------------------------> PUNTO D <----------------------------------------------------------
 ;************************************************************************************************************************
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;            ;
-;; resta:
-;
-;  Proposito:
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                                                ;
+;; resta:                                                                                        ;
+;                                                                                                ;
+;  Proposito:                                                                                    ;
 ;    @a x @b -> N ; Resta dos números enteros de forma recursiva, haciendo uso de add1 y sub1    ;
-;
-;  Args:
-;    @a: El primer número entero.
-;    @b: El segundo número entero.
-;
-;  Returns:
-;    La diferencia entre @x e @y
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                                                ;
+;  Args:                                                                                         ;
+;    @a: El primer número entero.                                                                ;
+;    @b: El segundo número entero.                                                               ;
+;                                                                                                ;
+;  Returns:                                                                                      ;
+;    La diferencia entre @x e @y                                                                 ;
+;                                                                                                ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; funRecursiva:
 ;   @restar(@a, @b) = Si @b
 ;                         entonces evaluar @restar(sub1(@a) , sub1(@b)) finEval
@@ -515,7 +517,9 @@
 
 
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                                        ;
 ;; multiplicar:                                                                          ; 
 ;  Proposito:                                                                            ;
 ;   @x x @y -> N ; Multiplica dos números enteros                                        ;
@@ -526,13 +530,18 @@
 ;                                                                                        ;
 ;  Returns:                                                                              ;
 ;    El producto de @x e @y                                                              ;
+;                                                                                        ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; funRecursiva:
-;   @sumar(@a,@b)        = Si @a entonces evaluar @sumar (sub1(@a),add1(@b)) finEval sino @b finSI;
+;   @sumar(@a, @b) = Si @a
+;                       entonces evaluar @sumar (sub1(@a),add1(@b)) finEval
+;                       sino @b
+;                     finSI;
+; 
 ;   @multiplicar(@x, @y) = Si @y
-;                            entonces evaluar @sumar (@x, evaluar @multiplicar (@x,sub1(@y)) finEval) finEval
-;                            sino 0
-;                          finSI;
+;                             entonces evaluar @sumar (@x, evaluar @multiplicar (@x,sub1(@y)) finEval) finEval
+;                             sino 0
+;                           finSI;
 ; 
 ;   { evaluar @multiplicar (10,3) finEval }
 
@@ -544,6 +553,7 @@
 ;---------------------------------------------------> PUNTO E <----------------------------------------------------------
 ;************************************************************************************************************************
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                                        ;
 ;; integrantes (() -> texto):                                                            ; 
 ;  Proposito:                                                                            ;
 ;   () -> S ; Retorna una cadena de texto con los nombres de los integrantes             ;
@@ -553,9 +563,11 @@
 ;                                                                                        ;
 ;  Returns:                                                                              ;
 ;    Un string de los nombres de los integrantes                                         ;
+;                                                                                        ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                                        ;
 ;; saludar (procedimietno -> procedimiento):                                             ; 
 ;  Proposito:                                                                            ;
 ;   F -> S ; Devolver una funcion para el decorador                                      ;
@@ -566,11 +578,14 @@
 ;  Returns:                                                                              ;
 ;    Un procedimiento que concatena "Hola:" con la evaluacion del procedimiento          ;
 ;    que se paso como parametro                                                          ;
+;                                                                                        ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 ; declarar(
-;   @integrantes  = procedimiento () haga "Steven-Miguel" finProc;
+;   @integrantes  = procedimiento () haga
+;                                 "Steven-Miguel"
+;                   finProc;
 ;   @saludar      = procedimiento (@funcion) haga
 ;                                 procedimiento () haga
 ;                                               ("Hola:" concat evaluar @funcion () finEval)
@@ -595,6 +610,48 @@
 ;************************************************************************************************************************
 ;---------------------------------------------------> PUNTO F <----------------------------------------------------------
 ;************************************************************************************************************************
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                                        ;
+;; integrantes (() -> texto):                                                            ; 
+;  Proposito:                                                                            ;
+;   () -> S ; Retorna una cadena de texto con los nombres de los integrantes             ;
+;                                                                                        ;
+;  Args:                                                                                 ;
+;    ()                                                                                  ;
+;                                                                                        ;
+;  Returns:                                                                              ;
+;    Un string de los nombres de los integrantes                                         ;
+;                                                                                        ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                                        ;
+;; saludar (procedimietno -> procedimiento):                                             ; 
+;  Proposito:                                                                            ;
+;   F -> S ; Devolver una funcion para el decorador                                      ;
+;                                                                                        ;
+;  Args:                                                                                 ;
+;    @funcion: funcion que se evalua                                                     ;
+;                                                                                        ;
+;  Returns:                                                                              ;
+;    Un procedimiento que concatena "Hola:" con la evaluacion del procedimiento          ;
+;    que se paso como parametro                                                          ;
+;                                                                                        ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                                        ;
+;; decorate (texto -> texto):                                                            ; 
+;  Proposito:                                                                            ;
+;   S -> S' ; concatenar un mensaje personalizado con la evaluacion de saludar           ;
+;                                                                                        ;
+;  Args:                                                                                 ;
+;    @final: string que representa el mensaje personalizado                              ;
+;                                                                                        ;
+;  Returns:                                                                              ;
+;    Un string con la concatenacion del mensaje junto con el restulado de @saludar       ;
+;                                                                                        ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; declarar(
 ;   @integrantes  = procedimiento () haga "Steven-Miguel" finProc;
@@ -615,6 +672,29 @@
 
 
 
+
+
+
+
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;                                                                                        ;
+;; saludar (procedimietno -> procedimiento):                                             ; 
+;  Proposito:                                                                            ;
+;   F -> S ; Devolver una funcion para el decorador                                      ;
+;                                                                                        ;
+;  Args:                                                                                 ;
+;    @funcion: funcion que se evalua                                                     ;
+;                                                                                        ;
+;  Returns:                                                                              ;
+;    Un procedimiento que recibe a su vez un parametro adicional con                     ;
+;    el mensaje personalizado y devuelve el todas las concatenaciones                    ;
+;                                                                                        ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ; declarar(
 ;   @integrantes  = procedimiento () haga "Steven-Miguel" finProc;
 ;   @saludar      = procedimiento (@funcion) haga
@@ -629,6 +709,7 @@
 ;     evaluar @decorate("-ProfesoresFLP")  finEval
 ;     }
 ;   }
+
 
 
 
