@@ -567,3 +567,22 @@
 ;************************************************************************************************************************
 ;---------------------------------------------------> PUNTO F <----------------------------------------------------------
 ;************************************************************************************************************************
+;
+; declarar(
+;   @integrantes  = procedimiento () haga "Steven-Miguel" finProc;
+;   @saludar      = procedimiento (@funcion) haga
+;                                                procedimiento () haga ("Hola:" concat evaluar @funcion () finEval) finProc
+;                                            finProc               
+;   ) {
+;   declarar (
+;     @decorate   = procedimiento (@final) haga
+;                                        (evaluar evaluar @saludar(@integrantes) finEval () finEval concat @final)
+;                                    finProc
+;     ) {
+;     evaluar @decorate("-ProfesoresFLP")  finEval
+;     }
+;   }
+
+
+
+
