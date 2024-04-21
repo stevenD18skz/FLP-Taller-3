@@ -394,3 +394,31 @@
 ;     evaluar @areaCirculo(@radio) finEval
 ;    }
 
+
+;************************************************************************************************************************
+;---------------------------------------------------> PUNTO B <----------------------------------------------------------
+;************************************************************************************************************************
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; factorial (numero -> numero):                                                        ;
+;                                                                                       ;
+;  Proposito:                                                                           ;
+;    @n -> N ; Calcula el factorial de un número usando recursividad.                   ;
+;                                                                                       ;
+;  Args:                                                                                ;
+;    @n: El número entero no negativo del que se quiere calcular el factorial.          ;
+;                                                                                       ;
+;  Returns:                                                                             ;
+;    El valor del factorial de @n                                                       ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; funRecursiva:
+;   @factorial(@n)=Si @n
+;                         entonces (@n * evaluar  @factorial(sub1(@n)) finEval)
+;                         sino 1
+;                     finSI;
+;   { evaluar @factorial(5) finEval }
+
+
+
+
+
