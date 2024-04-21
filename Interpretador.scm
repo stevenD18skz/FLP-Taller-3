@@ -18,23 +18,23 @@
 ;;                  ::= (<expresion> <primitiva-binaria> <expresion>)
 ;;                      primapp-bin-exp (exp1 prim-binaria exp2)
 ;;                  ::= <primitiva-unaria> (<expresion>})
-;;                      primapp-exp (prim-unaria rands)
+;;                      primapp-un-exp (prim-unaria exp)
 ;;
 
 
-;;                  ::= if <expresion> then <expresion> else <expresion>
-;;                      <condicional-exp (exp1 exp2 exp23)>
-;;                  ::= let {identificador = <expresion>}* in <expresion>
-;;                      <variableLocal-exp (ids rands body)>
-;;                  ::= proc({<identificador>}*(,)) <expresion>
-;;                      <procedimiento-ex (ids body)>
-;;                  ::= (<expresion> {<expresion>}*)
-;;                      <app-exp proc rands>
-;;                  ::= letrec  {identificador ({identificador}*(,)) = <expresion>}* in <expresion>
-;;                     <letrec-exp proc-names idss bodies bodyletrec>
+;;                  ::= Si <expresion> entonces <expresion> sino <expresion> finSi
+;;                      condicional-exp (test-exp true-exp false-exp)
+;;                  ::= declarar (<identificador> = <expresion> (;)) { <expresion> }
+;;                      variableLocal-exp (ids exps cuerpo)
+;;                  ::=  procedimiento (<identificador>*',') haga <expresion> finProc
+;;                      procedimiento-ex (ids cuerpo)
+;;                  ::= "evaluar" expresion (expresion ",")* finEval
+;;                      app-exp(exp exps)
+;;                  ::= funRecursiva:  {<identificador> ({<identificador>}*(,)) = <expresion>(;)}* {<expresion>}
+;;                      rec-exp (proc-names idss bodies bodyrec)
 ;;
-;;  <primitiva-binaria>   ::= | + | ~  | * | / | concat |
-;;  <primitiva-unaria>    ::= | longitud | add1 () | sub1 |
+;;  <primitiva-binaria>   ::= | + | ~  | / | * | concat |
+;;  <primitiva-unaria>    ::= | longitud | add1 | sub1 |
 
 ;******************************************************************************************
 
@@ -363,6 +363,7 @@
 (interpretador)
 
 
+
 ;///////////////////////////////////////////////////////////
 ;           ==>  SOLUCIONES DE PUNTOS   <==
 ;///////////////////////////////////////////////////////////
@@ -382,10 +383,3 @@
 ;  {
 ;    evaluar @areaCirculo (@radio) finEval
 ;  }
-
-
-
-;  {
-;    evaluar @areaCirculo (@radio) finEval
-;  }
-
