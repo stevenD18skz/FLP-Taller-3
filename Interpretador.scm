@@ -19,9 +19,6 @@
 ;;                      primapp-bin-exp (exp1 prim-binaria exp2)
 ;;                  ::= <primitiva-unaria> (<expresion>})
 ;;                      primapp-un-exp (prim-unaria exp)
-;;
-
-
 ;;                  ::= Si <expresion> entonces <expresion> sino <expresion> finSi
 ;;                      condicional-exp (test-exp true-exp false-exp)
 ;;                  ::= declarar (<identificador> = <expresion> (;)) { <expresion> }
@@ -96,19 +93,19 @@
     
     (expresion ( "evaluar" expresion "(" (separated-list expresion ",") ")" "finEval")
                 app-exp)
-
+    
+    ;;;;;;;FUNCION RECURSIVA;;;;;;;;;;;;;;;
     (expresion ("funRecursiva:" (arbno identificador "(" (separated-list identificador ",") ")" "=" expresion ";")  "{" expresion "}")
                 rec-exp)
     
-    ;
-
+    ;;;;;;;PRIMITIVAS BINARIAS;;;;;;;;;;;;;;;
     (primitiva-binaria ("+") primitiva-suma)
     (primitiva-binaria ("~") primitiva-resta)
     (primitiva-binaria ("/") primitiva-div)
     (primitiva-binaria ("*") primitiva-multi)
     (primitiva-binaria ("concat") primitiva-concat)
 
-    
+    ;;;;;;;PRIMITIVAS UNARIAS;;;;;;;;;;;;;;;
     (primitiva-unaria ("add1") primitiva-add1)
     (primitiva-unaria ("sub1") primitiva-sub1)
     (primitiva-unaria ("longitud") primitiva-longitud)
