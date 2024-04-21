@@ -463,24 +463,51 @@
 ;************************************************************************************************************************
 ;---------------------------------------------------> PUNTO D <----------------------------------------------------------
 ;************************************************************************************************************************
-;; resta:
-;
-;  Proposito:
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;   
+;; resta (numero * numero -> numero):                                                            ;
+;                                                                                                ;
+;  Proposito:                                                                                    ;
 ;    @a x @b -> N ; Resta dos números enteros de forma recursiva, haciendo uso de add1 y sub1    ;
+;                                                                                                ;
+;  Args:                                                                                         ;
+;    @a: El primer número entero.                                                                ;
+;    @b: El segundo número entero.                                                               ;
+;                                                                                                ;
+;  Returns:                                                                                      ;
+;    La diferencia entre @x e @y                                                                 ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;      
 ;
-;  Args:
-;    @a: El primer número entero.
-;    @b: El segundo número entero.
-;
-;  Returns:
-;    La diferencia entre @x e @y
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; funRecursiva:
 ;   @restar(@a, @b) = Si @b
 ;                         entonces evaluar @restar(sub1(@a) , sub1(@b)) finEval
 ;                         sino @a
 ;                       finSI ;
 ;   { evaluar @restar(10, 3) finEval }
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; multiplicar (numero * numero -> numero):                                              ; 
+;  Proposito:                                                                            ;
+;   @x x @y -> N ; Multiplica dos números enteros                                        ;
+;                                                                                        ;
+;  Args:                                                                                 ;
+;    @x: El primer número entero                                                         ;
+;    @y: El segundo número entero                                                        ;
+;                                                                                        ;
+;  Returns:                                                                              ;
+;    El producto de @x e @y                                                              ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;
+; funRecursiva:
+;   @sumar(@a,@b)        = Si @a entonces evaluar @sumar (sub1(@a),add1(@b)) finEval sino @b finSI;
+;   @multiplicar(@x, @y) = Si @y
+;                            entonces evaluar @sumar (@x, evaluar @multiplicar (@x,sub1(@y)) finEval) finEval
+;                            sino 0
+;                          finSI;
+; 
+;   { evaluar @multiplicar (10,3) finEval }
+
+
 
 
 
