@@ -420,5 +420,20 @@
 
 
 
+; funRecursiva:
+;   @factorial(@n)=Si @n
+;                       entonces (@n * evaluar  @factorial(sub1(@n)) finEval)
+;                       sino 1
+;                     finSI;
+;   {
+;    declarar (
+;     @valor = 10
+;    ) {
+;       evaluar @factorial(@valor) finEval
+;      }
+;    }
+
+
+
 
 
