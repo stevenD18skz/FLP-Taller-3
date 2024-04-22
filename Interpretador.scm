@@ -652,7 +652,6 @@
 ;    Un string con la concatenacion del mensaje junto con el restulado de @saludar       ;
 ;                                                                                        ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 ; declarar(
 ;   @integrantes  = procedimiento () haga "Steven-Miguel" finProc;
 ;   @saludar      = procedimiento (@funcion) haga
@@ -665,46 +664,6 @@
 ;     @decorate   = procedimiento (@final) haga
 ;                                 (evaluar evaluar @saludar(@integrantes) finEval () finEval concat @final)
 ;                   finProc
-;     ) {
-;     evaluar @decorate("-ProfesoresFLP")  finEval
-;     }
-;   }
-
-
-
-
-
-
-
-
-
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;                                                                                        ;
-;; saludar (procedimietno -> procedimiento):                                             ; 
-;  Proposito:                                                                            ;
-;   F -> S ; Devolver una funcion para el decorador                                      ;
-;                                                                                        ;
-;  Args:                                                                                 ;
-;    @funcion: funcion que se evalua                                                     ;
-;                                                                                        ;
-;  Returns:                                                                              ;
-;    Un procedimiento que recibe a su vez un parametro adicional con                     ;
-;    el mensaje personalizado y devuelve el todas las concatenaciones                    ;
-;                                                                                        ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-; declarar(
-;   @integrantes  = procedimiento () haga "Steven-Miguel" finProc;
-;   @saludar      = procedimiento (@funcion) haga
-;                                 procedimiento (@adios) haga
-;                                               (("hola:" concat evaluar @funcion () finEval) concat @adios)
-;                                 finProc
-;                   finProc                
-;   ) {
-;   declarar (
-;     @decorate  = evaluar @saludar(@integrantes) finEval
 ;     ) {
 ;     evaluar @decorate("-ProfesoresFLP")  finEval
 ;     }
