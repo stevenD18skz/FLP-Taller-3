@@ -473,10 +473,10 @@
 ;  Args:                                                                                ;
 ;    @a: El primer número entero a sumar.                                               ;
 ;    @b: El segundo número entero a sumar.                                              ;
-;                                                                                       ;                                                                                      ;
+;                                                                                       ;                                                                                      
 ;  Returns:;                                                                            ;
 ;    La suma de a y b                                                                   ;
-;                                                                                        ;
+;                                                                                       ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; funRecursiva:
 ;   @sumar(@a, @b) = Si @a
