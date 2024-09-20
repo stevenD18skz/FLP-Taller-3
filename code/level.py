@@ -6,8 +6,8 @@ from debug import debug
 from support import *
 from random import choice
 from player import Player
-from Logic.CostoSearch import COSTOSEARCH
-from Logic.AmplitudSearch import BusquedaAmplitud
+from code.Logic.viejo.CostoSearch import COSTOSEARCH
+from code.Logic.viejo.AmplitudSearch import BusquedaAmplitud
 
 
 #COSTOSEARCH
