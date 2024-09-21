@@ -3,7 +3,7 @@ import os
 import time
 
 
-class BusquedaAmplitud():
+class Costo():
     def __init__(self, mapa):
         # Mapeo de costos
         self.COSTS = {
@@ -181,7 +181,7 @@ class BusquedaAmplitud():
 
 
 
-
+"""
 entrada1 =  [
     [0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [0, 1, 1, 0, 0, 0, 4, 0, 0, 0],
@@ -195,7 +195,7 @@ entrada1 =  [
     [0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
 ]
 
-motor = BusquedaAmplitud(entrada1)
+motor = Costo(entrada1)
 solucion = motor.solucionar()
 
 # Imprimimos los caminos encontrados
@@ -209,3 +209,4 @@ if solucion["paths"]:
     print(f"\nCAMINO:\n{solucion["paths"]}")
 else:
     print("No se encontraron caminos para todos los objetivos.")
+"""

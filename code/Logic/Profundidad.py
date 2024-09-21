@@ -132,7 +132,7 @@ class BusquedaProfundidad():
             "tiempo_computo": f"{tiempo_computo:6.5f}"
         }
 
-
+"""
 entrada1 =  [
     [0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [0, 1, 1, 0, 0, 0, 4, 0, 0, 0],
@@ -158,3 +158,4 @@ if solucion["paths"]:
     print(f"\nCAMINO:\n{solucion['paths']}")
 else:
     print("No se encontraron caminos para todos los objetivos.")
+"""

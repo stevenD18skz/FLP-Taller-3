@@ -10,8 +10,6 @@ class Player(pygame.sprite.Sprite):
         # Graphics display
         self.original_size = size
         self.image = pygame.transform.scale(pygame.image.load(path_main + 'graphics/objects/lapras.png').convert_alpha(), size)
-        print(self.image.get_rect(topleft=pos))
-        print(self.image.get_rect())
         self.rect = self.image.get_rect(topleft=pos)
         self.hitbox = self.rect.inflate(0, 0)
 
@@ -80,39 +78,39 @@ class Player(pygame.sprite.Sprite):
 
 
     def input(self):
-        print(self.in_movimiento)
         if self.in_movimiento or self.is_starting:
             return
 
         if self.movimientos != []:
+            print(self.movimientos)
             # Tomar el siguiente movimiento de la lista
             self.movimiento_actual = self.movimientos[0][1]
 
             # Establecer la dirección basada en el movimiento
-            if self.movimiento_actual.lower() == "start":
+            if self.movimiento_actual.lower() in ["start"]:
                 self.is_starting = True
                 self.save_pos_b = self.rect
 
-            if self.movimiento_actual.lower() == 'left':
+            if self.movimiento_actual.lower() in ['left', "izquierda"]:
                 self.status = 'left'
                 self.direction.x = -1
                 self.direction.y = 0
-            elif self.movimiento_actual.lower() == 'right':
+            elif self.movimiento_actual.lower() in ['right', "derecha"]:
                 self.status = 'right'
                 self.direction.x = 1
                 self.direction.y = 0
-            elif self.movimiento_actual.lower() == 'up':
+            elif self.movimiento_actual.lower() in ['up', "arriba"]:
                 self.status = 'up'
                 self.direction.x = 0
                 self.direction.y = -1
-            elif self.movimiento_actual.lower() == 'down':
+            elif self.movimiento_actual.lower() in ['down', "abajo"]:
                 self.status = 'down'
                 self.direction.x = 0
                 self.direction.y = 1
 
             # Comenzar movimiento
             self.in_movimiento = True
-            self.meta_pos = self.movimientos[0][0]
+            self.meta_pos = self.movimientos[0][0][::-1]
 
 
 

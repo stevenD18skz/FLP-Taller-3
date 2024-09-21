@@ -81,9 +81,16 @@ class BusquedaAmplitud():
                 current_node, path, picked_up_passenger, dir_name = CP.pop(0)
                 x, y = current_node
 
+
+                if current_node == self.passager and not picked_up_passenger:
+                                print(next_node)
+                                picked_up_passenger = True
+
                 indice = 0
                 for i, (dx, dy) in enumerate(self.MOVEMENTS):
                     next_x, next_y = x + dx, y + dy
+
+                    
 
                     if self.is_valid(next_x, next_y, grid):
                         if ((next_x, next_y), picked_up_passenger) not in visited: # verificamos que no sea una posicion donde el, autp, no haya pasado ya
@@ -101,8 +108,10 @@ class BusquedaAmplitud():
                             self.nodos_expandidos += 1
                             self.profunidad_maxima = max(self.profunidad_maxima, len(path))
 
-                            if next_node == self.passager and not picked_up_passenger:
-                                picked_up_passenger = True
+                            #verificar si el nodo es el pasajero
+                            #if next_node == self.passager and not picked_up_passenger:
+                                #print(next_node)
+                                #picked_up_passenger = True
                            
                             #se verfica si el nodo que se encontro es la meta
                             if next_node == goal and picked_up_passenger:
@@ -157,6 +166,8 @@ class BusquedaAmplitud():
         arbol_final, camino_arbol = self.search_cost(self.mapa, self.start, self.goal)
         tiempo_final = time.time()
         tiempo_computo = tiempo_final - tiempo_inicio  
+
+        self.imprimir_arbol_clasico(arbol_final)
 
         #devolver el camino completo
         return {

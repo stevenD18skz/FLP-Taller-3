@@ -1,4 +1,5 @@
 import pygame
+import os
 from os import walk
 from os.path import splitext
 from csv import reader
@@ -53,3 +54,15 @@ def import_folder(path):
             surface_dict[image_name] = image_surf
     return surface_dict
 
+
+
+
+def ALFile(ruta_archivo=""):
+    if ruta_archivo == "":
+        return ""
+
+    with open(ruta_archivo, 'r') as archivo:
+        # Leer cada línea del archivo, dividirla por espacios y convertir los valores a enteros
+        mapa = [list(map(int, linea.split())) for linea in archivo]
+    
+    return mapa
