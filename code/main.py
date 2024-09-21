@@ -131,8 +131,6 @@ class Game:
 
 
 
-
-
     def run(self):
         while True:
             for event in pygame.event.get():
@@ -158,10 +156,6 @@ class Game:
                                 self.tree_display.update_tree(tree_text)
                                 self.level.ejecutarAlgoritmo(button.text)
                                 
-
-                                
-
-
             self.screen.fill(GRAY)
             self.level.run()
             

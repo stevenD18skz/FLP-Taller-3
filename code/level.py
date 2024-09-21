@@ -6,7 +6,7 @@ from support import *
 from random import choice
 from player import Player
 
-from Logic.AmplitudSearch_1_tree import BusquedaAmplitud
+from Logic.Prueba import BusquedaAmplitud
 from Logic.Costo_1 import Costo
 from Logic.Profundidad import BusquedaProfundidad
 
@@ -33,8 +33,6 @@ class Level:
         self.z_pressed = False  # Variable para controlar si ya se presionó la tecla
 
 
-
-
     """
     def input(self):
         key = pygame.key.get_pressed()
@@ -49,7 +47,7 @@ class Level:
             # Resetear la variable cuando se suelta la tecla Z
             self.z_pressed = False
     """
-
+    
     def ejecutarAlgoritmo(self, eleccion):
         algoritmos = {
             "Amplitud": BusquedaAmplitud,
@@ -66,8 +64,6 @@ class Level:
 
 
 
-
-
     def create_map(self):
         layout = self.mapa
         graphics = import_folder(path_main + 'graphics/objects')
@@ -76,12 +72,12 @@ class Level:
 
 
         llave_nombre = {
-            1: "pasto",
-            2: "lapras",
-            3: "snorlax_dormido",
-            4: "snorlax_despierto",
-            5: "net",
-            6: "meta",
+            1: ["pasto", "object"],
+            2: ["lapras", "object"],
+            3: ["snorlax_dormido", "object"],
+            4: ["snorlax_despierto", "object"],
+            5: ["net", "passager"],
+            6: ["meta", "goal"],
         }
 
         """     
@@ -107,14 +103,16 @@ class Level:
                     elif int(col) == 2:
                         self.player = Player(
                             (self.motor.encontrar_objeto(2)[1] * TILESIZE, self.motor.encontrar_objeto(2)[0] * TILESIZE),
-                            [self.visible_sprites],self.obstacle_sprites, 
+                            [self.visible_sprites],
+                            self.obstacle_sprites, 
                             (TILESIZE, TILESIZE))
                     
                     else:
-                        surf = pygame.transform.scale(graphics[llave_nombre[int(col)]], (TILESIZE, TILESIZE))
-                        Tile((x,y),[self.visible_sprites,self.obstacle_sprites],'object',surf)
-
-
+                        surf = pygame.transform.scale(graphics[llave_nombre[int(col)][0]], (TILESIZE, TILESIZE))
+                        Tile((x,y),
+                             [self.visible_sprites,self.obstacle_sprites],
+                             llave_nombre[int(col)][1],
+                             surf)
 
 
 
@@ -165,12 +163,12 @@ class Level:
         if self.mapa == None:
             self.loading_screen()
             return
-            
-            
 
-        #self.input()
-        self.visible_sprites.custom_draw()
+        #print("1111111111111111")
+        self.visible_sprites.custom_draw()#4
+        #print("2222222222222222")
         self.visible_sprites.update()
+        #print("55555555555555555")
         debug(f"{self.player.status} === {self.player.rect} === {self.player.movimiento_actual}")
     
 
@@ -196,6 +194,7 @@ class YSortCameraGroup(pygame.sprite.Group):
 
 
     def custom_draw(self):
+        #print("444444444444444444444s")
         # dibuja el suelo (escenario fijo)
         self.display_surface.blit(self.floor_surf, self.floor_rect.topleft)
 
@@ -205,19 +204,21 @@ class YSortCameraGroup(pygame.sprite.Group):
         # Dibuja todos los sprites en el orden de la lista
         for sprite in sprites_ordenados:
             #dibujar las areas para debug
-            try:
-                pass
-                #pygame.draw.rect(self.display_surface, (0, 100, 0), sprite.activacion)
-                #pygame.draw.rect(self.display_surface, (40, 48, 48), sprite.rect)
-                #pygame.draw.rect(self.display_surface, (255, 0, 0), sprite.hitbox)
-            except:
-                pass
-                #pygame.draw.rect(self.display_surface, (40, 48, 48), sprite.rect)
-                #pygame.draw.rect(self.display_surface, (255, 0, 0), sprite.hitbox)
 
             if isinstance(sprite, Player):
                 pygame.draw.rect(self.display_surface, (255, 0, 0), sprite.hitbox)
                 pygame.draw.rect(self.display_surface, (40, 48, 48), sprite.rect)
+            
+            elif not isinstance(sprite, Player) and sprite.sprite_type == "passager":
+                #pygame.draw.rect(self.display_surface, (255, 0, 0), sprite.hitbox)
+                pygame.draw.rect(self.display_surface, (40, 48, 48), sprite.rect)
+                pygame.draw.rect(self.display_surface, (100, 255, 100), sprite.activacion)
+            
+            else:
+                pygame.draw.rect(self.display_surface, (40, 48, 48), sprite.rect)
+                pygame.draw.rect(self.display_surface, (100, 255, 100), sprite.activacion)
+            
 
             # Dibuja la imagen del sprite
             self.display_surface.blit(sprite.image, sprite.rect.topleft)
+            

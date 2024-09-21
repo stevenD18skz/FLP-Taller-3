@@ -71,22 +71,25 @@ class BusquedaAmplitud():
 
     def search_cost(self, grid, start, goal):
             CP = []#la cola de nodos a evular
-            #UN NODO ES IGUAL A = COORDENADA HIJOS up_passager DIRECCION
-            ARBOL = [(start, [], False, "start")]
-            CP.append((start, [], False,  "start"))
-            visited = [(start, False)]
-            self.nodos_expandidos += 1
 
+            #UN NODO ES IGUAL A = COORDENADA HIJOS up_passager DIRECCION
+            ARBOL = [(start, [], False, "start")]   #El arbol de busqueda
+            CP.append((start, [], False,  "start")) #Cola de nodos por expandir
+            visited = [(start, False)]              #nodos visitados (nodo, si es un camino con el pasajero recogido)
+
+            self.nodos_expandidos += 1
             while CP:
-                current_node, path, picked_up_passenger, dir_name = CP.pop(0)
+                current_node, path, picked_up_passenger, dir_name = CP.pop(0) #crear nodo actual
                 x, y = current_node
 
-
                 if current_node == self.passager and not picked_up_passenger:
-                                print(next_node)
-                                picked_up_passenger = True
+                    print(f"{current_node} \n")
+                    self.imprimir_arbol_clasico(ARBOL)
+                    input()
+                    picked_up_passenger = True     #
 
                 indice = 0
+
                 for i, (dx, dy) in enumerate(self.MOVEMENTS):
                     next_x, next_y = x + dx, y + dy
 
@@ -109,9 +112,10 @@ class BusquedaAmplitud():
                             self.profunidad_maxima = max(self.profunidad_maxima, len(path))
 
                             #verificar si el nodo es el pasajero
-                            #if next_node == self.passager and not picked_up_passenger:
-                                #print(next_node)
-                                #picked_up_passenger = True
+                            if next_node == self.passager and not picked_up_passenger:
+                                print(f"{current_node} <========> {next_node}\n")
+                                self.imprimir_arbol_clasico(ARBOL)
+                                input()
                            
                             #se verfica si el nodo que se encontro es la meta
                             if next_node == goal and picked_up_passenger:

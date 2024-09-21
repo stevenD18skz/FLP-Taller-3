@@ -131,6 +131,8 @@ class Player(pygame.sprite.Sprite):
                 self.rect.x += self.direction.x * self.speed
                 self.rect.y += self.direction.y * self.speed
                 self.hitbox = self.rect
+                self.collision()
+                
 
 
 
@@ -157,13 +159,26 @@ class Player(pygame.sprite.Sprite):
 
 
 
+    def collision(self):
+        for sprite in self.obstacle_sprites:
+            if sprite.activacion.colliderect(self.hitbox):
+                print("llegue a una meta" + sprite.sprite_type)
+                sprite.animation = True
+                sprite.activacion.width = 0
+                sprite.activacion.height = 0
+
+          
+          
+
 
 
     def update(self):
         if self.is_starting:
             self.start_animation()
-        else:
-            self.get_status()
-            self.animate()
-            self.input()
-            self.movimiento_caminata()
+            return
+
+        #print("333333333333333333")
+        self.get_status()
+        self.animate()
+        self.input()
+        self.movimiento_caminata()

@@ -1,6 +1,8 @@
 import time
 
 
+
+
 class BusquedaProfundidad():
     def __init__(self, mapa):
         #constantes
@@ -23,14 +25,23 @@ class BusquedaProfundidad():
         self.nodos_expandidos = 0
         self.profundidad_maxima = 0
 
+
+
+
     def encontrar_objeto(self, valor_objeto): #hay que acomodarla (y, x) => (x, y)
         for y, array in enumerate(self.mapa):
             for x, valor in enumerate(array):
                 if valor == valor_objeto:
                     return (y, x)
 
+
+
+
     def is_valid(self, x, y, grid):
         return 0 <= x < len(grid) and 0 <= y < len(grid[0]) and grid[x][y] != 1
+
+
+
 
     def agregar_nodo(self, ARBOL, cor, cont, picked_up_passenger, next_dir_name):
         # Si no hay coordenadas, estamos en la raíz, y agregamos directamente
@@ -48,11 +59,17 @@ class BusquedaProfundidad():
         
         return ARBOL
 
+
+
+
     def search_cost(self, grid, start, goal):
         CP = []  # Pila de nodos a evaluar (para DFS)
+
+
         ARBOL = [(start, [], False, "start")]
         CP.append((start, [], False, "start"))
         visited = [(start, False)]
+
         self.nodos_expandidos += 1
 
         while CP:
