@@ -1,21 +1,5 @@
 
-
-
-tapion = [2, 3, 4, 5]
-
-ultimo = tapion.pop()
+tapion = [2, 3, 4]
+hijos = [0, 1]
+tapion = hijos + tapion  # Concatenar ambas listas
 print(tapion)
-print(ultimo)
-
-tapion.append(88)
-
-ultimo = tapion.pop()
-print(tapion)
-print(ultimo)
-
-
-tapion.append(102)
-
-ultimo = tapion.pop()
-print(tapion)
-print(ultimo)

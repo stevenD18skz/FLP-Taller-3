@@ -8,7 +8,7 @@ from player import Player
 
 from Logic.Prueba import BusquedaAmplitud
 from Logic.Costo_1 import Costo
-from Logic.Profundidad import BusquedaProfundidad
+from Logic.Profundidad_WN import BusquedaProfundidad
 
 
 #COSTOSEARCH
@@ -61,6 +61,8 @@ class Level:
         solucion = motor.solucionar()
 
         self.player.movimientos = solucion["paths"]
+
+        return solucion
 
 
 

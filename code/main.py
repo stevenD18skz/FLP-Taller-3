@@ -152,9 +152,8 @@ class Game:
 
                             else:
                                 #print(f"Algoritmo seleccionado: {self.algorithm_choice} - {button.text}")
-                                tree_text = self.generate_search_tree()
-                                self.tree_display.update_tree(tree_text)
-                                self.level.ejecutarAlgoritmo(button.text)
+                                s = self.level.ejecutarAlgoritmo(button.text)
+                                self.tree_display.update_tree(s["arbol"])
                                 
             self.screen.fill(GRAY)
             self.level.run()

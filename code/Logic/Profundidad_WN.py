@@ -118,6 +118,9 @@ class BusquedaProfundidad():
 
         return ARBOL, []
 
+
+
+
     def imprimir_arbol_clasico(self, lista, prefijo="", es_ultimo=True):
         try:
             nodo, hijos, up, dir_name = lista
@@ -158,12 +161,12 @@ class BusquedaProfundidad():
             "tiempo_computo": f"{tiempo_computo:6.5f}"
         }
 
-
+"""
 entrada1 =  [
     [0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [0, 1, 1, 0, 0, 0, 4, 0, 0, 0],
     [2, 1, 1, 0, 1, 0, 1, 0, 1, 0],
-    [0, 3, 3, 0, 4, 0, 5, 0, 4, 0],
+    [0, 3, 3, 0, 4, 0, 1, 0, 4, 0],
     [0, 1, 1, 0, 1, 1, 1, 1, 1, 0],
     [0, 0, 0, 0, 1, 1, 0, 0, 0, 6],
     [5, 1, 1, 1, 1, 1, 0, 1, 1, 1],
@@ -184,3 +187,4 @@ if solucion["paths"]:
     print(f"\nCAMINO:\n{solucion['paths']}")
 else:
     print("No se encontraron caminos para todos los objetivos.")
+"""
