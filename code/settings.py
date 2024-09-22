@@ -7,5 +7,5 @@ path_main = path_main.replace("code/settings.py", "")
 # game setup
 WIDTH    = 1050
 HEIGHT   = 640
-FPS      = 40
+FPS      = 5
 TILESIZE = 64

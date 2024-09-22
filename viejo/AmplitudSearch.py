@@ -1,18 +1,16 @@
 from collections import deque
 
-
+"""
+EN ESTE CASO ESTE ALGORITMO LO QUE HACIA ERA HACER 2 ARBOLES DE BUSQUEDA
+PERO ESTO CAMBIO POR LO QUE YA QUEDA OBSOLETO
+"""
 
 class BusquedaAmplitud():
     def __init__(self, mapa):
         # Matriz del mapa
-        #y es el numero filas (arriba abajo)
-        #x es el numero de columas <- ->
-        #para coger los valores aqui es al revez (y, x) pero para el final (x, y)
-        #constatnes
         self.REPRESENTACION_INICIO = 2
         self.REPRESENTACION_PASAJERO = 5
         self.REPRESENTACION_OBJETIVO = 6
-
 
         # Definición de los movimientos (arriba, abajo, izquierda, derecha)
         self.MOVEMENTS = [(-1, 0), (1, 0), (0, -1), (0, 1)]

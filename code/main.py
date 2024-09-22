@@ -98,6 +98,10 @@ class Game:
         # Crear el recuadro para mostrar el árbol de búsqueda
         self.tree_display = TreeDisplay(650, 300, 310, 260)
 
+        #C:/Users/braya/Desktop/PRY/FLP-Taller-3/entrada1.txt
+        mapa = ALFile("C:/Users/braya/Desktop/PRY/FLP-Taller-3/entrada1.txt")
+        self.level.setMap(mapa)
+
 
 
     def update_button_states(self):

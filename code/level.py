@@ -1,17 +1,15 @@
+import time
 import pygame 
 from settings import *
 from tile import Tile
 from debug import debug
 from support import *
-from random import choice
 from player import Player
 
-from Logic.Prueba import BusquedaAmplitud
-from Logic.Costo_1 import Costo
-from Logic.Profundidad_WN import BusquedaProfundidad
+from Logic.BusquedaAmplitud import BusquedaAmplitud
+from Logic.BusquedaCosto import BusquedaCosto
+from Logic.BusquedaProfundidad import BusquedaProfundidad
 
-
-#COSTOSEARCH
 
 class Level:
     def __init__(self):
@@ -21,6 +19,7 @@ class Level:
         # sprite group setup
         self.visible_sprites = YSortCameraGroup()
         self.obstacle_sprites = pygame.sprite.Group()
+        self.caminos = pygame.sprite.Group()
 
         self.mapa = None
         self.motor = None
@@ -30,28 +29,65 @@ class Level:
         self.fade_speed = 5    # Velocidad de desvanecimiento
         self.fading_out = True  # Control de la animación de desvanecimiento
 
-        self.z_pressed = False  # Variable para controlar si ya se presionó la tecla
 
 
-    """
-    def input(self):
-        key = pygame.key.get_pressed()
+        #variables control de timepo
+        self.indice = 1 # Control para llevar registro de hasta que profundidad del arbol imprimir
+        self.arrow_alpha = 0
 
-        if key[pygame.K_z] and not self.z_pressed:
-            # Ejecutar la lógica solo una vez cuando se presiona la tecla Z
-            solucion = self.motor.solucionar()
-            self.player.movimientos = solucion
-            self.z_pressed = True  # Marcar que la tecla Z ha sido presionada
+        self.chat = time.time()
+        self.init_wait = time.time()
 
-        if not key[pygame.K_z]:
-            # Resetear la variable cuando se suelta la tecla Z
-            self.z_pressed = False
-    """
-    
+
+        self.tiempo_inicio_juego = time.time()
+
+
+
+
+    def loading_screen(self):
+        screen_width = 640
+        screen_height = 640
+
+        # Colores
+        BLACK = (0, 0, 0)
+        WHITE = (255, 255, 255)
+        
+        # Fuente
+        font = pygame.font.Font(None, 50)
+
+        # Dibujar el recuadro negro con bordes redondeados
+        rect_width = 640
+        rect_height = 640
+        rect_x = (screen_width - rect_width) // 2
+        rect_y = (screen_height - rect_height) // 2
+        pygame.draw.rect(self.display_surface, BLACK, (rect_x, rect_y, rect_width, rect_height), border_radius=25)
+
+        # Crear el texto "esperando entrada"
+        text_surface = font.render("esperando entrada", True, WHITE)
+        text_surface.set_alpha(self.text_alpha)  # Ajustar la transparencia
+        text_rect = text_surface.get_rect(center=(screen_width // 2, screen_height // 2))
+
+        # Dibujar el texto
+        self.display_surface.blit(text_surface, text_rect)
+
+        # Control de la animación (aparecer/desaparecer)
+        if self.fading_out:
+            self.text_alpha -= self.fade_speed
+            if self.text_alpha <= 0:
+                self.text_alpha = 0
+                self.fading_out = False
+        else:
+            self.text_alpha += self.fade_speed
+            if self.text_alpha >= 255:
+                self.text_alpha = 255
+                self.fading_out = True
+
+
+
     def ejecutarAlgoritmo(self, eleccion):
         algoritmos = {
             "Amplitud": BusquedaAmplitud,
-            "Costo uniforme": Costo,
+            "Costo uniforme": BusquedaCosto,
             "Profundidad evitando ciclos": BusquedaProfundidad,
             "Avara": None,
             "A*": None,
@@ -63,6 +99,93 @@ class Level:
         self.player.movimientos = solucion["paths"]
 
         return solucion
+        # Función para animar la flecha
+
+
+
+    def crear_caminos_arbol(self):
+        # Definir el tamaño de la casilla, del cuadrado, y las dimensiones de la flecha
+        CASILLA_SIZE = 64
+        CUADRADO_SIZE = 32
+        FLECHA_ANCHO = 16
+        FLECHA_ALTO_VERTICAL = 32  # Flecha que apunta hacia arriba o abajo
+        
+
+        # Función para calcular la posición central de una casilla
+        def centrar_en_casilla(coordenadas):
+            y, x = coordenadas
+            transformacion = (x * CASILLA_SIZE, y * CASILLA_SIZE)
+            centro = (transformacion[0] + CASILLA_SIZE // 2 - CUADRADO_SIZE // 2,
+                    transformacion[1] + CASILLA_SIZE // 2 - CUADRADO_SIZE // 2)
+            return centro
+
+
+        # Función para calcular la posición de la flecha
+        def calcular_posicion_flecha(centro, direccion, tamano_flecha):
+            if direccion == "arriba":
+                return (centro[0] + CUADRADO_SIZE // 2 - FLECHA_ANCHO // 2, centro[1] - tamano_flecha)
+            elif direccion == "abajo":
+                return (centro[0] + CUADRADO_SIZE // 2 - FLECHA_ANCHO // 2, centro[1] + CUADRADO_SIZE)
+            elif direccion == "izquierda":
+                return (centro[0] - tamano_flecha, centro[1] + CUADRADO_SIZE // 2 - FLECHA_ANCHO // 2)
+            elif direccion == "derecha":
+                return (centro[0] + CUADRADO_SIZE, centro[1] + CUADRADO_SIZE // 2 - FLECHA_ANCHO // 2)
+
+
+        # Función para obtener el tamaño de la flecha según la dirección
+        def obtener_tamano_flecha(direccion, alpha):
+            if direccion == "arriba" or direccion == "abajo":
+                return (FLECHA_ANCHO, int(FLECHA_ALTO_VERTICAL*alpha))     #(ancho, alto)
+            elif direccion == "izquierda" or direccion == "derecha":
+                return (int(FLECHA_ALTO_VERTICAL*alpha), FLECHA_ANCHO)
+
+
+
+        lista = [ #el nodo = los nodos que expandio = las direcciones que expandio
+                #((2, 0), [], []),
+                ((2, 0), [(1, 0), (3, 0)], ['arriba', 'abajo']),
+                        ((1, 0), [(0, 0)], ['arriba']),
+                        ((3, 0), [(4, 0), (3, 1)], ['abajo', 'derecha']),
+                                ((4, 0), [(5, 0)], ['abajo']),
+                                ((3, 1), [(3, 2)],  ['derecha']),
+                                        ((5, 0), [(6, 0)], ["abajo"]),
+                                        ((3, 2), [], []),
+                                                ((6, 0), [], [])
+        ]
+
+
+        for i in range(self.indice):
+            SQUARE_COLOR = (255, 0, 0)
+            ARROW_COLOR = (255, 0, 0)
+            SQUARE_COLOR_hijo = (255, 0, 0)
+            escalar = 1
+
+            if i == self.indice - 1:#si es el nodo que se mostrara como se expande
+                SQUARE_COLOR = (0, 0, 255)
+                ARROW_COLOR = (0, 255, 0)
+                SQUARE_COLOR_hijo = (0, 255, 0)
+                escalar = self.arrow_alpha
+            
+
+            inicio, hijos, direcciones = lista[i]
+
+            posicion_cuadro = centrar_en_casilla(inicio)
+            pygame.draw.rect(self.display_surface, SQUARE_COLOR, pygame.Rect(posicion_cuadro[0], posicion_cuadro[1], CUADRADO_SIZE, CUADRADO_SIZE))
+
+            for direction in direcciones:
+                tamano_flecha = obtener_tamano_flecha(direction, alpha=escalar)
+                centro_flecha = calcular_posicion_flecha(posicion_cuadro, direction, tamano_flecha[1] if direction in ["arriba", "abajo"] else tamano_flecha[0])
+                pygame.draw.rect(self.display_surface, ARROW_COLOR, pygame.Rect(centro_flecha[0], centro_flecha[1], tamano_flecha[0], tamano_flecha[1]))
+            
+
+            self.arrow_alpha = min(1, (time.time() - self.chat) / 3) #esto solo toma valores entre 0 - 1, este valor llega de 0 a 1 en 3 segufnods
+            
+            if self.arrow_alpha == 1 or escalar == 1: #cuando el valor es 1 es que ya se compleot de imprimit la flelcha por compelto 
+                for hijo in hijos:
+                    centro_hijo = centrar_en_casilla(hijo)
+                    pygame.draw.rect(self.display_surface, SQUARE_COLOR_hijo, pygame.Rect(centro_hijo[0], centro_hijo[1], CUADRADO_SIZE, CUADRADO_SIZE))
+            
+            
 
 
 
@@ -118,61 +241,37 @@ class Level:
 
 
 
-    def loading_screen(self):
-        screen_width = 640
-        screen_height = 640
-
-        # Colores
-        BLACK = (0, 0, 0)
-        WHITE = (255, 255, 255)
-        GREY = (100, 0, 0)
-        
-        # Fuente
-        font = pygame.font.Font(None, 50)
-
-        # Fondo de la pantalla
-        #self.display_surface.fill(GREY)
-
-        # Dibujar el recuadro negro con bordes redondeados
-        rect_width = 640
-        rect_height = 640
-        rect_x = (screen_width - rect_width) // 2
-        rect_y = (screen_height - rect_height) // 2
-        pygame.draw.rect(self.display_surface, BLACK, (rect_x, rect_y, rect_width, rect_height), border_radius=25)
-
-        # Crear el texto "esperando entrada"
-        text_surface = font.render("esperando entrada", True, WHITE)
-        text_surface.set_alpha(self.text_alpha)  # Ajustar la transparencia
-        text_rect = text_surface.get_rect(center=(screen_width // 2, screen_height // 2))
-
-        # Dibujar el texto
-        self.display_surface.blit(text_surface, text_rect)
-
-        # Control de la animación (aparecer/desaparecer)
-        if self.fading_out:
-            self.text_alpha -= self.fade_speed
-            if self.text_alpha <= 0:
-                self.text_alpha = 0
-                self.fading_out = False
-        else:
-            self.text_alpha += self.fade_speed
-            if self.text_alpha >= 255:
-                self.text_alpha = 255
-                self.fading_out = True
-
-
     def run(self):
         if self.mapa == None:
             self.loading_screen()
             return
 
-        #print("1111111111111111")
-        self.visible_sprites.custom_draw()#4
-        #print("2222222222222222")
+        self.visible_sprites.custom_draw()
         self.visible_sprites.update()
-        #print("55555555555555555")
-        debug(f"{self.player.status} === {self.player.rect} === {self.player.movimiento_actual}")
+
+
+
+
+        time_animation = min(1, (time.time() - self.init_wait) / 5)#este tiempor es el timepor de la animacion de expandir un nodo, llega de 0 - 1 en 5 segundos
+
+        if time_animation == 1:#si ya es 1 es porque ya termino el timepo de la animcaion
+            self.indice += 1 #aumentar un nivel de profundidad
+            self.arrow_alpha = 0 #reiniciar el valor para la siguiente flecha
+
+            self.chat = time.time()
+            self.init_wait = time.time()
+
+
+
+
+
+        self.crear_caminos_arbol()
+
+
+
+        debug(f"{self.player.status} === {self.player.rect} === {self.player.movimiento_actual} === {time.time() - self.tiempo_inicio_juego}")
     
+
 
     def setMap(self, map):
         self.mapa = map

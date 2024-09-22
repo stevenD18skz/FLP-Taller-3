@@ -1,6 +1,7 @@
 import time
 
-
+"""
+coppiar de segura"""
 
 
 class BusquedaProfundidad():
@@ -9,7 +10,6 @@ class BusquedaProfundidad():
         self.REPRESENTACION_INICIO = 2
         self.REPRESENTACION_PASAJERO = 5
         self.REPRESENTACION_OBJETIVO = 6
-
 
         # Definición de los movimientos (arriba, abajo, izquierda, derecha)
         self.MOVEMENTS = [(-1, 0), (1, 0), (0, -1), (0, 1)]
@@ -27,7 +27,6 @@ class BusquedaProfundidad():
 
 
 
-
     def encontrar_objeto(self, valor_objeto): #hay que acomodarla (y, x) => (x, y)
         for y, array in enumerate(self.mapa):
             for x, valor in enumerate(array):
@@ -36,29 +35,26 @@ class BusquedaProfundidad():
 
 
 
-
     def is_valid(self, x, y, grid):
         return 0 <= x < len(grid) and 0 <= y < len(grid[0]) and grid[x][y] != 1
 
 
 
-
-    def agregar_nodo(self, ARBOL, cor, cont, picked_up_passenger, next_dir_name):
+    def agregar_nodo(self, ARBOL, path, nodo, picked_up_passenger, next_dir_name):
         # Si no hay coordenadas, estamos en la raíz, y agregamos directamente
-        if not cor:
-            ARBOL[0][1].append((cont, [], picked_up_passenger, next_dir_name))
+        if not path:
+            ARBOL[0][1].append((nodo, [], picked_up_passenger, next_dir_name))
             return ARBOL
         
         # Empezamos desde el primer nivel de profundidad (sin contar la raíz)
         sub_tree = ARBOL[0][1]
-        for i, c in enumerate(cor):
+        for i, c in enumerate(path):
             sub_tree = sub_tree[c][1]
 
-            if i + 1 == len(cor):
-                sub_tree.append((cont, [], picked_up_passenger, next_dir_name))
+            if i + 1 == len(path):
+                sub_tree.append((nodo, [], picked_up_passenger, next_dir_name))
         
         return ARBOL
-
 
 
 
@@ -118,6 +114,8 @@ class BusquedaProfundidad():
 
         return ARBOL, []
 
+
+
     def imprimir_arbol_clasico(self, lista, prefijo="", es_ultimo=True):
         try:
             nodo, hijos, up, dir_name = lista
@@ -158,12 +156,12 @@ class BusquedaProfundidad():
             "tiempo_computo": f"{tiempo_computo:6.5f}"
         }
 
-
+"""
 entrada1 =  [
     [0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [0, 1, 1, 0, 0, 0, 4, 0, 0, 0],
     [2, 1, 1, 0, 1, 0, 1, 0, 1, 0],
-    [0, 3, 3, 0, 4, 0, 5, 0, 4, 0],
+    [0, 3, 3, 0, 4, 0, 1, 0, 4, 0],
     [0, 1, 1, 0, 1, 1, 1, 1, 1, 0],
     [0, 0, 0, 0, 1, 1, 0, 0, 0, 6],
     [5, 1, 1, 1, 1, 1, 0, 1, 1, 1],
@@ -184,3 +182,4 @@ if solucion["paths"]:
     print(f"\nCAMINO:\n{solucion['paths']}")
 else:
     print("No se encontraron caminos para todos los objetivos.")
+"""

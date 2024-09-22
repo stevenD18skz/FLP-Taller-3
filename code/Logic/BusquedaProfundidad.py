@@ -2,14 +2,12 @@ import time
 
 
 
-
 class BusquedaProfundidad():
     def __init__(self, mapa):
         #constantes
         self.REPRESENTACION_INICIO = 2
         self.REPRESENTACION_PASAJERO = 5
         self.REPRESENTACION_OBJETIVO = 6
-
 
         # Definición de los movimientos (arriba, abajo, izquierda, derecha)
         self.MOVEMENTS = [(-1, 0), (1, 0), (0, -1), (0, 1)]
@@ -27,7 +25,6 @@ class BusquedaProfundidad():
 
 
 
-
     def encontrar_objeto(self, valor_objeto): #hay que acomodarla (y, x) => (x, y)
         for y, array in enumerate(self.mapa):
             for x, valor in enumerate(array):
@@ -36,53 +33,46 @@ class BusquedaProfundidad():
 
 
 
-
     def is_valid(self, x, y, grid):
         return 0 <= x < len(grid) and 0 <= y < len(grid[0]) and grid[x][y] != 1
 
 
 
-
-    def agregar_nodo(self, ARBOL, cor, cont, picked_up_passenger, next_dir_name):
+    def agregar_nodo(self, ARBOL, path, nodo, picked_up_passenger, next_dir_name):
         # Si no hay coordenadas, estamos en la raíz, y agregamos directamente
-        if not cor:
-            ARBOL[0][1].append((cont, [], picked_up_passenger, next_dir_name))
+        if not path:
+            ARBOL[0][1].append((nodo, [], picked_up_passenger, next_dir_name))
             return ARBOL
         
         # Empezamos desde el primer nivel de profundidad (sin contar la raíz)
         sub_tree = ARBOL[0][1]
-        for i, c in enumerate(cor):
+        for i, c in enumerate(path):
             sub_tree = sub_tree[c][1]
 
-            if i + 1 == len(cor):
-                sub_tree.append((cont, [], picked_up_passenger, next_dir_name))
+            if i + 1 == len(path):
+                sub_tree.append((nodo, [], picked_up_passenger, next_dir_name))
         
         return ARBOL
 
 
 
-
     def search_cost(self, grid, start, goal):
-        CP = []#[((4, 0), [0], False, 'arriba'), ((6, 0), [1], False, 'abajo'), ((5, 1), [2], False, 'derecha')]  # Pila de nodos a evaluar (para DFS)
-                #A                              B                               C
+        CP = []
 
-        ARBOL = [(start, [], False, "start")] #[((5, 0), [((4, 0), [], False, 'arriba'), ((6, 0), [], False, 'abajo'), ((5, 1), [], False, 'derecha')], False, 'start')]#[(start, [], False, "start")]
+        ARBOL = [(start, [], False, "start")]
         CP.append((start, [], False, "start"))
         visited = [(start, False)]
 
         self.nodos_expandidos += 1
-
-
+        self.profunidad_maxima = 1
 
         while CP:
-            print(f"Estado de la fila{CP}")
-            self.imprimir_arbol_clasico(ARBOL)
             current_node, path, picked_up_passenger, dir_name = CP.pop(0)  # Cambiamos pop(0) por pop() para pila
             x, y = current_node
-            print(f"NODO A EXPANDIR {current_node}\n\n")
+
+            self.imprimir_arbol_clasico(ARBOL)
             input()
 
-            
             indice = 0
             hijos_del_nodo = []
             for i, (dx, dy) in enumerate(self.MOVEMENTS):
@@ -96,28 +86,29 @@ class BusquedaProfundidad():
                         next_path = path + [indice]
                         next_dir_name = self.DIRECTIONS[i]
 
-                        # Agregamos el nodo a la pila y al árbol
-                        hijos_del_nodo.append((next_node, next_path, picked_up_passenger, next_dir_name))
-                        ARBOL = self.agregar_nodo(ARBOL, path, next_node, picked_up_passenger, next_dir_name)
-
-                        # Ajustamos valores de salida de información
-                        self.nodos_expandidos += 1
-                        self.profundidad_maxima = max(self.profundidad_maxima, len(path))
-
                         if next_node == self.passager and not picked_up_passenger:
-                            picked_up_passenger = True
+                            hijos_del_nodo.append((next_node, next_path, True, next_dir_name))
+                            ARBOL = self.agregar_nodo(ARBOL, path, next_node, True, next_dir_name)
+                            visited.append(((next_node), True))
                         
+                        else:
+                            # Agregamos el nodo a la pila y al árbol
+                            hijos_del_nodo.append((next_node, next_path, picked_up_passenger, next_dir_name))
+                            ARBOL = self.agregar_nodo(ARBOL, path, next_node, picked_up_passenger, next_dir_name)
+                            visited.append(((next_node), picked_up_passenger))
+
+                        #se ajustan valores de salida de informacion
+                        self.nodos_expandidos += 1
+                        self.profunidad_maxima = max(self.profunidad_maxima, (len(next_path) + 1))
+  
                         if next_node == goal and picked_up_passenger:
                             return ARBOL, next_path
 
                         indice += 1
-                        visited.append(((next_node), picked_up_passenger))
-           
-           
+    
             CP = hijos_del_nodo + CP
 
         return ARBOL, []
-
 
 
 
@@ -135,6 +126,8 @@ class BusquedaProfundidad():
             for i, hijo in enumerate(hijos):
                 self.imprimir_arbol_clasico(hijo, nuevo_prefijo, i == len(hijos) - 1)
 
+
+
     def crear_salida_gui(self, arbol_final, camino_arbol):
         nodo = arbol_final[0]
         cord, hijos, up, dir_name = nodo
@@ -148,6 +141,8 @@ class BusquedaProfundidad():
 
         return res
 
+
+
     def solucionar(self):
         tiempo_inicio = time.time()
         arbol_final, camino_arbol = self.search_cost(self.mapa, self.start, self.goal)
@@ -157,7 +152,7 @@ class BusquedaProfundidad():
         return {
             "paths": self.crear_salida_gui(arbol_final, camino_arbol),
             "nodos_explorados": self.nodos_expandidos,
-            "profundidad_maxima": self.profundidad_maxima + 1,
+            "profundidad_maxima": self.profundidad_maxima,
             "tiempo_computo": f"{tiempo_computo:6.5f}"
         }
 
@@ -166,7 +161,7 @@ entrada1 =  [
     [0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [0, 1, 1, 0, 0, 0, 4, 0, 0, 0],
     [2, 1, 1, 0, 1, 0, 1, 0, 1, 0],
-    [0, 3, 3, 0, 4, 0, 1, 0, 4, 0],
+    [0, 3, 3, 0, 4, 0, 0, 0, 4, 0],
     [0, 1, 1, 0, 1, 1, 1, 1, 1, 0],
     [0, 0, 0, 0, 1, 1, 0, 0, 0, 6],
     [5, 1, 1, 1, 1, 1, 0, 1, 1, 1],

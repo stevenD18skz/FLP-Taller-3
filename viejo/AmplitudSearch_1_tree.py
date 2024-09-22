@@ -2,6 +2,10 @@ import heapq
 import os
 import time
 
+"""
+ESTE ALGORITMO ESTA MAL, YA QUE TIENE UN ERROR AL ENCONTRAR EL PASAGERO
+"""
+
 
 class BusquedaAmplitud():
     def __init__(self, mapa):
@@ -23,7 +27,6 @@ class BusquedaAmplitud():
         #DATOS ARBOLES
         self.nodos_expandidos = 0
         self.profunidad_maxima = 0
-        self.acarreo = 0
 
 
 
@@ -68,7 +71,7 @@ class BusquedaAmplitud():
 
 
 
-    #AJUSTAR CUANDO SE AGREGA A LOS VISITADOS EL PASAJERO
+
     def search_cost(self, grid, start, goal):
         CP = []#la cola de nodos a evular
 
@@ -79,10 +82,13 @@ class BusquedaAmplitud():
 
         self.nodos_expandidos += 1
         self.profunidad_maxima = 1
-        
+
         while CP:
             current_node, path, picked_up_passenger, dir_name = CP.pop(0) #crear nodo actual
             x, y = current_node
+
+            if current_node == self.passager and not picked_up_passenger:
+                picked_up_passenger = True
 
             indice = 0
             for i, (dx, dy) in enumerate(self.MOVEMENTS):
@@ -96,25 +102,22 @@ class BusquedaAmplitud():
                         next_path = path + [indice]
                         next_dir_name = self.DIRECTIONS[i]
 
-                        #verificar si el nodo creo al expandir el nodo actual es el pasajero
-                        if next_node == self.passager and not picked_up_passenger:
-                            #se agrega el nodo a la cola de examinacion y al arbol
-                            CP.append((next_node, next_path, True, next_dir_name))
-                            ARBOL = self.agregar_nodo(ARBOL, path, next_node, True, next_dir_name)
-                        
-                        else:
-                            #se agrega el nodo a la cola de examinacion y al arbol
-                            CP.append((next_node, next_path, picked_up_passenger, next_dir_name))
-                            ARBOL = self.agregar_nodo(ARBOL, path, next_node, picked_up_passenger, next_dir_name)
+                        #se agrega el nodo a la cola de examinacion y al arbol
+                        CP.append((next_node, next_path, picked_up_passenger, next_dir_name))
+                        ARBOL = self.agregar_nodo(ARBOL, path, next_node, picked_up_passenger, next_dir_name)
 
-
-                        #verificar si el nodo creo al expandir el nodo actual es la meta
-                        if next_node == goal and picked_up_passenger:
-                            return ARBOL, next_path
-                        
                         #se ajustan valores de salida de informacion
                         self.nodos_expandidos += 1
-                        self.profunidad_maxima = max(self.profunidad_maxima, (len(next_path) + 1))
+                        self.profunidad_maxima = max(self.profunidad_maxima, len(path))
+
+                        #verificar si el nodo es el pasajero
+                        if next_node == self.passager and not picked_up_passenger:
+                            pass
+                            #picked_up_passenger = True
+                        
+                        #se verfica si el nodo que se encontro es la meta
+                        if next_node == goal and picked_up_passenger:
+                            return ARBOL, next_path
 
                         #se aniade una pocision para la lista de hijos y se agrega que este nodo ya se visito
                         indice += 1
@@ -125,7 +128,7 @@ class BusquedaAmplitud():
 
 
 
-    def imprimir_arbol_clasico2(self, lista, prefijo="", es_ultimo=True):
+    def imprimir_arbol_clasico(self, lista, prefijo="", es_ultimo=True):
         try:
             nodo, hijos, up, dir_name = lista
         except:
@@ -138,25 +141,6 @@ class BusquedaAmplitud():
             nuevo_prefijo = prefijo + ("    " if es_ultimo else "│   ")
             for i, hijo in enumerate(hijos):
                 self.imprimir_arbol_clasico(hijo, nuevo_prefijo, i == len(hijos) - 1)
-
-
-    def imprimir_arbol_clasico(self, lista, prefijo="", es_ultimo=True):
-        resultado = []  # Lista para acumular las cadenas generadas
-        try:
-            nodo, hijos, up, dir_name = lista
-        except:
-            nodo, hijos, up, dir_name = lista[0]
-
-        marcador = "--> " if es_ultimo else "|-- "
-        resultado.append(prefijo + marcador + f"{nodo} [P? {up}] [direccion {dir_name}]")
-
-        if hijos:
-            nuevo_prefijo = prefijo + ("    " if es_ultimo else "|   ")
-            for i, hijo in enumerate(hijos):
-                resultado.append(self.imprimir_arbol_clasico(hijo, nuevo_prefijo, i == len(hijos) - 1))
-
-        return "\n".join(resultado)  # Unir todas las cadenas y devolver
-
 
 
 
@@ -184,8 +168,6 @@ class BusquedaAmplitud():
         arbol_final, camino_arbol = self.search_cost(self.mapa, self.start, self.goal)
         tiempo_final = time.time()
         tiempo_computo = tiempo_final - tiempo_inicio  
-
-       
 
         #devolver el camino completo
         return {
@@ -225,4 +207,3 @@ if solucion["paths"]:
     print(f"\nCAMINO:\n{solucion["paths"]}")
 else:
     print("No se encontraron caminos para todos los objetivos.")
-
