@@ -153,8 +153,7 @@ class Level:
                                                 ((6, 0), [], [])
         ]
 
-
-        for i in range(self.indice):
+        for i in range(0): #range(self.indice):
             SQUARE_COLOR = (255, 0, 0)
             ARROW_COLOR = (255, 0, 0)
             SQUARE_COLOR_hijo = (255, 0, 0)
@@ -185,8 +184,74 @@ class Level:
                     centro_hijo = centrar_en_casilla(hijo)
                     pygame.draw.rect(self.display_surface, SQUARE_COLOR_hijo, pygame.Rect(centro_hijo[0], centro_hijo[1], CUADRADO_SIZE, CUADRADO_SIZE))
             
+
+
+        nodos_expandidos = [
+                        ((1, 0), [(0, 0)], ['arriba']),
+                        ((3, 0), [(4, 0), (3, 1)], ['abajo', 'derecha'])
+                    ]
+        
+
+        nodos_expandidos_2 = [
+                        ((0, 0), [], []),
+                        ((4, 0), [(5, 0)], ['abajo']),
+                        ((3, 1), [(3, 2)], ['derecha'])
+                    ]
+
+
+
+        SQUARE_COLOR = (255, 0, 0)
+        ARROW_COLOR = (255, 0, 0)
+        SQUARE_COLOR_hijo = (255, 0, 0)
+        escalar = 1
+
+        inicio, hijos, direcciones = lista[0]
+
+        posicion_cuadro = centrar_en_casilla(inicio)
+        pygame.draw.rect(self.display_surface, SQUARE_COLOR, pygame.Rect(posicion_cuadro[0], posicion_cuadro[1], CUADRADO_SIZE, CUADRADO_SIZE))
+
+        for direction in direcciones:
+            tamano_flecha = obtener_tamano_flecha(direction, alpha=escalar)
+            centro_flecha = calcular_posicion_flecha(posicion_cuadro, direction, tamano_flecha[1] if direction in ["arriba", "abajo"] else tamano_flecha[0])
+            pygame.draw.rect(self.display_surface, ARROW_COLOR, pygame.Rect(centro_flecha[0], centro_flecha[1], tamano_flecha[0], tamano_flecha[1]))
+        
+
+
+        
+        
+        for hijo in hijos:
+            centro_hijo = centrar_en_casilla(hijo)
+            pygame.draw.rect(self.display_surface, SQUARE_COLOR_hijo, pygame.Rect(centro_hijo[0], centro_hijo[1], CUADRADO_SIZE, CUADRADO_SIZE))
+
+
+
+
+
+
+
+        for i, n in enumerate(nodos_expandidos):
+            SQUARE_COLOR = (0, 0, 255)
+            ARROW_COLOR = (0, 255, 0)
+            SQUARE_COLOR_hijo = (0, 255, 0)
+            escalar = self.arrow_alpha
+            
+            inicio, hijos, direcciones = n
+
+            posicion_cuadro = centrar_en_casilla(inicio)
+            pygame.draw.rect(self.display_surface, SQUARE_COLOR, pygame.Rect(posicion_cuadro[0], posicion_cuadro[1], CUADRADO_SIZE, CUADRADO_SIZE))
+
+            for direction in direcciones:
+                tamano_flecha = obtener_tamano_flecha(direction, alpha=escalar)
+                centro_flecha = calcular_posicion_flecha(posicion_cuadro, direction, tamano_flecha[1] if direction in ["arriba", "abajo"] else tamano_flecha[0])
+                pygame.draw.rect(self.display_surface, ARROW_COLOR, pygame.Rect(centro_flecha[0], centro_flecha[1], tamano_flecha[0], tamano_flecha[1]))
             
 
+            self.arrow_alpha = min(1, (time.time() - self.chat) / 3) #esto solo toma valores entre 0 - 1, este valor llega de 0 a 1 en 3 segufnods
+            
+            if self.arrow_alpha == 1 or escalar == 1: #cuando el valor es 1 es que ya se compleot de imprimit la flelcha por compelto 
+                for hijo in hijos:
+                    centro_hijo = centrar_en_casilla(hijo)
+                    pygame.draw.rect(self.display_surface, SQUARE_COLOR_hijo, pygame.Rect(centro_hijo[0], centro_hijo[1], CUADRADO_SIZE, CUADRADO_SIZE))
 
 
     def create_map(self):

@@ -22,6 +22,7 @@ class BusquedaAmplitud():
         #DATOS ARBOLES
         self.nodos_expandidos = 0
         self.profunidad_maxima = 0
+        self.acarreo_profundidad = 0
 
 
 
@@ -75,6 +76,12 @@ class BusquedaAmplitud():
         self.profunidad_maxima = 1
         
         while CP:
+            if self.acarreo_profundidad == len(CP[0][1]):
+                #print(f"Cola: {CP} Profundida {self.acarreo_profundidad}")
+                self.acarreo_profundidad += 1
+                #print(self.imprimir_arbol_clasico(ARBOL))
+                #input()
+
             current_node, path, picked_up_passenger, dir_name = CP.pop(0) #crear nodo actual
             x, y = current_node
 
@@ -168,7 +175,7 @@ class BusquedaAmplitud():
 
 
 
-"""entrada1 =  [
+entrada1 =  [
     [0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [0, 1, 1, 0, 0, 0, 4, 0, 0, 0],
     [2, 1, 1, 0, 1, 0, 1, 0, 1, 0],
@@ -192,4 +199,3 @@ print(f"Profundidad máxima del árbol: {solucion['profundidad_maxima']}")
 print(f"Tiempo de cómputo: {solucion['tiempo_computo']} (S)")
 print(f"\nCAMINO:\n{solucion["paths"]}")
 print(f"\n\nARBOL:\n{solucion["arbol"]}")
-"""
