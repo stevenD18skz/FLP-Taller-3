@@ -82,7 +82,7 @@ class Player(pygame.sprite.Sprite):
             return
 
         if self.movimientos != []:
-            print(self.movimientos)
+            #print(self.movimientos)
             # Tomar el siguiente movimiento de la lista
             self.movimiento_actual = self.movimientos[0][1]
 
@@ -177,7 +177,7 @@ class Player(pygame.sprite.Sprite):
             self.start_animation()
             return
 
-        #print("333333333333333333")
+
         self.get_status()
         self.animate()
         self.input()

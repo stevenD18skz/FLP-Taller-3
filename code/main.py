@@ -99,13 +99,11 @@ class Game:
         self.tree_display = TreeDisplay(650, 300, 310, 260)
 
         #C:/Users/braya/Desktop/PRY/FLP-Taller-3/entrada1.txt
-        mapa = ALFile("C:/Users/braya/Desktop/PRY/FLP-Taller-3/entrada1.txt")
-        self.level.setMap(mapa)
+        #self.level.setMap(ALFile("C:/Users/braya/Desktop/PRY/FLP-Taller-3/entrada1.txt"))
 
 
 
     def update_button_states(self):
-        #print(self.level.mapa)
         if self.level.mapa == None:
             for button in self.buttons[:-1]:
                 button.active = False
@@ -143,7 +141,7 @@ class Game:
                     sys.exit()
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     x, y = pygame.mouse.get_pos()
-                    #print(f"posicion del mouse {(x, y)}")
+
                     for button in self.buttons:
                         if button.is_clicked((x, y)):
                             if button.text in ['No informada', 'Informada']:
@@ -155,7 +153,6 @@ class Game:
                                 self.update_button_states()
 
                             else:
-                                #print(f"Algoritmo seleccionado: {self.algorithm_choice} - {button.text}")
                                 s = self.level.ejecutarAlgoritmo(button.text)
                                 self.tree_display.update_tree(s["arbol"])
                                 
@@ -188,7 +185,6 @@ class Game:
             initialdir=".",
             filetypes=(("Archivos de texto", "*.txt"), ("Todos los archivos", "*.*"))
         )
-        #print(f"Archivo seleccionado: {file_path}")
         root.destroy()
 
         mapa = ALFile(file_path)

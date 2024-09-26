@@ -22,7 +22,11 @@ class BusquedaAmplitud():
         #DATOS ARBOLES
         self.nodos_expandidos = 0
         self.profunidad_maxima = 0
+
+
         self.acarreo_profundidad = 0
+        self.acarreo_nodos = []
+        self.final_nodos = []
 
 
 
@@ -77,15 +81,15 @@ class BusquedaAmplitud():
         
         while CP:
             if self.acarreo_profundidad == len(CP[0][1]):
-                #print(f"Cola: {CP} Profundida {self.acarreo_profundidad}")
                 self.acarreo_profundidad += 1
-                #print(self.imprimir_arbol_clasico(ARBOL))
-                #input()
+                self.final_nodos.append(self.acarreo_nodos)
+                self.acarreo_nodos = []
 
             current_node, path, picked_up_passenger, dir_name = CP.pop(0) #crear nodo actual
             x, y = current_node
 
             indice = 0
+            prueba = [current_node, [], [], False] # en nodo acualt, [sus nodos hijos] [la direccion de nodos hijos]
             for i, (dx, dy) in enumerate(self.MOVEMENTS):
                 next_x, next_y = x + dx, y + dy
 
@@ -101,12 +105,21 @@ class BusquedaAmplitud():
                             CP.append((next_node, next_path, True, next_dir_name))
                             ARBOL = self.agregar_nodo(ARBOL, path, next_node, True, next_dir_name)
                             visited.append(((next_node), True))
+
+                            prueba[1].append(next_node)
+                            prueba[2].append(next_dir_name)
+                            prueba[3] = True
                         
                         else:
                             CP.append((next_node, next_path, picked_up_passenger, next_dir_name))
                             ARBOL = self.agregar_nodo(ARBOL, path, next_node, picked_up_passenger, next_dir_name)
                             visited.append(((next_node), picked_up_passenger))
+
+                            prueba[1].append(next_node)
+                            prueba[2].append(next_dir_name)
+                            prueba[3] = picked_up_passenger
                         
+
                         #se ajustan valores de salida de informacion
                         self.nodos_expandidos += 1
                         self.profunidad_maxima = max(self.profunidad_maxima, (len(next_path) + 1))
@@ -115,6 +128,8 @@ class BusquedaAmplitud():
                             return ARBOL, next_path
                         
                         indice += 1
+                
+            self.acarreo_nodos.append(prueba)
 
         return ARBOL, []
 
@@ -162,19 +177,22 @@ class BusquedaAmplitud():
         tiempo_final = time.time()
         tiempo_computo = tiempo_final - tiempo_inicio  
 
+
         #devolver el camino completo
         return {
             "arbol":  self.imprimir_arbol_clasico(arbol_final),
             "paths": self.crear_salida_gui(arbol_final, camino_arbol),
             "nodos_explorados": self.nodos_expandidos,
             "profundidad_maxima": self.profunidad_maxima,
-            "tiempo_computo": f"{tiempo_computo:6.5f}"
+            "tiempo_computo": f"{tiempo_computo:6.5f}",
+            "nodos_expandidos": self.final_nodos[1:]
         }
 
 
 
 
 
+"""
 entrada1 =  [
     [0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [0, 1, 1, 0, 0, 0, 4, 0, 0, 0],
@@ -199,3 +217,5 @@ print(f"Profundidad máxima del árbol: {solucion['profundidad_maxima']}")
 print(f"Tiempo de cómputo: {solucion['tiempo_computo']} (S)")
 print(f"\nCAMINO:\n{solucion["paths"]}")
 print(f"\n\nARBOL:\n{solucion["arbol"]}")
+print(f"\n\nodos_expandidos:\n{solucion["nodos_expandidos"]}")
+"""

@@ -32,14 +32,19 @@ class Level:
 
 
         #variables control de timepo
-        self.indice = 1 # Control para llevar registro de hasta que profundidad del arbol imprimir
+        self.indice = 0 # Control para llevar registro de hasta que profundidad del arbol imprimir
         self.arrow_alpha = 0
 
         self.chat = time.time()
-        self.init_wait = time.time()
+        self.init_wait = -1
+
+        
+        self.all_ya = []
+        self.all_expandidos = []
 
 
         self.tiempo_inicio_juego = time.time()
+        self.solucion = None
 
 
 
@@ -94,12 +99,15 @@ class Level:
         }
 
         motor = algoritmos[eleccion](self.mapa)
-        solucion = motor.solucionar()
+        self.solucion = motor.solucionar()
 
-        self.player.movimientos = solucion["paths"]
+        self.init_wait = time.time()
+        self.all_ya = []
+        self.all_expandidos = self.solucion["nodos_expandidos"]
 
-        return solucion
-        # Función para animar la flecha
+        print(self.solucion["paths"])
+
+        return self.solucion
 
 
 
@@ -109,6 +117,11 @@ class Level:
         CUADRADO_SIZE = 32
         FLECHA_ANCHO = 16
         FLECHA_ALTO_VERTICAL = 32  # Flecha que apunta hacia arriba o abajo
+
+        ROJO = (255, 0, 0)
+        VERDE = (0, 255, 0)
+        AZUL = (0, 0, 255)
+        AMARILLO = (255, 255, 0)
         
 
         # Función para calcular la posición central de una casilla
@@ -141,117 +154,134 @@ class Level:
 
 
 
-        lista = [ #el nodo = los nodos que expandio = las direcciones que expandio
-                #((2, 0), [], []),
-                ((2, 0), [(1, 0), (3, 0)], ['arriba', 'abajo']),
-                        ((1, 0), [(0, 0)], ['arriba']),
-                        ((3, 0), [(4, 0), (3, 1)], ['abajo', 'derecha']),
-                                ((4, 0), [(5, 0)], ['abajo']),
-                                ((3, 1), [(3, 2)],  ['derecha']),
-                                        ((5, 0), [(6, 0)], ["abajo"]),
-                                        ((3, 2), [], []),
-                                                ((6, 0), [], [])
-        ]
 
-        for i in range(0): #range(self.indice):
-            SQUARE_COLOR = (255, 0, 0)
-            ARROW_COLOR = (255, 0, 0)
-            SQUARE_COLOR_hijo = (255, 0, 0)
+        for i, n in enumerate(self.all_ya):
+            SQUARE_COLOR = ROJO
+            ARROW_COLOR = ROJO
+            SQUARE_COLOR_hijo = ROJO
+            BORDER_COLOR = VERDE
             escalar = 1
 
-            if i == self.indice - 1:#si es el nodo que se mostrara como se expande
-                SQUARE_COLOR = (0, 0, 255)
-                ARROW_COLOR = (0, 255, 0)
-                SQUARE_COLOR_hijo = (0, 255, 0)
-                escalar = self.arrow_alpha
-            
+            inicio, hijos, direcciones, up_pasajero = n
 
-            inicio, hijos, direcciones = lista[i]
+        
+            grosor_borde = 0 if up_pasajero else 10
 
             posicion_cuadro = centrar_en_casilla(inicio)
-            pygame.draw.rect(self.display_surface, SQUARE_COLOR, pygame.Rect(posicion_cuadro[0], posicion_cuadro[1], CUADRADO_SIZE, CUADRADO_SIZE))
+            pygame.draw.rect(self.display_surface, SQUARE_COLOR, pygame.Rect(posicion_cuadro[0], posicion_cuadro[1], CUADRADO_SIZE, CUADRADO_SIZE))# Dibuja el borde del rectángulo
+            pygame.draw.rect(self.display_surface, BORDER_COLOR, pygame.Rect(posicion_cuadro[0], posicion_cuadro[1], CUADRADO_SIZE, CUADRADO_SIZE), grosor_borde)
 
             for direction in direcciones:
                 tamano_flecha = obtener_tamano_flecha(direction, alpha=escalar)
                 centro_flecha = calcular_posicion_flecha(posicion_cuadro, direction, tamano_flecha[1] if direction in ["arriba", "abajo"] else tamano_flecha[0])
                 pygame.draw.rect(self.display_surface, ARROW_COLOR, pygame.Rect(centro_flecha[0], centro_flecha[1], tamano_flecha[0], tamano_flecha[1]))
+
+                
+            for hijo in hijos:
+                centro_hijo = centrar_en_casilla(hijo)
+                pygame.draw.rect(self.display_surface, SQUARE_COLOR_hijo, pygame.Rect(centro_hijo[0], centro_hijo[1], CUADRADO_SIZE, CUADRADO_SIZE))
+
+
+
+        for i, n in enumerate(self.all_expandidos[0]):
+            SQUARE_COLOR = AZUL
+            ARROW_COLOR = AZUL
+            SQUARE_COLOR_hijo = AZUL
+            ESCALAR = self.arrow_alpha
+            
+            inicio, hijos, direcciones, up_pasajero = n
+
+            posicion_cuadro = centrar_en_casilla(inicio)
+            pygame.draw.rect(self.display_surface, SQUARE_COLOR, pygame.Rect(posicion_cuadro[0], posicion_cuadro[1], CUADRADO_SIZE, CUADRADO_SIZE))
+
+            for direction in direcciones:
+                tamano_flecha = obtener_tamano_flecha(direction, alpha=ESCALAR)
+                centro_flecha = calcular_posicion_flecha(posicion_cuadro, direction, tamano_flecha[1] if direction in ["arriba", "abajo"] else tamano_flecha[0])
+                pygame.draw.rect(self.display_surface, ARROW_COLOR, pygame.Rect(centro_flecha[0], centro_flecha[1], tamano_flecha[0], tamano_flecha[1]))
             
 
-            self.arrow_alpha = min(1, (time.time() - self.chat) / 3) #esto solo toma valores entre 0 - 1, este valor llega de 0 a 1 en 3 segufnods
+            self.arrow_alpha = min(1, (time.time() - self.chat) / 0.25) #esto solo toma valores entre 0 - 1, este valor llega de 0 a 1 en 3 segufnods
             
-            if self.arrow_alpha == 1 or escalar == 1: #cuando el valor es 1 es que ya se compleot de imprimit la flelcha por compelto 
+            if self.arrow_alpha == 1 or ESCALAR == 1: #cuando el valor es 1 es que ya se compleot de imprimit la flelcha por compelto 
                 for hijo in hijos:
                     centro_hijo = centrar_en_casilla(hijo)
                     pygame.draw.rect(self.display_surface, SQUARE_COLOR_hijo, pygame.Rect(centro_hijo[0], centro_hijo[1], CUADRADO_SIZE, CUADRADO_SIZE))
-            
+        
+        
+    
+    def camino_final(self):
 
+        # Definir el tamaño de la casilla, del cuadrado, y las dimensiones de la flecha
+        CASILLA_SIZE = 64
+        CUADRADO_SIZE = 32
+        FLECHA_ANCHO = 16
+        FLECHA_ALTO_VERTICAL = 32  # Flecha que apunta hacia arriba o abajo
 
-        nodos_expandidos = [
-                        ((1, 0), [(0, 0)], ['arriba']),
-                        ((3, 0), [(4, 0), (3, 1)], ['abajo', 'derecha'])
-                    ]
+        ROJO = (255, 0, 0)
+        VERDE = (0, 255, 0)
+        AZUL = (0, 0, 255)
+        AMARILLO = (255, 255, 0)
         
 
-        nodos_expandidos_2 = [
-                        ((0, 0), [], []),
-                        ((4, 0), [(5, 0)], ['abajo']),
-                        ((3, 1), [(3, 2)], ['derecha'])
-                    ]
+        # Función para calcular la posición central de una casilla
+        def centrar_en_casilla(coordenadas):
+            y, x = coordenadas
+            transformacion = (x * CASILLA_SIZE, y * CASILLA_SIZE)
+            centro = (transformacion[0] + CASILLA_SIZE // 2 - CUADRADO_SIZE // 2,
+                    transformacion[1] + CASILLA_SIZE // 2 - CUADRADO_SIZE // 2)
+            return centro
+
+
+        # Función para calcular la posición de la flecha
+        def calcular_posicion_flecha(centro, direccion, tamano_flecha):
+            if direccion == "abajo":
+                return (centro[0] + CUADRADO_SIZE // 2 - FLECHA_ANCHO // 2, centro[1] - tamano_flecha)
+            elif direccion == "arriba":
+                return (centro[0] + CUADRADO_SIZE // 2 - FLECHA_ANCHO // 2, centro[1] + CUADRADO_SIZE)
+            elif direccion == "derecha":
+                return (centro[0] - tamano_flecha, centro[1] + CUADRADO_SIZE // 2 - FLECHA_ANCHO // 2)
+            elif direccion == "izquierda":
+                return (centro[0] + CUADRADO_SIZE, centro[1] + CUADRADO_SIZE // 2 - FLECHA_ANCHO // 2)
+
+
+        # Función para obtener el tamaño de la flecha según la dirección
+        def obtener_tamano_flecha(direccion, alpha):
+            if direccion == "abajo" or direccion == "arriba":
+                return (FLECHA_ANCHO, int(FLECHA_ALTO_VERTICAL*alpha))     #(ancho, alto)
+            elif direccion == "derecha" or direccion == "izquierda":
+                return (int(FLECHA_ALTO_VERTICAL*alpha), FLECHA_ANCHO)
+            
+        
 
 
 
-        SQUARE_COLOR = (255, 0, 0)
-        ARROW_COLOR = (255, 0, 0)
-        SQUARE_COLOR_hijo = (255, 0, 0)
-        escalar = 1
+        for i, n in enumerate(self.solucion["paths"]):
+            SQUARE_COLOR = ROJO
+            ARROW_COLOR = ROJO
+            SQUARE_COLOR_hijo = ROJO
+            BORDER_COLOR = VERDE
+            escalar = 1
 
-        inicio, hijos, direcciones = lista[0]
+            #((3, 0), 'abajo')
+            hijo, direccion = n
 
-        posicion_cuadro = centrar_en_casilla(inicio)
-        pygame.draw.rect(self.display_surface, SQUARE_COLOR, pygame.Rect(posicion_cuadro[0], posicion_cuadro[1], CUADRADO_SIZE, CUADRADO_SIZE))
+            posicion_cuadro = centrar_en_casilla(hijo)
+            pygame.draw.rect(self.display_surface, SQUARE_COLOR, pygame.Rect(posicion_cuadro[0], posicion_cuadro[1], CUADRADO_SIZE, CUADRADO_SIZE))
 
-        for direction in direcciones:
-            tamano_flecha = obtener_tamano_flecha(direction, alpha=escalar)
-            centro_flecha = calcular_posicion_flecha(posicion_cuadro, direction, tamano_flecha[1] if direction in ["arriba", "abajo"] else tamano_flecha[0])
+
+            tamano_flecha = obtener_tamano_flecha(direccion, alpha=escalar)
+            centro_flecha = calcular_posicion_flecha(posicion_cuadro, direccion, tamano_flecha[1] if direccion in ["arriba", "abajo"] else tamano_flecha[0])
             pygame.draw.rect(self.display_surface, ARROW_COLOR, pygame.Rect(centro_flecha[0], centro_flecha[1], tamano_flecha[0], tamano_flecha[1]))
-        
+
+                
 
 
         
-        
-        for hijo in hijos:
-            centro_hijo = centrar_en_casilla(hijo)
-            pygame.draw.rect(self.display_surface, SQUARE_COLOR_hijo, pygame.Rect(centro_hijo[0], centro_hijo[1], CUADRADO_SIZE, CUADRADO_SIZE))
 
 
 
 
 
-
-
-        for i, n in enumerate(nodos_expandidos):
-            SQUARE_COLOR = (0, 0, 255)
-            ARROW_COLOR = (0, 255, 0)
-            SQUARE_COLOR_hijo = (0, 255, 0)
-            escalar = self.arrow_alpha
-            
-            inicio, hijos, direcciones = n
-
-            posicion_cuadro = centrar_en_casilla(inicio)
-            pygame.draw.rect(self.display_surface, SQUARE_COLOR, pygame.Rect(posicion_cuadro[0], posicion_cuadro[1], CUADRADO_SIZE, CUADRADO_SIZE))
-
-            for direction in direcciones:
-                tamano_flecha = obtener_tamano_flecha(direction, alpha=escalar)
-                centro_flecha = calcular_posicion_flecha(posicion_cuadro, direction, tamano_flecha[1] if direction in ["arriba", "abajo"] else tamano_flecha[0])
-                pygame.draw.rect(self.display_surface, ARROW_COLOR, pygame.Rect(centro_flecha[0], centro_flecha[1], tamano_flecha[0], tamano_flecha[1]))
-            
-
-            self.arrow_alpha = min(1, (time.time() - self.chat) / 3) #esto solo toma valores entre 0 - 1, este valor llega de 0 a 1 en 3 segufnods
-            
-            if self.arrow_alpha == 1 or escalar == 1: #cuando el valor es 1 es que ya se compleot de imprimit la flelcha por compelto 
-                for hijo in hijos:
-                    centro_hijo = centrar_en_casilla(hijo)
-                    pygame.draw.rect(self.display_surface, SQUARE_COLOR_hijo, pygame.Rect(centro_hijo[0], centro_hijo[1], CUADRADO_SIZE, CUADRADO_SIZE))
 
 
     def create_map(self):
@@ -317,20 +347,30 @@ class Level:
 
 
 
-        time_animation = min(1, (time.time() - self.init_wait) / 5)#este tiempor es el timepor de la animacion de expandir un nodo, llega de 0 - 1 en 5 segundos
 
-        if time_animation == 1:#si ya es 1 es porque ya termino el timepo de la animcaion
-            self.indice += 1 #aumentar un nivel de profundidad
-            self.arrow_alpha = 0 #reiniciar el valor para la siguiente flecha
+        if not self.init_wait == -1:
+            time_animation = min(1, (time.time() - self.init_wait) / 0.4)#este tiempor es el timepor de la animacion de expandir un nodo, llega de 0 - 1 en 5 segundos
 
-            self.chat = time.time()
-            self.init_wait = time.time()
+            if time_animation == 1:#si ya es 1 es porque ya termino el timepo de la animcaion
+                self.indice += 1 #aumentar un nivel de profundidad
+                self.arrow_alpha = 0 #reiniciar el valor para la siguiente flecha
+
+                self.chat = time.time()
+                self.init_wait = time.time()
+
+                self.all_ya = self.all_ya + self.all_expandidos[0]
+                self.all_expandidos.pop(0)
+                self.camino_final()
 
 
+            if self.all_expandidos == []:
+                self.player.movimientos = self.solucion["paths"]
+                self.init_wait = -1
+                
 
+            else:
+                self.crear_caminos_arbol()
 
-
-        self.crear_caminos_arbol()
 
 
 
@@ -360,7 +400,6 @@ class YSortCameraGroup(pygame.sprite.Group):
 
 
     def custom_draw(self):
-        #print("444444444444444444444s")
         # dibuja el suelo (escenario fijo)
         self.display_surface.blit(self.floor_surf, self.floor_rect.topleft)
 
@@ -388,3 +427,5 @@ class YSortCameraGroup(pygame.sprite.Group):
             # Dibuja la imagen del sprite
             self.display_surface.blit(sprite.image, sprite.rect.topleft)
             
+
+
