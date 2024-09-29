@@ -23,7 +23,7 @@ class BusquedaAmplitud():
         self.nodos_expandidos = 0
         self.profunidad_maxima = 0
 
-
+        #DATOS PARA MOSTRAR EL ARBOL GRAFICAMENTE
         self.acarreo_profundidad = 0
         self.acarreo_nodos = []
         self.final_nodos = []
@@ -42,7 +42,7 @@ class BusquedaAmplitud():
         return 0 <= x < len(grid) and 0 <= y < len(grid[0]) and grid[x][y] != 1
 
 
-              
+        
     def agregar_nodo(self, ARBOL, path, nodo, picked_up_passenger, next_dir_name):
             # Si no hay coordenadas, estamos en la raíz, y agregamos directamente
             if not path:
@@ -77,7 +77,7 @@ class BusquedaAmplitud():
         visited = [(start, False)]              #nodos visitados (nodo, si es un camino con el pasajero recogido)
 
         self.nodos_expandidos += 1
-        self.profunidad_maxima = 1
+        self.profunidad_maxima += 1
         
         while CP:
             if self.acarreo_profundidad == len(CP[0][1]):
@@ -101,24 +101,15 @@ class BusquedaAmplitud():
                         next_path = path + [indice]
                         next_dir_name = self.DIRECTIONS[i]
 
-                        if next_node == self.passager and not picked_up_passenger:
-                            CP.append((next_node, next_path, True, next_dir_name))
-                            ARBOL = self.agregar_nodo(ARBOL, path, next_node, True, next_dir_name)
-                            visited.append(((next_node), True))
+                        decision = True if next_node == self.passager and not picked_up_passenger else picked_up_passenger
 
-                            prueba[1].append(next_node)
-                            prueba[2].append(next_dir_name)
-                            prueba[3] = True
-                        
-                        else:
-                            CP.append((next_node, next_path, picked_up_passenger, next_dir_name))
-                            ARBOL = self.agregar_nodo(ARBOL, path, next_node, picked_up_passenger, next_dir_name)
-                            visited.append(((next_node), picked_up_passenger))
+                        CP.append((next_node, next_path, decision, next_dir_name))
+                        ARBOL = self.agregar_nodo(ARBOL, path, next_node, decision, next_dir_name)
+                        visited.append(((next_node), decision))
 
-                            prueba[1].append(next_node)
-                            prueba[2].append(next_dir_name)
-                            prueba[3] = picked_up_passenger
-                        
+                        prueba[1].append(next_node)
+                        prueba[2].append(next_dir_name)
+                        prueba[3] = decision
 
                         #se ajustan valores de salida de informacion
                         self.nodos_expandidos += 1

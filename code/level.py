@@ -40,6 +40,7 @@ class Level:
 
         self.chat = 0 #Manejador de tiempo para  "arrow_alpha"
         self.init_wait = -1 #Manejador de tiempo para la animaciones
+        self.init_final = -1
 
 
 
@@ -129,7 +130,7 @@ class Level:
 
 
                 if  ulitma_profundidad:
-                    self.arrow_alpha = min(1, (time.time() - self.chat) / 1) #esto solo toma valores entre 0 - 1, este valor llega de 0 a 1 en 3 segufnods
+                    self.arrow_alpha = min(1, (time.time() - self.chat) / 0.1) #esto solo toma valores entre 0 - 1, este valor llega de 0 a 1 en 3 segufnods
 
 
                 if self.arrow_alpha == 1 or ESCALAR == 1:
@@ -139,17 +140,57 @@ class Level:
             
 
 
-        dibujar_nodos(self.all_ya, False)
-        dibujar_nodos(self.all_expandidos[0], True)
+        if self.init_wait == -1:
+            return
+        
+        time_animation = min(1, (time.time() - self.init_wait) / 0.2)
+
+        if time_animation == 1:
+            self.arrow_alpha = 0
+            self.chat = time.time()
+            self.init_wait = time.time()
+
+            self.all_ya = self.all_ya + self.all_expandidos[0]
+            self.all_expandidos.pop(0)
+
+
+        if self.all_expandidos == []:
+            self.init_wait = -1
+            self.init_final = time.time()
+
+
+        else:
+            dibujar_nodos(self.all_ya, False)
+            dibujar_nodos(self.all_expandidos[0], True)
 
 
 
     def camino_final(self):
+
+        if self.init_final == -1:
+            return
+        
+        time_animation = min(1, (time.time() - self.init_final) / 6000)
+
+        if time_animation == 1:
+            self.player.movimientos = self.solucion["paths"]
+            self.init_final = -1
+        
+
+
+        lista = self.solucion["paths"]
+
+        inicio_d = lista[0][1]
+
+        if inicio_d == "abajo":
+            inicio = lista[0][0] - 
+
+
+
+
         for i, n in enumerate(self.solucion["paths"]):
             SQUARE_COLOR = ROJO
             ARROW_COLOR = ROJO
-            SQUARE_COLOR_HIJO = ROJO
-            BORDER_COLOR = VERDE
             escalar = 1
 
             #((3, 0), 'abajo')
@@ -160,9 +201,12 @@ class Level:
 
 
             tamano_flecha = obtener_tamano_flecha(direccion, alpha=escalar)
-            centro_flecha = calcular_posicion_flecha(posicion_cuadro, direccion, tamano_flecha[1] if direccion in ["arriba", "abajo"] else tamano_flecha[0])
-
+            centro_flecha = calcular_posicion_flecha_final(posicion_cuadro, direccion, tamano_flecha[1] if direccion in ["arriba", "abajo"] else tamano_flecha[0])
             pygame.draw.rect(self.display_surface, ARROW_COLOR, pygame.Rect(centro_flecha[0], centro_flecha[1], tamano_flecha[0], tamano_flecha[1 ]))
+
+            """
+            [((3, 0), 'abajo'), ((4, 0), 'abajo'), ((5, 0), 'abajo'), ((6, 0), 'abajo'), ((5, 0), 'arriba'), ((4, 0), 'arriba'), ((3, 0), 'arriba'), ((3, 1), 'derecha'), ((3, 2), 'derecha'), ((3, 3), 'derecha'), ((3, 4), 'derecha'), ((3, 5), 'derecha'), ((3, 6), 'derecha'), ((3, 7), 'derecha'), ((3, 8), 'derecha'), ((3, 9), 'derecha'), ((4, 9), 'abajo'), ((5, 9), 'abajo')]
+            """
 
        
 
@@ -226,34 +270,8 @@ class Level:
         self.visible_sprites.custom_draw()
         self.visible_sprites.update()
 
-
-
-
-
-        if not self.init_wait == -1:
-            time_animation = min(1, (time.time() - self.init_wait) / 2)
-
-            if time_animation == 1:
-                self.arrow_alpha = 0
-                self.chat = time.time()
-                self.init_wait = time.time()
-
-                self.all_ya = self.all_ya + self.all_expandidos[0]
-                self.all_expandidos.pop(0)
-
-
-            if self.all_expandidos == []:
-                self.player.movimientos = self.solucion["paths"]
-                self.init_wait = -1
-
-
-            else:
-                self.crear_caminos_arbol()
-
-            
-
-
-
+        self.crear_caminos_arbol()
+        self.camino_final()
 
 
         debug(f"{self.player.status} === {self.player.rect} === {self.player.movimiento_actual}")

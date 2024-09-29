@@ -105,3 +105,13 @@ def obtener_tamano_flecha(direccion, alpha):
     elif direccion == "izquierda" or direccion == "derecha":
         return (int(FLECHA_ALTO_VERTICAL*alpha), FLECHA_ANCHO)
 
+
+def calcular_posicion_flecha_final(centro, direccion, tamano_flecha):
+    if direccion == "abajo":
+        return (centro[0] + CUADRADO_SIZE // 2 - FLECHA_ANCHO // 2, centro[1] - tamano_flecha)
+    elif direccion == "arriba":
+        return (centro[0] + CUADRADO_SIZE // 2 - FLECHA_ANCHO // 2, centro[1] + CUADRADO_SIZE)
+    elif direccion == "derecha":
+        return (centro[0] - tamano_flecha, centro[1] + CUADRADO_SIZE // 2 - FLECHA_ANCHO // 2)
+    elif direccion == "izquierda":
+        return (centro[0] + CUADRADO_SIZE, centro[1] + CUADRADO_SIZE // 2 - FLECHA_ANCHO // 2)
