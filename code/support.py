@@ -54,9 +54,6 @@ def import_folder(path):
             surface_dict[image_name] = image_surf
     return surface_dict
 
-
-
-
 def ALFile(ruta_archivo=""):
     if ruta_archivo == "":
         return ""
@@ -66,3 +63,45 @@ def ALFile(ruta_archivo=""):
         mapa = [list(map(int, linea.split())) for linea in archivo]
     
     return mapa
+
+
+CASILLA_SIZE = 64
+CUADRADO_SIZE = 32
+CUADRADO_SIZE = 32
+FLECHA_ANCHO = 16
+FLECHA_ALTO_VERTICAL = 32
+
+ROJO = (255, 0, 0)
+VERDE = (0, 255, 0)
+AZUL = (0, 0, 255)
+AMARILLO = (255, 255, 0)
+
+
+# Función para calcular la posición central de una casilla
+def centrar_en_casilla(coordenadas):
+    y, x = coordenadas
+    transformacion = (x * CASILLA_SIZE, y * CASILLA_SIZE)
+    centro = (transformacion[0] + CASILLA_SIZE // 2 - CUADRADO_SIZE // 2,
+            transformacion[1] + CASILLA_SIZE // 2 - CUADRADO_SIZE // 2)
+    return centro
+
+
+# Función para calcular la posición de la flecha
+def calcular_posicion_flecha(centro, direccion, tamano_flecha):
+    if direccion == "arriba":
+        return (centro[0] + CUADRADO_SIZE // 2 - FLECHA_ANCHO // 2, centro[1] - tamano_flecha)
+    elif direccion == "abajo":
+        return (centro[0] + CUADRADO_SIZE // 2 - FLECHA_ANCHO // 2, centro[1] + CUADRADO_SIZE)
+    elif direccion == "izquierda":
+        return (centro[0] - tamano_flecha, centro[1] + CUADRADO_SIZE // 2 - FLECHA_ANCHO // 2)
+    elif direccion == "derecha":
+        return (centro[0] + CUADRADO_SIZE, centro[1] + CUADRADO_SIZE // 2 - FLECHA_ANCHO // 2)
+
+
+# Función para obtener el tamaño de la flecha según la dirección
+def obtener_tamano_flecha(direccion, alpha):
+    if direccion == "arriba" or direccion == "abajo":
+        return (FLECHA_ANCHO, int(FLECHA_ALTO_VERTICAL*alpha))     #(ancho, alto)
+    elif direccion == "izquierda" or direccion == "derecha":
+        return (int(FLECHA_ALTO_VERTICAL*alpha), FLECHA_ANCHO)
+

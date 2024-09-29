@@ -32,20 +32,14 @@ class Level:
 
 
         #variables control de timepo
-        self.indice = 0 # Control para llevar registro de hasta que profundidad del arbol imprimir
         self.arrow_alpha = 0
 
-        self.chat = time.time()
-        self.init_wait = -1
-
-        
         self.all_ya = []
         self.all_expandidos = []
-
-
-        self.tiempo_inicio_juego = time.time()
         self.solucion = None
 
+        self.chat = 0 #Manejador de tiempo para  "arrow_alpha"
+        self.init_wait = -1 #Manejador de tiempo para la animaciones
 
 
 
@@ -102,163 +96,59 @@ class Level:
         self.solucion = motor.solucionar()
 
         self.init_wait = time.time()
-        self.all_ya = []
+        self.chat = time.time()
         self.all_expandidos = self.solucion["nodos_expandidos"]
-
-        print(self.solucion["paths"])
 
         return self.solucion
 
 
 
     def crear_caminos_arbol(self):
-        # Definir el tamaño de la casilla, del cuadrado, y las dimensiones de la flecha
-        CASILLA_SIZE = 64
-        CUADRADO_SIZE = 32
-        FLECHA_ANCHO = 16
-        FLECHA_ALTO_VERTICAL = 32  # Flecha que apunta hacia arriba o abajo
 
-        ROJO = (255, 0, 0)
-        VERDE = (0, 255, 0)
-        AZUL = (0, 0, 255)
-        AMARILLO = (255, 255, 0)
-        
+        def dibujar_nodos(ln, ulitma_profundidad):
+            for i, n in enumerate(ln):
+                #si ultima_profundidad es false entonces son los ya expandidos(rojos), si es true (blue)
+                SQUARE_COLOR = ROJO if not ulitma_profundidad else AZUL
+                ARROW_COLOR = ROJO if not ulitma_profundidad else AZUL
+                SQUARE_COLOR_HIJO = ROJO if not ulitma_profundidad else AZUL
+                ESCALAR = 1  if not ulitma_profundidad else self.arrow_alpha
 
-        # Función para calcular la posición central de una casilla
-        def centrar_en_casilla(coordenadas):
-            y, x = coordenadas
-            transformacion = (x * CASILLA_SIZE, y * CASILLA_SIZE)
-            centro = (transformacion[0] + CASILLA_SIZE // 2 - CUADRADO_SIZE // 2,
-                    transformacion[1] + CASILLA_SIZE // 2 - CUADRADO_SIZE // 2)
-            return centro
+                inicio, hijos, direcciones, up_pasajero = n
 
+                #grosor_borde = 0 if up_pasajero else 10
+                #BORDER_COLOR = VERDE
 
-        # Función para calcular la posición de la flecha
-        def calcular_posicion_flecha(centro, direccion, tamano_flecha):
-            if direccion == "arriba":
-                return (centro[0] + CUADRADO_SIZE // 2 - FLECHA_ANCHO // 2, centro[1] - tamano_flecha)
-            elif direccion == "abajo":
-                return (centro[0] + CUADRADO_SIZE // 2 - FLECHA_ANCHO // 2, centro[1] + CUADRADO_SIZE)
-            elif direccion == "izquierda":
-                return (centro[0] - tamano_flecha, centro[1] + CUADRADO_SIZE // 2 - FLECHA_ANCHO // 2)
-            elif direccion == "derecha":
-                return (centro[0] + CUADRADO_SIZE, centro[1] + CUADRADO_SIZE // 2 - FLECHA_ANCHO // 2)
+                posicion_cuadro = centrar_en_casilla(inicio)
+                pygame.draw.rect(self.display_surface, SQUARE_COLOR, pygame.Rect(posicion_cuadro[0], posicion_cuadro[1], CUADRADO_SIZE, CUADRADO_SIZE))
+                #pygame.draw.rect(self.display_surface, BORDER_COLOR, pygame.Rect(posicion_cuadro[0], posicion_cuadro[1], CUADRADO_SIZE, CUADRADO_SIZE), grosor_borde)
+
+                for direction in direcciones:
+                    tamano_flecha = obtener_tamano_flecha(direction, alpha=ESCALAR)
+                    centro_flecha = calcular_posicion_flecha(posicion_cuadro, direction, tamano_flecha[1] if direction in ["arriba", "abajo"] else tamano_flecha[0])
+                    pygame.draw.rect(self.display_surface, ARROW_COLOR, pygame.Rect(centro_flecha[0], centro_flecha[1], tamano_flecha[0], tamano_flecha[1]))
 
 
-        # Función para obtener el tamaño de la flecha según la dirección
-        def obtener_tamano_flecha(direccion, alpha):
-            if direccion == "arriba" or direccion == "abajo":
-                return (FLECHA_ANCHO, int(FLECHA_ALTO_VERTICAL*alpha))     #(ancho, alto)
-            elif direccion == "izquierda" or direccion == "derecha":
-                return (int(FLECHA_ALTO_VERTICAL*alpha), FLECHA_ANCHO)
+                if  ulitma_profundidad:
+                    self.arrow_alpha = min(1, (time.time() - self.chat) / 1) #esto solo toma valores entre 0 - 1, este valor llega de 0 a 1 en 3 segufnods
 
 
-
-
-        for i, n in enumerate(self.all_ya):
-            SQUARE_COLOR = ROJO
-            ARROW_COLOR = ROJO
-            SQUARE_COLOR_hijo = ROJO
-            BORDER_COLOR = VERDE
-            escalar = 1
-
-            inicio, hijos, direcciones, up_pasajero = n
-
-        
-            grosor_borde = 0 if up_pasajero else 10
-
-            posicion_cuadro = centrar_en_casilla(inicio)
-            pygame.draw.rect(self.display_surface, SQUARE_COLOR, pygame.Rect(posicion_cuadro[0], posicion_cuadro[1], CUADRADO_SIZE, CUADRADO_SIZE))# Dibuja el borde del rectángulo
-            pygame.draw.rect(self.display_surface, BORDER_COLOR, pygame.Rect(posicion_cuadro[0], posicion_cuadro[1], CUADRADO_SIZE, CUADRADO_SIZE), grosor_borde)
-
-            for direction in direcciones:
-                tamano_flecha = obtener_tamano_flecha(direction, alpha=escalar)
-                centro_flecha = calcular_posicion_flecha(posicion_cuadro, direction, tamano_flecha[1] if direction in ["arriba", "abajo"] else tamano_flecha[0])
-                pygame.draw.rect(self.display_surface, ARROW_COLOR, pygame.Rect(centro_flecha[0], centro_flecha[1], tamano_flecha[0], tamano_flecha[1]))
-
-                
-            for hijo in hijos:
-                centro_hijo = centrar_en_casilla(hijo)
-                pygame.draw.rect(self.display_surface, SQUARE_COLOR_hijo, pygame.Rect(centro_hijo[0], centro_hijo[1], CUADRADO_SIZE, CUADRADO_SIZE))
-
-
-
-        for i, n in enumerate(self.all_expandidos[0]):
-            SQUARE_COLOR = AZUL
-            ARROW_COLOR = AZUL
-            SQUARE_COLOR_hijo = AZUL
-            ESCALAR = self.arrow_alpha
-            
-            inicio, hijos, direcciones, up_pasajero = n
-
-            posicion_cuadro = centrar_en_casilla(inicio)
-            pygame.draw.rect(self.display_surface, SQUARE_COLOR, pygame.Rect(posicion_cuadro[0], posicion_cuadro[1], CUADRADO_SIZE, CUADRADO_SIZE))
-
-            for direction in direcciones:
-                tamano_flecha = obtener_tamano_flecha(direction, alpha=ESCALAR)
-                centro_flecha = calcular_posicion_flecha(posicion_cuadro, direction, tamano_flecha[1] if direction in ["arriba", "abajo"] else tamano_flecha[0])
-                pygame.draw.rect(self.display_surface, ARROW_COLOR, pygame.Rect(centro_flecha[0], centro_flecha[1], tamano_flecha[0], tamano_flecha[1]))
+                if self.arrow_alpha == 1 or ESCALAR == 1:
+                    for hijo in hijos:
+                        centro_hijo = centrar_en_casilla(hijo)
+                        pygame.draw.rect(self.display_surface, SQUARE_COLOR_HIJO, pygame.Rect(centro_hijo[0], centro_hijo[1], CUADRADO_SIZE, CUADRADO_SIZE))
             
 
-            self.arrow_alpha = min(1, (time.time() - self.chat) / 0.25) #esto solo toma valores entre 0 - 1, este valor llega de 0 a 1 en 3 segufnods
-            
-            if self.arrow_alpha == 1 or ESCALAR == 1: #cuando el valor es 1 es que ya se compleot de imprimit la flelcha por compelto 
-                for hijo in hijos:
-                    centro_hijo = centrar_en_casilla(hijo)
-                    pygame.draw.rect(self.display_surface, SQUARE_COLOR_hijo, pygame.Rect(centro_hijo[0], centro_hijo[1], CUADRADO_SIZE, CUADRADO_SIZE))
-        
-        
-    
+
+        dibujar_nodos(self.all_ya, False)
+        dibujar_nodos(self.all_expandidos[0], True)
+
+
+
     def camino_final(self):
-
-        # Definir el tamaño de la casilla, del cuadrado, y las dimensiones de la flecha
-        CASILLA_SIZE = 64
-        CUADRADO_SIZE = 32
-        FLECHA_ANCHO = 16
-        FLECHA_ALTO_VERTICAL = 32  # Flecha que apunta hacia arriba o abajo
-
-        ROJO = (255, 0, 0)
-        VERDE = (0, 255, 0)
-        AZUL = (0, 0, 255)
-        AMARILLO = (255, 255, 0)
-        
-
-        # Función para calcular la posición central de una casilla
-        def centrar_en_casilla(coordenadas):
-            y, x = coordenadas
-            transformacion = (x * CASILLA_SIZE, y * CASILLA_SIZE)
-            centro = (transformacion[0] + CASILLA_SIZE // 2 - CUADRADO_SIZE // 2,
-                    transformacion[1] + CASILLA_SIZE // 2 - CUADRADO_SIZE // 2)
-            return centro
-
-
-        # Función para calcular la posición de la flecha
-        def calcular_posicion_flecha(centro, direccion, tamano_flecha):
-            if direccion == "abajo":
-                return (centro[0] + CUADRADO_SIZE // 2 - FLECHA_ANCHO // 2, centro[1] - tamano_flecha)
-            elif direccion == "arriba":
-                return (centro[0] + CUADRADO_SIZE // 2 - FLECHA_ANCHO // 2, centro[1] + CUADRADO_SIZE)
-            elif direccion == "derecha":
-                return (centro[0] - tamano_flecha, centro[1] + CUADRADO_SIZE // 2 - FLECHA_ANCHO // 2)
-            elif direccion == "izquierda":
-                return (centro[0] + CUADRADO_SIZE, centro[1] + CUADRADO_SIZE // 2 - FLECHA_ANCHO // 2)
-
-
-        # Función para obtener el tamaño de la flecha según la dirección
-        def obtener_tamano_flecha(direccion, alpha):
-            if direccion == "abajo" or direccion == "arriba":
-                return (FLECHA_ANCHO, int(FLECHA_ALTO_VERTICAL*alpha))     #(ancho, alto)
-            elif direccion == "derecha" or direccion == "izquierda":
-                return (int(FLECHA_ALTO_VERTICAL*alpha), FLECHA_ANCHO)
-            
-        
-
-
-
         for i, n in enumerate(self.solucion["paths"]):
             SQUARE_COLOR = ROJO
             ARROW_COLOR = ROJO
-            SQUARE_COLOR_hijo = ROJO
+            SQUARE_COLOR_HIJO = ROJO
             BORDER_COLOR = VERDE
             escalar = 1
 
@@ -271,18 +161,10 @@ class Level:
 
             tamano_flecha = obtener_tamano_flecha(direccion, alpha=escalar)
             centro_flecha = calcular_posicion_flecha(posicion_cuadro, direccion, tamano_flecha[1] if direccion in ["arriba", "abajo"] else tamano_flecha[0])
-            pygame.draw.rect(self.display_surface, ARROW_COLOR, pygame.Rect(centro_flecha[0], centro_flecha[1], tamano_flecha[0], tamano_flecha[1]))
 
-                
+            pygame.draw.rect(self.display_surface, ARROW_COLOR, pygame.Rect(centro_flecha[0], centro_flecha[1], tamano_flecha[0], tamano_flecha[1 ]))
 
-
-        
-
-
-
-
-
-
+       
 
     def create_map(self):
         layout = self.mapa
@@ -349,33 +231,34 @@ class Level:
 
 
         if not self.init_wait == -1:
-            time_animation = min(1, (time.time() - self.init_wait) / 0.4)#este tiempor es el timepor de la animacion de expandir un nodo, llega de 0 - 1 en 5 segundos
+            time_animation = min(1, (time.time() - self.init_wait) / 2)
 
-            if time_animation == 1:#si ya es 1 es porque ya termino el timepo de la animcaion
-                self.indice += 1 #aumentar un nivel de profundidad
-                self.arrow_alpha = 0 #reiniciar el valor para la siguiente flecha
-
+            if time_animation == 1:
+                self.arrow_alpha = 0
                 self.chat = time.time()
                 self.init_wait = time.time()
 
                 self.all_ya = self.all_ya + self.all_expandidos[0]
                 self.all_expandidos.pop(0)
-                self.camino_final()
 
 
             if self.all_expandidos == []:
                 self.player.movimientos = self.solucion["paths"]
                 self.init_wait = -1
-                
+
 
             else:
                 self.crear_caminos_arbol()
 
+            
 
 
 
-        debug(f"{self.player.status} === {self.player.rect} === {self.player.movimiento_actual} === {time.time() - self.tiempo_inicio_juego}")
+
+
+        debug(f"{self.player.status} === {self.player.rect} === {self.player.movimiento_actual}")
     
+
 
 
     def setMap(self, map):
