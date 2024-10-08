@@ -22,7 +22,7 @@ class Player(pygame.sprite.Sprite):
         # Movimiento
         self.in_movimiento = False
         self.direction = pygame.math.Vector2(0, 0)
-        self.speed = 4
+        self.speed = 8 #velocidad tiene que ser en potencia de 2
         self.obstacle_sprites = obstacle_sprites
         self.movimientos = []
         self.movimiento_actual = None

@@ -42,7 +42,7 @@ class BusquedaAmplitud():
         return 0 <= x < len(grid) and 0 <= y < len(grid[0]) and grid[x][y] != 1
 
 
-        
+
     def agregar_nodo(self, ARBOL, path, nodo, picked_up_passenger, next_dir_name):
             # Si no hay coordenadas, estamos en la raíz, y agregamos directamente
             if not path:
@@ -68,28 +68,26 @@ class BusquedaAmplitud():
 
 
 
-    def search_cost(self, grid, start, goal):
+    def buscar_amplitud(self, grid, start, goal):
         CP = []#la cola de nodos a evular
 
-        #UN NODO ES IGUAL A = COORDENADA HIJOS up_passager DIRECCION
-        ARBOL = [(start, [], False, "start")]   #El arbol de busqueda
-        CP.append((start, [], False,  "start")) #Cola de nodos por expandir
-        visited = [(start, False)]              #nodos visitados (nodo, si es un camino con el pasajero recogido)
+        ARBOL = [(start, [], False, "start")]
+        CP.append((start, [], False,  "start"))
+        visited = [(start, False)]
 
         self.nodos_expandidos += 1
         self.profunidad_maxima += 1
-        
         while CP:
             if self.acarreo_profundidad == len(CP[0][1]):
                 self.acarreo_profundidad += 1
                 self.final_nodos.append(self.acarreo_nodos)
                 self.acarreo_nodos = []
 
-            current_node, path, picked_up_passenger, dir_name = CP.pop(0) #crear nodo actual
+            current_node, path, picked_up_passenger, dir_name = CP.pop(0)
             x, y = current_node
 
             indice = 0
-            prueba = [current_node, [], [], False] # en nodo acualt, [sus nodos hijos] [la direccion de nodos hijos]
+            prueba = [current_node, [], [], False]
             for i, (dx, dy) in enumerate(self.MOVEMENTS):
                 next_x, next_y = x + dx, y + dy
 
@@ -134,7 +132,7 @@ class BusquedaAmplitud():
             nodo, hijos, up, dir_name = lista[0]
 
         marcador = "--> " if es_ultimo else "|-- "
-        resultado.append(prefijo + marcador + f"{nodo}")#[P? {up}] [direccion {dir_name}]")
+        resultado.append(prefijo + marcador + f"{nodo} [P? {up}] [direccion {dir_name}]")
 
         if hijos:
             nuevo_prefijo = prefijo + ("    " if es_ultimo else "|   ")
@@ -164,10 +162,9 @@ class BusquedaAmplitud():
     def solucionar(self):
         #encontrar camino hasta el pasajero
         tiempo_inicio = time.time()
-        arbol_final, camino_arbol = self.search_cost(self.mapa, self.start, self.goal)
+        arbol_final, camino_arbol = self.buscar_amplitud(self.mapa, self.start, self.goal)
         tiempo_final = time.time()
         tiempo_computo = tiempo_final - tiempo_inicio  
-
 
         #devolver el camino completo
         return {

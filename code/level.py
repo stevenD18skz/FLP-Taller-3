@@ -116,12 +116,12 @@ class Level:
 
                 inicio, hijos, direcciones, up_pasajero = n
 
-                #grosor_borde = 0 if up_pasajero else 10
-                #BORDER_COLOR = VERDE
+                grosor_borde = 0 if up_pasajero else 10
+                BORDER_COLOR = VERDE
 
                 posicion_cuadro = centrar_en_casilla(inicio)
                 pygame.draw.rect(self.display_surface, SQUARE_COLOR, pygame.Rect(posicion_cuadro[0], posicion_cuadro[1], CUADRADO_SIZE, CUADRADO_SIZE))
-                #pygame.draw.rect(self.display_surface, BORDER_COLOR, pygame.Rect(posicion_cuadro[0], posicion_cuadro[1], CUADRADO_SIZE, CUADRADO_SIZE), grosor_borde)
+                pygame.draw.rect(self.display_surface, BORDER_COLOR, pygame.Rect(posicion_cuadro[0], posicion_cuadro[1], CUADRADO_SIZE, CUADRADO_SIZE), grosor_borde)
 
                 for direction in direcciones:
                     tamano_flecha = obtener_tamano_flecha(direction, alpha=ESCALAR)
@@ -170,7 +170,7 @@ class Level:
         if self.init_final == -1:
             return
         
-        time_animation = min(1, (time.time() - self.init_final) / 6000)
+        time_animation = min(1, (time.time() - self.init_final) / 2)
 
         if time_animation == 1:
             self.player.movimientos = self.solucion["paths"]
@@ -182,8 +182,8 @@ class Level:
 
         inicio_d = lista[0][1]
 
-        if inicio_d == "abajo":
-            inicio = lista[0][0] - 
+        #if inicio_d == "abajo":
+        #    inicio = lista[0][0] - 
 
 
 
@@ -276,6 +276,13 @@ class Level:
 
         debug(f"{self.player.status} === {self.player.rect} === {self.player.movimiento_actual}")
     
+
+    def reiniciar(self):
+        self.create_map()
+        self.motor = BusquedaAmplitud(self.mapa)
+        self.solucion = None
+        self.all_expandidos = None
+        self.all_ya = None
 
 
 

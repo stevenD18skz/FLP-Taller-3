@@ -56,7 +56,7 @@ class BusquedaProfundidad():
 
 
 
-    def search_cost(self, grid, start, goal):
+    def search_deep(self, grid, start, goal):
         CP = []
 
         ARBOL = [(start, [], False, "start")]
@@ -65,13 +65,9 @@ class BusquedaProfundidad():
 
         self.nodos_expandidos += 1
         self.profunidad_maxima = 1
-
         while CP:
-            current_node, path, picked_up_passenger, dir_name = CP.pop(0)  # Cambiamos pop(0) por pop() para pila
+            current_node, path, picked_up_passenger, dir_name = CP.pop(0)
             x, y = current_node
-
-            self.imprimir_arbol_clasico(ARBOL)
-            input()
 
             indice = 0
             hijos_del_nodo = []
@@ -86,18 +82,12 @@ class BusquedaProfundidad():
                         next_path = path + [indice]
                         next_dir_name = self.DIRECTIONS[i]
 
-                        if next_node == self.passager and not picked_up_passenger:
-                            hijos_del_nodo.append((next_node, next_path, True, next_dir_name))
-                            ARBOL = self.agregar_nodo(ARBOL, path, next_node, True, next_dir_name)
-                            visited.append(((next_node), True))
-                        
-                        else:
-                            # Agregamos el nodo a la pila y al árbol
-                            hijos_del_nodo.append((next_node, next_path, picked_up_passenger, next_dir_name))
-                            ARBOL = self.agregar_nodo(ARBOL, path, next_node, picked_up_passenger, next_dir_name)
-                            visited.append(((next_node), picked_up_passenger))
+                        decision = True if next_node == self.passager and not picked_up_passenger else picked_up_passenger
 
-                        #se ajustan valores de salida de informacion
+                        hijos_del_nodo.append((next_node, next_path, decision, next_dir_name))
+                        ARBOL = self.agregar_nodo(ARBOL, path, next_node, decision, next_dir_name)
+                        visited.append(((next_node), decision))
+
                         self.nodos_expandidos += 1
                         self.profunidad_maxima = max(self.profunidad_maxima, (len(next_path) + 1))
   
@@ -113,18 +103,21 @@ class BusquedaProfundidad():
 
 
     def imprimir_arbol_clasico(self, lista, prefijo="", es_ultimo=True):
+        resultado = []  # Lista para acumular las cadenas generadas
         try:
             nodo, hijos, up, dir_name = lista
         except:
             nodo, hijos, up, dir_name = lista[0]
 
-        marcador = "└── " if es_ultimo else "├── "
-        print(prefijo + marcador + f"{nodo} [P? {up}] [direccion {dir_name}]")
+        marcador = "--> " if es_ultimo else "|-- "
+        resultado.append(prefijo + marcador + f"{nodo} [P? {up}] [direccion {dir_name}]")
 
         if hijos:
-            nuevo_prefijo = prefijo + ("    " if es_ultimo else "│   ")
+            nuevo_prefijo = prefijo + ("    " if es_ultimo else "|   ")
             for i, hijo in enumerate(hijos):
-                self.imprimir_arbol_clasico(hijo, nuevo_prefijo, i == len(hijos) - 1)
+                resultado.append(self.imprimir_arbol_clasico(hijo, nuevo_prefijo, i == len(hijos) - 1))
+
+        return "\n".join(resultado)  # Unir todas las cadenas y devolver
 
 
 
@@ -145,7 +138,7 @@ class BusquedaProfundidad():
 
     def solucionar(self):
         tiempo_inicio = time.time()
-        arbol_final, camino_arbol = self.search_cost(self.mapa, self.start, self.goal)
+        arbol_final, camino_arbol = self.search_deep(self.mapa, self.start, self.goal)
         tiempo_final = time.time()
         tiempo_computo = tiempo_final - tiempo_inicio  
 

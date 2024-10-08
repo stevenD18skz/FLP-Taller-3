@@ -91,7 +91,8 @@ class Game:
             Button('Profundidad evitando ciclos', 650, 230, 150, 40, font_size=18, color=LIGHT_GRAY),
             Button('Avara', 810, 110, 150, 40, font_size=18, color=LIGHT_GRAY),
             Button('A*', 810, 170, 150, 40, font_size=18, color=LIGHT_GRAY),
-            Button('Subir archivo', 800, 580, 150, 40, font_size=24, color=LIGHT_GRAY) 
+            Button('Subir archivo', 800, 580, 150, 40, font_size=24, color=LIGHT_GRAY), 
+            Button('REINICIAR', 650, 580, 100, 40, font_size=24, color=LIGHT_GRAY) 
         ]
         self.update_button_states()
 
@@ -105,7 +106,7 @@ class Game:
 
     def update_button_states(self):
         if self.level.mapa == None:
-            for button in self.buttons[:-1]:
+            for button in self.buttons[:-2]:
                 button.active = False
             
             return
@@ -151,6 +152,9 @@ class Game:
                             elif button.text == 'Subir archivo':
                                 self.upload_file()
                                 self.update_button_states()
+                            
+                            elif button.text == 'REINICIAR':
+                                self.level.create_map()
 
                             else:
                                 s = self.level.ejecutarAlgoritmo(button.text)

@@ -9,8 +9,8 @@ class BusquedaCosto():
             0: 1,  # Casilla libre
             1: float('inf'),  # Muro (inaccesible)
             2: 1,  # Punto de partida
-            3: 20,  # Tráfico medio
-            4: 30,  # Tráfico pesado
+            3: 8,  # Tráfico medio
+            4: 15,  # Tráfico pesado
             5: 1,  # Pasajero (ignorado en el cálculo de movimiento)
             6: 1   # Destino
         }
@@ -77,16 +77,14 @@ class BusquedaCosto():
     def search_cost(self, grid, start, goal):
         CP = []#la cola de nodos a evular
 
-        #UN NODO ES IGUAL A = COSTO COORDENADA HIJOS up_passager DIRECCION
         ARBOL = [(0, start, [], False, "start")]
         heapq.heappush(CP, (0, start, [], False, "start"))
         visited = [(start, False)]
 
         self.nodos_expandidos += 1
-        self.profunidad_maxima = 1
-
+        self.profunidad_maxima += 1
         while CP:
-            costo_node, current_node, path, picked_up_passenger, dir_name = heapq.heappop(CP)#CP.pop(0)
+            costo_node, current_node, path, picked_up_passenger, dir_name = heapq.heappop(CP)
             x, y = current_node
 
             indice = 0
@@ -94,7 +92,7 @@ class BusquedaCosto():
                 next_x, next_y = x + dx, y + dy
 
                 if self.is_valid(next_x, next_y, grid):
-                    if ((next_x, next_y), picked_up_passenger) not in visited: # verificamos que no sea una posicion donde el, autp, no haya pasado ya
+                    if ((next_x, next_y), picked_up_passenger) not in visited:
 
                         #se arma el nodo
                         next_node = (next_x, next_y)
@@ -102,28 +100,19 @@ class BusquedaCosto():
                         next_dir_name = self.DIRECTIONS[i]
                         next_cost = costo_node + self.COSTS[grid[next_x][next_y]]
 
-                        #verificar si el nodo creo al expandir el nodo actual es el pasajero
-                        if next_node == self.passager and not picked_up_passenger:
-                            #se agrega el nodo a la cola de examinacion y al arbol
-                            heapq.heappush(CP, (next_cost, next_node, next_path, True, next_dir_name))
-                            ARBOL = self.agregar_nodo(ARBOL, path, next_cost, next_node, True, next_dir_name)
-                        
-                        else:
-                            #se agrega el nodo a la cola de examinacion y al arbol
-                            heapq.heappush(CP, (next_cost, next_node, next_path, picked_up_passenger, next_dir_name))
-                            ARBOL = self.agregar_nodo(ARBOL, path, next_cost, next_node, picked_up_passenger, next_dir_name)
-                        
-                        #se verfica si el nodo que se encontro es la meta
+                        decision = True if next_node == self.passager and not picked_up_passenger else picked_up_passenger
+
+                        heapq.heappush(CP, (next_cost, next_node, next_path, decision, next_dir_name))
+                        ARBOL = self.agregar_nodo(ARBOL, path, next_cost, next_node, decision, next_dir_name)
+                        visited.append(((next_node), decision))
+
+                        self.nodos_expandidos += 1
+                        self.profunidad_maxima = max(self.profunidad_maxima, (len(next_path) + 1))
+
                         if next_node == goal and picked_up_passenger:
                             return ARBOL, next_path, next_cost
-
-                        #se aniade una pocision para la lista de hijos y se agrega que este nodo ya se visito
+                        
                         indice += 1
-                        visited.append(((next_node), picked_up_passenger))
-
-                        #se ajustan valores de salida de informacion
-                        self.nodos_expandidos += 1
-                        self.profunidad_maxima = max(self.profunidad_maxima, len(path))
 
         return ARBOL, []
 
