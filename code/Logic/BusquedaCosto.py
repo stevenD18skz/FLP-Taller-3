@@ -4,17 +4,6 @@ import time
 
 class BusquedaCosto():
     def __init__(self, mapa):
-        # Mapeo de costos
-        self.COSTS = {
-            0: 1,  # Casilla libre
-            1: float('inf'),  # Muro (inaccesible)
-            2: 1,  # Punto de partida
-            3: 8,  # Tráfico medio
-            4: 15,  # Tráfico pesado
-            5: 1,  # Pasajero (ignorado en el cálculo de movimiento)
-            6: 1   # Destino
-        }
-
         #constatnes
         self.REPRESENTACION_INICIO = 2
         self.REPRESENTACION_PASAJERO = 5
@@ -33,6 +22,22 @@ class BusquedaCosto():
         #DATOS ARBOLES
         self.nodos_expandidos = 0
         self.profunidad_maxima = 0
+
+        # Mapeo de costos
+        self.COSTS = {
+            0: 1,  # Casilla libre
+            1: float('inf'),  # Muro (inaccesible)
+            2: 1,  # Punto de partida
+            3: 8,  # Tráfico medio
+            4: 15,  # Tráfico pesado
+            5: 1,  # Pasajero
+            6: 1   # Destino
+        }
+
+        #DATOS PARA MOSTRAR EL ARBOL GRAFICAMENTE
+        self.acarreo_profundidad = 0
+        self.acarreo_nodos = []
+        self.final_nodos = []
 
 
 
@@ -87,6 +92,8 @@ class BusquedaCosto():
             costo_node, current_node, path, picked_up_passenger, dir_name = heapq.heappop(CP)
             x, y = current_node
 
+            
+
             indice = 0
             for i, (dx, dy) in enumerate(self.MOVEMENTS):
                 next_x, next_y = x + dx, y + dy
@@ -113,6 +120,7 @@ class BusquedaCosto():
                             return ARBOL, next_path, next_cost
                         
                         indice += 1
+                        self.final_nodos.append([next_node, next_dir_name, decision])
 
         return ARBOL, []
 
@@ -167,8 +175,11 @@ class BusquedaCosto():
             "costo": costo_total,
             "nodos_explorados": self.nodos_expandidos,
             "profundidad_maxima": self.profunidad_maxima,
-            "tiempo_computo": f"{tiempo_computo:6.5f}"
+            "tiempo_computo": f"{tiempo_computo:6.5f}",
+            "nodos_expandidos": self.final_nodos[1:]
         }
+
+
 
 
 """

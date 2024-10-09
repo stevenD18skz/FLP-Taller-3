@@ -2,7 +2,7 @@ import time
 
 
 
-class BusquedaProfundidad():
+class BusquedaAvara():
     def __init__(self, mapa):
         #constantes
         self.REPRESENTACION_INICIO = 2
@@ -23,8 +23,6 @@ class BusquedaProfundidad():
         self.nodos_expandidos = 0
         self.profundidad_maxima = 0
 
-        self.final_nodos = []
-
 
 
     def encontrar_objeto(self, valor_objeto): #hay que acomodarla (y, x) => (x, y)
@@ -33,6 +31,9 @@ class BusquedaProfundidad():
                 if valor == valor_objeto:
                     return (y, x)
 
+
+    def distancia_manhattan(x1, y1, x2, y2):
+        return abs(x1 - x2) + abs(y1 - y2)
 
 
     def is_valid(self, x, y, grid):
@@ -58,7 +59,7 @@ class BusquedaProfundidad():
 
 
 
-    def search_deep(self, grid, start, goal):
+    def search_greedy(self, grid, start, goal):
         CP = []
 
         ARBOL = [(start, [], False, "start")]
@@ -71,12 +72,11 @@ class BusquedaProfundidad():
             current_node, path, picked_up_passenger, dir_name = CP.pop(0)
             x, y = current_node
 
-            #print(self.imprimir_arbol_clasico(ARBOL))
-            #input("=== ")
+            print(self.imprimir_arbol_clasico(ARBOL))
+            input("=== ")
 
             indice = 0
             hijos_del_nodo = []
-            prueba = [current_node, [], [], False]
             for i, (dx, dy) in enumerate(self.MOVEMENTS):
                 next_x, next_y = x + dx, y + dy
 
@@ -92,25 +92,17 @@ class BusquedaProfundidad():
 
                         hijos_del_nodo.append((next_node, next_path, decision, next_dir_name))
                         ARBOL = self.agregar_nodo(ARBOL, path, next_node, decision, next_dir_name)
-
-                        self.final_nodos.append([])
                         visited.append(((next_node), decision))
-
-                        prueba[1].append(next_node)
-                        prueba[2].append(next_dir_name)
-                        prueba[3] = decision
 
                         self.nodos_expandidos += 1
                         self.profunidad_maxima = max(self.profunidad_maxima, (len(next_path) + 1))
   
                         if next_node == goal and picked_up_passenger:
-                            print(self.imprimir_arbol_clasico(ARBOL))
                             return ARBOL, next_path
 
                         indice += 1
     
             CP = hijos_del_nodo + CP
-            self.final_nodos.append([prueba])
 
         return ARBOL, []
 
@@ -152,17 +144,15 @@ class BusquedaProfundidad():
 
     def solucionar(self):
         tiempo_inicio = time.time()
-        arbol_final, camino_arbol = self.search_deep(self.mapa, self.start, self.goal)
+        arbol_final, camino_arbol = self.search_greedy(self.mapa, self.start, self.goal)
         tiempo_final = time.time()
         tiempo_computo = tiempo_final - tiempo_inicio  
 
         return {
-            "arbol":  self.imprimir_arbol_clasico(arbol_final),
             "paths": self.crear_salida_gui(arbol_final, camino_arbol),
             "nodos_explorados": self.nodos_expandidos,
-            "profundidad_maxima": self.profunidad_maxima,
-            "tiempo_computo": f"{tiempo_computo:6.5f}",
-            "nodos_expandidos": self.final_nodos[1:]
+            "profundidad_maxima": self.profundidad_maxima,
+            "tiempo_computo": f"{tiempo_computo:6.5f}"
         }
 
 
@@ -170,16 +160,16 @@ entrada1 =  [
     [0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [0, 1, 1, 0, 0, 0, 4, 0, 0, 0],
     [2, 1, 1, 0, 1, 0, 1, 0, 1, 0],
-    [0, 6, 3, 0, 4, 0, 0, 0, 4, 0],
-    [0, 1, 0, 0, 1, 1, 1, 1, 1, 0],
-    [0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
+    [0, 3, 3, 0, 4, 0, 0, 0, 4, 0],
+    [0, 1, 1, 0, 1, 1, 1, 1, 1, 0],
+    [0, 0, 0, 0, 1, 1, 0, 0, 0, 6],
     [5, 1, 1, 1, 1, 1, 0, 1, 1, 1],
     [0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
     [0, 1, 0, 1, 0, 1, 1, 1, 0, 1],
     [0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
 ]
 
-motor = BusquedaProfundidad(entrada1)
+motor = BusquedaAvara(entrada1)
 solucion = motor.solucionar()
 
 if solucion["paths"]:

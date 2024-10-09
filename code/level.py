@@ -21,15 +21,13 @@ class Level:
         self.obstacle_sprites = pygame.sprite.Group()
         self.caminos = pygame.sprite.Group()
 
+        #CONTROLADORES DE LOS ALGORITMOS
         self.mapa = None
-        self.motor = None
 
         # Variables para la animación de texto
         self.text_alpha = 255  # Opacidad inicial
         self.fade_speed = 5    # Velocidad de desvanecimiento
         self.fading_out = True  # Control de la animación de desvanecimiento
-
-
 
         #variables control de timepo
         self.arrow_alpha = 0
@@ -41,6 +39,7 @@ class Level:
         self.chat = 0 #Manejador de tiempo para  "arrow_alpha"
         self.init_wait = -1 #Manejador de tiempo para la animaciones
         self.init_final = -1
+        self.time_wait = 0.2
 
 
 
@@ -100,23 +99,20 @@ class Level:
         self.chat = time.time()
         self.all_expandidos = self.solucion["nodos_expandidos"]
 
-        return self.solucion
-
 
 
     def crear_caminos_arbol(self):
-
         def dibujar_nodos(ln, ulitma_profundidad):
             for i, n in enumerate(ln):
                 #si ultima_profundidad es false entonces son los ya expandidos(rojos), si es true (blue)
                 SQUARE_COLOR = ROJO if not ulitma_profundidad else AZUL
                 ARROW_COLOR = ROJO if not ulitma_profundidad else AZUL
                 SQUARE_COLOR_HIJO = ROJO if not ulitma_profundidad else AZUL
-                ESCALAR = 1  if not ulitma_profundidad else self.arrow_alpha
+                ESCALAR = 1 if not ulitma_profundidad else self.arrow_alpha
 
                 inicio, hijos, direcciones, up_pasajero = n
 
-                grosor_borde = 0 if up_pasajero else 10
+                grosor_borde = 16 if up_pasajero else 1
                 BORDER_COLOR = VERDE
 
                 posicion_cuadro = centrar_en_casilla(inicio)
@@ -130,7 +126,7 @@ class Level:
 
 
                 if  ulitma_profundidad:
-                    self.arrow_alpha = min(1, (time.time() - self.chat) / 0.1) #esto solo toma valores entre 0 - 1, este valor llega de 0 a 1 en 3 segufnods
+                    self.arrow_alpha = min(1, (time.time() - self.chat) / self.time_wait) #esto solo toma valores entre 0 - 1, este valor llega de 0 a 1 en 3 segufnods
 
 
                 if self.arrow_alpha == 1 or ESCALAR == 1:
@@ -143,7 +139,7 @@ class Level:
         if self.init_wait == -1:
             return
         
-        time_animation = min(1, (time.time() - self.init_wait) / 0.2)
+        time_animation = min(1, (time.time() - self.init_wait) / (self.time_wait * 2))
 
         if time_animation == 1:
             self.arrow_alpha = 0
@@ -162,6 +158,7 @@ class Level:
         else:
             dibujar_nodos(self.all_ya, False)
             dibujar_nodos(self.all_expandidos[0], True)
+            print(self.all_ya)
 
 
 
@@ -170,7 +167,7 @@ class Level:
         if self.init_final == -1:
             return
         
-        time_animation = min(1, (time.time() - self.init_final) / 2)
+        time_animation = min(1, (time.time() - self.init_final) / (self.time_wait*2))
 
         if time_animation == 1:
             self.player.movimientos = self.solucion["paths"]
@@ -210,12 +207,27 @@ class Level:
 
        
 
+    def run(self):
+        if self.mapa == None:
+            self.loading_screen()
+            return
+
+        self.visible_sprites.custom_draw()
+        self.visible_sprites.update()
+
+        self.crear_caminos_arbol()
+        self.camino_final()
+
+        debug(f"{self.player.status} === {self.player.rect} === {self.player.movimiento_actual}")
+    
+
+
+
+
+
     def create_map(self):
         layout = self.mapa
         graphics = import_folder(path_main + 'graphics/objects')
-        self.motor = BusquedaAmplitud(layout)
-
-
 
         llave_nombre = {
             1: ["pasto", "object"],
@@ -248,7 +260,7 @@ class Level:
 
                     elif int(col) == 2:
                         self.player = Player(
-                            (self.motor.encontrar_objeto(2)[1] * TILESIZE, self.motor.encontrar_objeto(2)[0] * TILESIZE),
+                            (x, y),
                             [self.visible_sprites],
                             self.obstacle_sprites, 
                             (TILESIZE, TILESIZE))
@@ -262,24 +274,8 @@ class Level:
 
 
 
-    def run(self):
-        if self.mapa == None:
-            self.loading_screen()
-            return
-
-        self.visible_sprites.custom_draw()
-        self.visible_sprites.update()
-
-        self.crear_caminos_arbol()
-        self.camino_final()
-
-
-        debug(f"{self.player.status} === {self.player.rect} === {self.player.movimiento_actual}")
-    
-
     def reiniciar(self):
         self.create_map()
-        self.motor = BusquedaAmplitud(self.mapa)
         self.solucion = None
         self.all_expandidos = None
         self.all_ya = None

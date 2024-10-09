@@ -91,8 +91,8 @@ class Game:
             Button('Profundidad evitando ciclos', 650, 230, 150, 40, font_size=18, color=LIGHT_GRAY),
             Button('Avara', 810, 110, 150, 40, font_size=18, color=LIGHT_GRAY),
             Button('A*', 810, 170, 150, 40, font_size=18, color=LIGHT_GRAY),
-            Button('Subir archivo', 800, 580, 150, 40, font_size=24, color=LIGHT_GRAY), 
-            Button('REINICIAR', 650, 580, 100, 40, font_size=24, color=LIGHT_GRAY) 
+            Button('REINICIAR', 650, 580, 100, 40, font_size=24, color=LIGHT_GRAY),
+            Button('Subir archivo', 800, 580, 150, 40, font_size=24, color=LIGHT_GRAY)
         ]
         self.update_button_states()
 
@@ -106,14 +106,12 @@ class Game:
 
     def update_button_states(self):
         if self.level.mapa == None:
-            for button in self.buttons[:-2]:
+            for button in self.buttons[:-1]:
                 button.active = False
-            
             return
 
         for button in self.buttons:
             button.active = True  # Reiniciar el estado de todos los botones
-
 
 
         if self.algorithm_choice == 'No informada':
@@ -157,8 +155,8 @@ class Game:
                                 self.level.create_map()
 
                             else:
-                                s = self.level.ejecutarAlgoritmo(button.text)
-                                self.tree_display.update_tree(s["arbol"])
+                                self.level.ejecutarAlgoritmo(button.text)
+                                self.tree_display.update_tree(self.level.solucion["arbol"])
                                 
             self.screen.fill(GRAY)
             self.level.run()
@@ -170,15 +168,6 @@ class Game:
 
             pygame.display.update()
             self.clock.tick(FPS)
-
-
-    def generate_search_tree(self):
-            # Ejemplo del formato del árbol de búsqueda
-            return """--> (2, 0) 
-        |--> (1, 0) 
-        --> (3, 0) 
-            |--> (4, 0)
-            --> (5, 0) """
 
 
     def upload_file(self):
@@ -193,6 +182,10 @@ class Game:
 
         mapa = ALFile(file_path)
         self.level.setMap(mapa)
+
+
+
+
 
 if __name__ == '__main__':
     game = Game()
