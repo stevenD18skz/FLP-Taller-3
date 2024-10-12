@@ -13,33 +13,6 @@ LIGHT_GRAY = (220, 220, 220)
 DARK_GRAY = (150, 150, 150)
 BORDER_COLOR = (0, 0, 0)  # Color del borde
 
-class TreeDisplay:
-    def __init__(self, x, y, width, height, font_size=18, text_color=BLACK, bg_color=WHITE, border_color=BORDER_COLOR, border_width=2):
-        self.rect = pygame.Rect(x, y, width, height)
-        self.font = pygame.font.Font(None, font_size)
-        self.text_color = text_color
-        self.bg_color = bg_color
-        self.border_color = border_color
-        self.border_width = border_width
-        self.text_lines = []  # Lista de líneas de texto para el árbol
-
-    def update_tree(self, tree_text):
-        """Actualizar el contenido del árbol con un nuevo texto"""
-        self.text_lines = tree_text.splitlines()  # Dividir el texto en líneas
-
-    def draw(self, surface):
-        # Dibujar el fondo del recuadro
-        pygame.draw.rect(surface, self.bg_color, self.rect)
-        
-        # Dibujar el borde del recuadro
-        pygame.draw.rect(surface, self.border_color, self.rect, self.border_width)
-
-        # Dibujar cada línea de texto dentro del recuadro
-        y_offset = 10  # Margen superior
-        for line in self.text_lines:
-            text_surface = self.font.render(line, True, self.text_color)
-            surface.blit(text_surface, (self.rect.x + 10, self.rect.y + y_offset))
-            y_offset += text_surface.get_height() + 5  # Espacio entre líneas
 
 # Clase para crear botones
 class Button:
@@ -94,13 +67,9 @@ class Game:
             Button('REINICIAR', 650, 580, 100, 40, font_size=24, color=LIGHT_GRAY),
             Button('Subir archivo', 800, 580, 150, 40, font_size=24, color=LIGHT_GRAY)
         ]
+        
+        self.level.setMap(ALFile("C:/Users/braya/Desktop/FLP-Taller-3/entrada1.txt"))
         self.update_button_states()
-
-        # Crear el recuadro para mostrar el árbol de búsqueda
-        self.tree_display = TreeDisplay(650, 300, 310, 260)
-
-        #C:/Users/braya/Desktop/PRY/FLP-Taller-3/entrada1.txt
-        #self.level.setMap(ALFile("C:/Users/braya/Desktop/PRY/FLP-Taller-3/entrada1.txt"))
 
 
 
@@ -146,6 +115,8 @@ class Game:
                             if button.text in ['No informada', 'Informada']:
                                 self.algorithm_choice = button.text
                                 self.update_button_states()
+                                button.border_color = (255, 112, 40)
+                                
 
                             elif button.text == 'Subir archivo':
                                 self.upload_file()
@@ -156,15 +127,13 @@ class Game:
 
                             else:
                                 self.level.ejecutarAlgoritmo(button.text)
-                                self.tree_display.update_tree(self.level.solucion["arbol"])
+                                button.border_color = (0, 255, 0)
                                 
             self.screen.fill(GRAY)
             self.level.run()
             
             for button in self.buttons:
                 button.draw(self.screen)
-            
-            self.tree_display.draw(self.screen)
 
             pygame.display.update()
             self.clock.tick(FPS)
@@ -180,8 +149,17 @@ class Game:
         )
         root.destroy()
 
-        mapa = ALFile(file_path)
-        self.level.setMap(mapa)
+        # Si seleccionó un archivo, procesarlo
+        print(file_path)
+        if file_path:
+            mapa = ALFile(file_path)
+            self.level.setMap(mapa)
+
+        # Restablecer el foco a la ventana de Pygame
+        pygame.display.set_mode((self.screen.get_width(), self.screen.get_height()))
+
+        # Opcional: también puedes usar pygame.event.clear() para limpiar eventos pendientes
+        pygame.event.clear()
 
 
 

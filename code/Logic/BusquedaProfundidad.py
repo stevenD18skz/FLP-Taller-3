@@ -59,7 +59,7 @@ class BusquedaProfundidad():
 
 
     def search_deep(self, grid, start, goal):
-        CP = []
+        CP = []#la cola de nodos a evular
 
         ARBOL = [(start, [], False, "start")]
         CP.append((start, [], False, "start"))
@@ -68,15 +68,14 @@ class BusquedaProfundidad():
         self.nodos_expandidos += 1
         self.profunidad_maxima = 1
         while CP:
+            print(CP)
             current_node, path, picked_up_passenger, dir_name = CP.pop(0)
             x, y = current_node
 
-            #print(self.imprimir_arbol_clasico(ARBOL))
-            #input("=== ")
-
             indice = 0
             hijos_del_nodo = []
-            prueba = [current_node, [], [], False]
+            compocision_expansion = [current_node, [], [], picked_up_passenger]
+            [[(5, 4), [(5, 3), (5, 5)], ['izquierda', 'derecha'], False]]
             for i, (dx, dy) in enumerate(self.MOVEMENTS):
                 next_x, next_y = x + dx, y + dy
 
@@ -88,29 +87,28 @@ class BusquedaProfundidad():
                         next_path = path + [indice]
                         next_dir_name = self.DIRECTIONS[i]
 
+                        #se verifica si el nodo expandido es alguna meta
                         decision = True if next_node == self.passager and not picked_up_passenger else picked_up_passenger
 
+                        #se agrega el nodo a la cola, arbol y nodos visitados
                         hijos_del_nodo.append((next_node, next_path, decision, next_dir_name))
                         ARBOL = self.agregar_nodo(ARBOL, path, next_node, decision, next_dir_name)
-
-                        self.final_nodos.append([])
                         visited.append(((next_node), decision))
 
-                        prueba[1].append(next_node)
-                        prueba[2].append(next_dir_name)
-                        prueba[3] = decision
+                        compocision_expansion[1].append(next_node)
+                        compocision_expansion[2].append(next_dir_name)
 
+                        #se ajustan datos de salida del arbol
                         self.nodos_expandidos += 1
                         self.profunidad_maxima = max(self.profunidad_maxima, (len(next_path) + 1))
   
                         if next_node == goal and picked_up_passenger:
-                            print(self.imprimir_arbol_clasico(ARBOL))
                             return ARBOL, next_path
 
                         indice += 1
-    
+            
             CP = hijos_del_nodo + CP
-            self.final_nodos.append([prueba])
+            self.final_nodos.append([compocision_expansion])
 
         return ARBOL, []
 
@@ -162,10 +160,10 @@ class BusquedaProfundidad():
             "nodos_explorados": self.nodos_expandidos,
             "profundidad_maxima": self.profunidad_maxima,
             "tiempo_computo": f"{tiempo_computo:6.5f}",
-            "nodos_expandidos": self.final_nodos[1:]
+            "nodos_expandidos": self.final_nodos
         }
 
-
+"""
 entrada1 =  [
     [0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [0, 1, 1, 0, 0, 0, 4, 0, 0, 0],
@@ -191,3 +189,4 @@ if solucion["paths"]:
     print(f"\nCAMINO:\n{solucion['paths']}")
 else:
     print("No se encontraron caminos para todos los objetivos.")
+"""

@@ -2,49 +2,49 @@ import heapq
 import time
 
 
-class BusquedaCosto():
-    def __init__(self, mapa):
-        #constatnes
-        self.REPRESENTACION_INICIO = 2
-        self.REPRESENTACION_PASAJERO = 5
-        self.REPRESENTACION_OBJETIVO = 6
+class CostSearch():
+    def __init__(self, grid):
+        # Constants
+        self.START_REPRESENTATION = 2
+        self.PASSENGER_REPRESENTATION = 5
+        self.GOAL_REPRESENTATION = 6
 
-        # Definición de los movimientos (arriba, abajo, izquierda, derecha)
+        # Define movements (up, down, left, right)
         self.MOVEMENTS = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-        self.DIRECTIONS = ["arriba", "abajo", "izquierda", "derecha"]
+        self.DIRECTIONS = ["up", "down", "left", "right"]
 
-        #Inicializar mapa/mundo una  delas 2 pues
-        self.mapa = mapa
-        self.start = self.encontrar_objeto(self.REPRESENTACION_INICIO)
-        self.passager = self.encontrar_objeto(self.REPRESENTACION_PASAJERO)
-        self.goal = self.encontrar_objeto(self.REPRESENTACION_OBJETIVO)
+        # Initialize the grid
+        self.grid = grid
+        self.start = self.find_object(self.START_REPRESENTATION)
+        self.passenger = self.find_object(self.PASSENGER_REPRESENTATION)
+        self.goal = self.find_object(self.GOAL_REPRESENTATION)
 
-        #DATOS ARBOLES
-        self.nodos_expandidos = 0
-        self.profunidad_maxima = 0
+        # Tree search data
+        self.explored_nodes = 0
+        self.max_depth = 0
 
-        # Mapeo de costos
+        # Cost mapping
         self.COSTS = {
-            0: 1,  # Casilla libre
-            1: float('inf'),  # Muro (inaccesible)
-            2: 1,  # Punto de partida
-            3: 8,  # Tráfico medio
-            4: 15,  # Tráfico pesado
-            5: 1,  # Pasajero
-            6: 1   # Destino
+            0: 1,   # Free space
+            1: float('inf'),  # Wall (inaccessible)
+            2: 1,   # Start point
+            3: 8,   # Medium traffic
+            4: 15,  # Heavy traffic
+            5: 1,   # Passenger
+            6: 1    # Goal
         }
 
-        #DATOS PARA MOSTRAR EL ARBOL GRAFICAMENTE
-        self.acarreo_profundidad = 0
-        self.acarreo_nodos = []
-        self.final_nodos = []
+        # Tree visualization data
+        self.carry_depth = 0
+        self.current_nodes = []
+        self.final_nodes = []
 
 
 
-    def encontrar_objeto(self, valor_objeto): #hay que acomodarla (y, x) => (x, y)
-        for y, array in enumerate(self.mapa):
-            for x, valor in enumerate(array):
-                if valor == valor_objeto:
+    def find_object(self, object_value):
+        for y, row in enumerate(self.grid):
+            for x, value in enumerate(row):
+                if value == object_value:
                     return (y, x)
 
 
@@ -54,130 +54,125 @@ class BusquedaCosto():
 
 
 
-    def agregar_nodo(self, ARBOL, path, next_cost, nodo, picked_up_passenger, next_dir_name):
-            # Si no hay coordenadas, estamos en la raíz, y agregamos directamente
-            if not path:
-                ARBOL[0][2].append((next_cost, nodo, [], picked_up_passenger, next_dir_name))
-                #imprimir_arbol_clasico(tree)
-                return ARBOL
-            
+    def add_node(self, tree, path, next_cost, node, picked_up_passenger, next_direction_name):
+        # Add node at root if path is empty
+        if not path:
+            tree[0][2].append((next_cost, node, [], picked_up_passenger, next_direction_name))
+            return tree
 
-            # Empezamos desde el primer nivel de profundidad (sin contar la raíz)
-            sub_tree = ARBOL[0][2]
-            for i, c in enumerate(path):
-                # Encontramos el nodo que corresponde a 'c' 
-                #       [A, [K, L, J]] => c es por asi decir el hijo de A que esa en la c-nesima posicion
-                #       en este caso si c fuera 2, el hijo seleccionado seria J
-                sub_tree = sub_tree[c][2]
-
-                # Si estamos en el último índice de 'cor', agregamos el nuevo nodo, 
-                # esto es que ya llegamos a donde queriamos llegar
-                if i + 1 == len(path):
-                    sub_tree.append((next_cost, nodo, [], picked_up_passenger, next_dir_name))
-            
-            return ARBOL
+        # Navigate the tree to the correct depth
+        subtree = tree[0][2]
+        for i, index in enumerate(path):
+            subtree = subtree[index][2]
+            if i + 1 == len(path):
+                subtree.append((next_cost, node, [], picked_up_passenger, next_direction_name))
+        return tree
 
 
 
     def search_cost(self, grid, start, goal):
-        CP = []#la cola de nodos a evular
-
-        ARBOL = [(0, start, [], False, "start")]
-        heapq.heappush(CP, (0, start, [], False, "start"))
+        priority_queue = []
+        tree = [(0, start, [], False, "start")]
+        heapq.heappush(priority_queue, (0, start, [], False, "start"))
         visited = [(start, False)]
 
-        self.nodos_expandidos += 1
-        self.profunidad_maxima += 1
-        while CP:
-            costo_node, current_node, path, picked_up_passenger, dir_name = heapq.heappop(CP)
+        self.explored_nodes += 1
+        self.max_depth += 1
+
+        while priority_queue:
+            current_cost, current_node, path, picked_up_passenger, direction_name = heapq.heappop(priority_queue)
             x, y = current_node
+            next_index = 0
 
-            
-
-            indice = 0
+            expanded_node_info = [current_node, [], [], picked_up_passenger, current_cost, []]
             for i, (dx, dy) in enumerate(self.MOVEMENTS):
                 next_x, next_y = x + dx, y + dy
 
                 if self.is_valid(next_x, next_y, grid):
                     if ((next_x, next_y), picked_up_passenger) not in visited:
-
-                        #se arma el nodo
                         next_node = (next_x, next_y)
-                        next_path = path + [indice]
-                        next_dir_name = self.DIRECTIONS[i]
-                        next_cost = costo_node + self.COSTS[grid[next_x][next_y]]
+                        next_path = path + [next_index]
+                        next_direction_name = self.DIRECTIONS[i]
+                        next_cost = current_cost + self.COSTS[grid[next_x][next_y]]
 
-                        decision = True if next_node == self.passager and not picked_up_passenger else picked_up_passenger
+                        has_passenger = True if next_node == self.passenger and not picked_up_passenger else picked_up_passenger
 
-                        heapq.heappush(CP, (next_cost, next_node, next_path, decision, next_dir_name))
-                        ARBOL = self.agregar_nodo(ARBOL, path, next_cost, next_node, decision, next_dir_name)
-                        visited.append(((next_node), decision))
+                        # Add node to queue, tree, and visited list
+                        heapq.heappush(priority_queue, (next_cost, next_node, next_path, has_passenger, next_direction_name))
+                        tree = self.add_node(tree, path, next_cost, next_node, has_passenger, next_direction_name)
+                        visited.append((next_node, has_passenger))
 
-                        self.nodos_expandidos += 1
-                        self.profunidad_maxima = max(self.profunidad_maxima, (len(next_path) + 1))
+                        expanded_node_info[1].append(next_node)
+                        expanded_node_info[2].append(next_direction_name)
+                        expanded_node_info[5].append(next_cost)
+
+                        # Update tree and search stats
+                        self.explored_nodes += 1
+                        self.max_depth = max(self.max_depth, (len(next_path) + 1))
 
                         if next_node == goal and picked_up_passenger:
-                            return ARBOL, next_path, next_cost
-                        
-                        indice += 1
-                        self.final_nodos.append([next_node, next_dir_name, decision])
+                            return tree, next_path, next_cost
 
-        return ARBOL, []
+                        next_index += 1
+
+            self.final_nodes.append([expanded_node_info])
+
+        return tree, [], 0
 
 
 
-    def imprimir_arbol_clasico(self, lista, prefijo="", es_ultimo=True):
-        resultado = []  # Lista para acumular las cadenas generadas
+    def print_classic_tree(self, node, prefix="", is_last=True):
+        result = []
         try:
-            costo, nodo, hijos, up, dir_name = lista
+            cost, coord, children, has_passenger, direction_name = node
         except:
-            costo, nodo, hijos, up, dir_name = lista[0]
+            cost, coord, children, has_passenger, direction_name = node[0]
 
-        marcador = "--> " if es_ultimo else "|-- "
-        resultado.append(prefijo + marcador + f"{nodo} [costo: {costo}] [P? {up}] [direccion {dir_name}]")
+        connector = "--> " if is_last else "|-- "
+        result.append(f"{prefix}{connector}{coord} [cost: {cost}] [Passenger? {has_passenger}] [Direction: {direction_name}]")
 
-        if hijos:
-            nuevo_prefijo = prefijo + ("    " if es_ultimo else "|   ")
-            for i, hijo in enumerate(hijos):
-                resultado.append(self.imprimir_arbol_clasico(hijo, nuevo_prefijo, i == len(hijos) - 1))
+        if children:
+            new_prefix = prefix + ("    " if is_last else "|   ")
+            for i, child in enumerate(children):
+                result.append(self.print_classic_tree(child, new_prefix, i == len(children) - 1))
 
-        return "\n".join(resultado)  # Unir todas las cadenas y devolver
-
-
-
-    def crear_salida_gui(self, arbol_final, camino_arbol):
-        #costo nodo hijos
-        nodo = arbol_final[0]
-        costo, cord, hijos, up, dir_name = nodo
-        res = []
-
-        hijos = nodo[2]
-        for i, c in enumerate(camino_arbol):
-            nodo = hijos[c]
-            costo, cord, hijos, up, dir_name  = nodo
-            res.append((cord, dir_name))
-
-        return res
+        return "\n".join(result)
 
 
 
-    def solucionar(self):
-        #encontrar camino hasta el pasajero
-        tiempo_inicio = time.time()
-        arbol_final, camino_arbol, costo_total = self.search_cost(self.mapa, self.start, self.goal)
-        tiempo_final = time.time()
-        tiempo_computo = tiempo_final - tiempo_inicio  
+    def generate_path_output(self, final_tree, path):
+        node = final_tree[0]
+        cost, coord, children, has_passenger, direction_name = node
+        output = []
 
-        #devolver el camino completo
+        children = node[2]
+        for i, step in enumerate(path):
+            node = children[step]
+            cost, coord, children, has_passenger, direction_name = node
+            output.append((coord, direction_name))
+
+        return output
+
+
+
+    def solve(self):
+        # Search for path to the goal
+        start_time = time.time()
+        final_tree, path, total_cost = self.search_cost(self.grid, self.start, self.goal)
+        end_time = time.time()
+        computation_time = end_time - start_time
+
+        # Return the solution data
         return {
-            "arbol":  self.imprimir_arbol_clasico(arbol_final),
-            "paths": self.crear_salida_gui(arbol_final, camino_arbol),
-            "costo": costo_total,
-            "nodos_explorados": self.nodos_expandidos,
-            "profundidad_maxima": self.profunidad_maxima,
-            "tiempo_computo": f"{tiempo_computo:6.5f}",
-            "nodos_expandidos": self.final_nodos[1:]
+            "tree": self.print_classic_tree(final_tree),
+            "path": self.generate_path_output(final_tree, path),
+            "total_cost": total_cost,
+            "explored_nodes": self.explored_nodes,
+            "max_depth": self.max_depth,
+            "computation_time": f"{computation_time:.5f} seconds",
+            "expanded_nodes": self.final_nodes
         }
+
 
 
 

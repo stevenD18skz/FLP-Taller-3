@@ -1,4 +1,5 @@
 import time
+from tkinter import font
 import pygame 
 from settings import *
 from tile import Tile
@@ -33,13 +34,13 @@ class Level:
         self.arrow_alpha = 0
 
         self.all_ya = []
-        self.all_expandidos = []
+        self.all_expandir = []
         self.solucion = None
 
         self.chat = 0 #Manejador de tiempo para  "arrow_alpha"
         self.init_wait = -1 #Manejador de tiempo para la animaciones
         self.init_final = -1
-        self.time_wait = 0.2
+        self.time_wait = 0.25
 
 
 
@@ -97,11 +98,15 @@ class Level:
 
         self.init_wait = time.time()
         self.chat = time.time()
-        self.all_expandidos = self.solucion["nodos_expandidos"]
+        self.all_expandir = self.solucion["nodos_expandidos"]
+
+
+
 
 
 
     def crear_caminos_arbol(self):
+
         def dibujar_nodos(ln, ulitma_profundidad):
             for i, n in enumerate(ln):
                 #si ultima_profundidad es false entonces son los ya expandidos(rojos), si es true (blue)
@@ -110,7 +115,7 @@ class Level:
                 SQUARE_COLOR_HIJO = ROJO if not ulitma_profundidad else AZUL
                 ESCALAR = 1 if not ulitma_profundidad else self.arrow_alpha
 
-                inicio, hijos, direcciones, up_pasajero = n
+                inicio, hijos, direcciones, up_pasajero, *costo = n
 
                 grosor_borde = 16 if up_pasajero else 1
                 BORDER_COLOR = VERDE
@@ -118,6 +123,18 @@ class Level:
                 posicion_cuadro = centrar_en_casilla(inicio)
                 pygame.draw.rect(self.display_surface, SQUARE_COLOR, pygame.Rect(posicion_cuadro[0], posicion_cuadro[1], CUADRADO_SIZE, CUADRADO_SIZE))
                 pygame.draw.rect(self.display_surface, BORDER_COLOR, pygame.Rect(posicion_cuadro[0], posicion_cuadro[1], CUADRADO_SIZE, CUADRADO_SIZE), grosor_borde)
+
+
+
+                TEXT_COLOR = (255, 255, 255)
+                font = pygame.font.SysFont(None, 12)  # Puedes ajustar el tamaño
+
+                text = font.render(str(costo[0]) if costo else "", True, TEXT_COLOR)
+                text_rect = text.get_rect(center=(posicion_cuadro[0] + CUADRADO_SIZE / 2, posicion_cuadro[1] + CUADRADO_SIZE / 2))
+                self.display_surface.blit(text, text_rect)
+
+
+
 
                 for direction in direcciones:
                     tamano_flecha = obtener_tamano_flecha(direction, alpha=ESCALAR)
@@ -130,10 +147,16 @@ class Level:
 
 
                 if self.arrow_alpha == 1 or ESCALAR == 1:
-                    for hijo in hijos:
+                    for i, hijo in enumerate(hijos):
                         centro_hijo = centrar_en_casilla(hijo)
                         pygame.draw.rect(self.display_surface, SQUARE_COLOR_HIJO, pygame.Rect(centro_hijo[0], centro_hijo[1], CUADRADO_SIZE, CUADRADO_SIZE))
+
+                        
+                        text = font.render(str(costo[1][i]) if costo else "", True, TEXT_COLOR)
+                        text_rect_hijo = text.get_rect(center=(centro_hijo[0] + CUADRADO_SIZE / 2, centro_hijo[1] + CUADRADO_SIZE / 2))
+                        self.display_surface.blit(text, text_rect_hijo)
             
+
 
 
         if self.init_wait == -1:
@@ -146,19 +169,18 @@ class Level:
             self.chat = time.time()
             self.init_wait = time.time()
 
-            self.all_ya = self.all_ya + self.all_expandidos[0]
-            self.all_expandidos.pop(0)
+            self.all_ya = self.all_ya + self.all_expandir[0]
+            self.all_expandir.pop(0)
 
 
-        if self.all_expandidos == []:
+        if self.all_expandir == []:
             self.init_wait = -1
             self.init_final = time.time()
 
 
         else:
             dibujar_nodos(self.all_ya, False)
-            dibujar_nodos(self.all_expandidos[0], True)
-            print(self.all_ya)
+            dibujar_nodos(self.all_expandir[0], True)
 
 
 
@@ -277,7 +299,7 @@ class Level:
     def reiniciar(self):
         self.create_map()
         self.solucion = None
-        self.all_expandidos = None
+        self.all_expandir = None
         self.all_ya = None
 
 
