@@ -11,7 +11,7 @@ class CostSearch():
 
         # Define movements (up, down, left, right)
         self.MOVEMENTS = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-        self.DIRECTIONS = ["up", "down", "left", "right"]
+        self.DIRECTIONS = ["arriba", "abajo", "izquierda", "derecha"]
 
         # Initialize the grid
         self.grid = grid

@@ -12,6 +12,8 @@ GRAY = (200, 200, 200)
 LIGHT_GRAY = (220, 220, 220)
 DARK_GRAY = (150, 150, 150)
 BORDER_COLOR = (0, 0, 0)  # Color del borde
+ORANGE = (255, 112, 40)  # Color naranja para selección de "Informada/No informada"
+BLUE = (0, 0, 255)  # Color azul para selección de algoritmos
 
 
 # Clase para crear botones
@@ -22,18 +24,26 @@ class Button:
         self.color = color
         self.border_color = border_color
         self.border_width = border_width
-        self.font = pygame.font.Font(None, font_size)  # Cambiar tamaño de la fuente
+        self.font = pygame.font.Font(None, font_size)
         self.active = True
+        self.selected = False  # Estado de selección del botón
 
     def draw(self, surface):
-        # Color del botón
-        button_color = self.color if self.active else DARK_GRAY
+        # Cambiar el color del botón según su estado de selección
+        if not self.active:
+            button_color = DARK_GRAY
+        elif self.selected:
+            button_color = BLUE if self.text in ['Amplitud', 'Costo uniforme', 'Profundidad evitando ciclos', 'Avara', 'A*'] else ORANGE
+        else:
+            button_color = self.color
+
+        # Dibujar el botón
         pygame.draw.rect(surface, button_color, self.rect)
 
-        # Dibuja el borde
+        # Dibujar el borde
         pygame.draw.rect(surface, self.border_color, self.rect, self.border_width)
 
-        # Dibuja el texto
+        # Dibujar el texto
         text_surface = self.font.render(self.text, True, BLACK)
         text_rect = text_surface.get_rect(center=self.rect.center)
         surface.blit(text_surface, text_rect)
@@ -47,7 +57,6 @@ class Button:
 
 class Game:
     def __init__(self):
-        # Configuración general
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption('POKEMON')
@@ -56,6 +65,7 @@ class Game:
 
         # Configuración de botones
         self.algorithm_choice = 'No informada'
+        self.selected_algorithm_button = None  # Para almacenar el botón de algoritmo seleccionado
         self.buttons = [
             Button('No informada', 650, 40, 150, 40, font_size=24, color=LIGHT_GRAY),
             Button('Informada', 810, 40, 150, 40, font_size=24, color=LIGHT_GRAY),
@@ -72,33 +82,44 @@ class Game:
         self.update_button_states()
 
 
-
     def update_button_states(self):
-        if self.level.mapa == None:
+        # Si no hay mapa, desactivar todos los botones excepto el de subir archivo
+        if self.level.mapa is None:
             for button in self.buttons[:-1]:
                 button.active = False
             return
 
+        # Activar todos los botones
         for button in self.buttons:
-            button.active = True  # Reiniciar el estado de todos los botones
+            button.active = True
 
-
+        # Actualizar botones según el algoritmo seleccionado
         if self.algorithm_choice == 'No informada':
-            # Activar botones de algoritmos no informados y desactivar los de informados
             for button in self.buttons[2:5]:  # Amplitud, Costo uniforme, Profundidad evitando ciclos
                 button.active = True
-
             for button in self.buttons[5:7]:  # Avara, A*
                 button.active = False
-
         elif self.algorithm_choice == 'Informada':
-            # Desactivar botones de algoritmos no informados y activar los de informados
             for button in self.buttons[2:5]:  # Amplitud, Costo uniforme, Profundidad evitando ciclos
                 button.active = False
-
             for button in self.buttons[5:7]:  # Avara, A*
                 button.active = True
 
+
+    def handle_button_selection(self, selected_button):
+        # Lógica para cambiar el borde del botón según la selección de "Informada" o "No informada"
+        if selected_button.text in ['No informada', 'Informada']:
+            self.algorithm_choice = selected_button.text
+            for button in self.buttons[:2]:  # Actualizar solo los botones de No informada e Informada
+                button.selected = (button == selected_button)
+            self.update_button_states()
+
+        # Lógica para seleccionar el algoritmo
+        elif selected_button.text in ['Amplitud', 'Costo uniforme', 'Profundidad evitando ciclos', 'Avara', 'A*']:
+            if self.selected_algorithm_button:
+                self.selected_algorithm_button.selected = False  # Desactivar selección previa
+            selected_button.selected = True
+            self.selected_algorithm_button = selected_button
 
 
     def run(self):
@@ -112,23 +133,20 @@ class Game:
 
                     for button in self.buttons:
                         if button.is_clicked((x, y)):
-                            if button.text in ['No informada', 'Informada']:
-                                self.algorithm_choice = button.text
-                                self.update_button_states()
-                                button.border_color = (255, 112, 40)
-                                
+                            if button.text in ['No informada', 'Informada', 'Amplitud', 'Costo uniforme', 'Profundidad evitando ciclos', 'Avara', 'A*']:
+                                self.handle_button_selection(button)
 
                             elif button.text == 'Subir archivo':
                                 self.upload_file()
                                 self.update_button_states()
-                            
+
                             elif button.text == 'REINICIAR':
                                 self.level.create_map()
 
                             else:
                                 self.level.ejecutarAlgoritmo(button.text)
-                                button.border_color = (0, 255, 0)
-                                
+
+            # Dibujar los botones y actualizar la pantalla
             self.screen.fill(GRAY)
             self.level.run()
             
@@ -149,23 +167,14 @@ class Game:
         )
         root.destroy()
 
-        # Si seleccionó un archivo, procesarlo
-        print(file_path)
         if file_path:
             mapa = ALFile(file_path)
             self.level.setMap(mapa)
 
-        # Restablecer el foco a la ventana de Pygame
         pygame.display.set_mode((self.screen.get_width(), self.screen.get_height()))
-
-        # Opcional: también puedes usar pygame.event.clear() para limpiar eventos pendientes
         pygame.event.clear()
-
-
-
 
 
 if __name__ == '__main__':
     game = Game()
     game.run()
-

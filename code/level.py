@@ -8,7 +8,7 @@ from support import *
 from player import Player
 
 from Logic.BusquedaAmplitud import BusquedaAmplitud
-from Logic.BusquedaCosto import BusquedaCosto
+from Logic.BusquedaCosto import CostSearch
 from Logic.BusquedaProfundidad import BusquedaProfundidad
 
 
@@ -87,7 +87,7 @@ class Level:
     def ejecutarAlgoritmo(self, eleccion):
         algoritmos = {
             "Amplitud": BusquedaAmplitud,
-            "Costo uniforme": BusquedaCosto,
+            "Costo uniforme": CostSearch,
             "Profundidad evitando ciclos": BusquedaProfundidad,
             "Avara": None,
             "A*": None,
