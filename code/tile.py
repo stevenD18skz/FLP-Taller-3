@@ -17,12 +17,10 @@ class Tile(pygame.sprite.Sprite):
 			'aura': import_folder_un(path_main + 'graphics/particles/aura'),
 			'heal': import_folder_un(path_main + 'graphics/particles/heal'),
 			'fire': import_folder_un(path_main + 'graphics/particles/fire'),
+			'nova': import_folder_un(path_main + 'graphics/particles/nova'),
 		}
 		
 		
-
-
-
 		if sprite_type == 'object':
 			self.rect = self.image.get_rect(topleft=(pos[0], pos[1]))
 			self.hitbox = self.rect.inflate(0, 0)
@@ -39,9 +37,7 @@ class Tile(pygame.sprite.Sprite):
 			self.rect = self.image.get_rect(topleft=pos)
 			self.activacion = self.rect.inflate(-40, -40)
 			self.hitbox = self.rect.inflate(0, 0)
-			self.particule = Particle(self.rect.center, groups, self.frames['fire'])
-
-
+			self.particule = Particle(self.rect.center, groups, self.frames['nova'])
 
 
 
