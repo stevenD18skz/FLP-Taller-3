@@ -6,7 +6,6 @@ from support import *
 class Tile(pygame.sprite.Sprite):
 	def __init__(self, pos, groups, sprite_type, surface=pygame.Surface((TILESIZE, TILESIZE))):
 		super().__init__(groups)
-		self.auxiliar = groups
 		self.sprite_type = sprite_type
 		self.image = surface
 		self.original_image = self.image.copy()  # Guardar la imagen original para no perder calidad al desvanecer
@@ -19,51 +18,43 @@ class Tile(pygame.sprite.Sprite):
 			'fire': import_folder_un(path_main + 'graphics/particles/fire'),
 			'nova': import_folder_un(path_main + 'graphics/particles/nova'),
 		}
+
+		
+		self.auxiliar = groups
 		
 		
 		if sprite_type == 'object':
 			self.rect = self.image.get_rect(topleft=(pos[0], pos[1]))
 			self.hitbox = self.rect.inflate(0, 0)
 			self.activacion = self.rect.inflate(-TILESIZE, -TILESIZE)
-			self.particule = None
 
 		elif sprite_type == 'passager':
 			self.rect = self.image.get_rect(topleft=pos)
 			self.activacion = self.rect.inflate(-20, -30)
 			self.hitbox = self.rect.inflate(0, 0)
-			self.particule = Particle(self.rect.center, groups, self.frames['aura'])
-
+			
 		elif sprite_type == 'goal':
 			self.rect = self.image.get_rect(topleft=pos)
 			self.activacion = self.rect.inflate(-40, -40)
 			self.hitbox = self.rect.inflate(0, 0)
-			self.particule = Particle(self.rect.center, groups, self.frames['nova'])
-
-
+		
 
 
 	def desaparecer_animation(self):
 		if self.animation:
-			# Desvanecer gradualmente la imagen
+			#self.particule = Particle(self.rect.center, self.auxiliar, self.frames['nova']) if not self.particule else self.particule
+
 			if self.alpha > 0:
 				self.alpha -= 5
 				self.image = self.original_image.copy()
 				self.image.set_alpha(self.alpha)
 			else:
-				self.particule.kill()
-				self.kill()  # Eliminar el sprite del grupo cuando esté completamente desvanecido
+				self.kill()
 
 
 	def update(self):
-		print("hola")
 		self.desaparecer_animation()
 
-		try:
-			self.particule.exist = True
-		
-		except:
-			pass
-			
 
 
 
@@ -90,7 +81,7 @@ class Particle(pygame.sprite.Sprite):
 		self.frame_index += self.animation_speed
 		if self.frame_index >= len(self.frames):
 			self.frame_index = 0
-			#self.kill()
+			self.kill()
 		else:
 			self.image = self.frames[int(self.frame_index)]
 
@@ -108,7 +99,7 @@ class Particle(pygame.sprite.Sprite):
 				self.life = 30
 				self.exist = False
 				self.alpha = 255
-				#self.kill()  # Eliminar la partícula cuando su vida se acabe
+				self.kill()  # Eliminar la partícula cuando su vida se acabe
 
 
 

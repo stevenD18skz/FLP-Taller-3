@@ -159,6 +159,7 @@ class Game:
 
                     for button in self.buttons:
                         if button.is_clicked((x, y)) and self.level.init_wait == -1 and self.level.init_final == -1:
+                            print("click")
                             if button.text in ['No informada', 'Informada']:
                                 self.algorithm_choice = button.text
 

@@ -194,13 +194,13 @@ class BusquedaAvara():
 
                         if next_node == goal and picked_up_passenger:
                             self.final_nodes.append([expanded_node_info])
-                            return tree, next_path, next_cost
+                            return tree, next_path
 
                         next_index += 1
 
             self.final_nodes.append([expanded_node_info])
 
-        return tree, [], 0
+        return tree, []
 
 
 
@@ -274,14 +274,13 @@ class BusquedaAvara():
             - "expanded_nodes": Información sobre los nodos expandidos en la búsqueda.
         """
         start_time = time.time()
-        final_tree, path, total_cost = self.search_avara(self.grid, self.start, self.goal)
+        final_tree, path = self.search_avara(self.grid, self.start, self.goal)
         end_time = time.time()
         computation_time = end_time - start_time
 
         return {
             "tree": self.print_classic_tree(final_tree),
             "path": self.generate_path_output(final_tree, path),
-            "total_cost": total_cost,
             "explored_nodes": self.explored_nodes,
             "max_depth": self.max_depth,
             "computation_time": f"{computation_time:.5f} seconds",
@@ -291,34 +290,3 @@ class BusquedaAvara():
 
 
 
-
-"""
-entrada1 =  [
-    [0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [0, 1, 1, 0, 0, 0, 4, 0, 0, 0],
-    [2, 1, 1, 0, 1, 0, 1, 0, 1, 0],
-    [0, 3, 3, 0, 4, 0, 0, 0, 4, 0],
-    [0, 1, 1, 0, 1, 1, 1, 1, 1, 0],
-    [0, 0, 0, 0, 1, 1, 0, 0, 0, 6],
-    [5, 1, 1, 1, 1, 1, 0, 1, 1, 1],
-    [0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
-    [0, 1, 0, 1, 0, 1, 1, 1, 0, 1],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
-]
-
-motor = BusquedaCosto(entrada1)
-solucion = motor.solucionar()
-
-# Imprimimos los caminos encontrados
-if solucion["paths"]:
-    print("Caminos encontrados a los objetivos:")
-    # Imprimimos las métricas
-    print(f"Costo: {solucion["costo"]}")
-    print(f"Nodos explorados: {solucion['nodos_explorados']}")
-    print(f"Profundidad máxima del árbol: {solucion['profundidad_maxima']}")
-    print(f"Tiempo de cómputo: {solucion['tiempo_computo']} (S)")
-    print(f"\nCAMINO:\n{solucion["paths"]}")
-    print(f"\n\nARBOL:\n{solucion["arbol"]}")
-else:
-    print("No se encontraron caminos para todos los objetivos.")
-"""

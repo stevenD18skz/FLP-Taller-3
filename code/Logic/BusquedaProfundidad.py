@@ -267,35 +267,3 @@ class BusquedaProfundidad():
             "expanded_nodes": self.final_nodes
         }
 
-
-
-
-
-
-"""
-entrada1 =  [
-    [0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [0, 1, 1, 0, 0, 0, 4, 0, 0, 0],
-    [2, 1, 1, 0, 1, 0, 1, 0, 1, 0],
-    [0, 6, 3, 0, 4, 0, 0, 0, 4, 0],
-    [0, 1, 0, 0, 1, 1, 1, 1, 1, 0],
-    [0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
-    [5, 1, 1, 1, 1, 1, 0, 1, 1, 1],
-    [0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
-    [0, 1, 0, 1, 0, 1, 1, 1, 0, 1],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
-]
-
-motor = BusquedaProfundidad(entrada1)
-solucion = motor.solucionar()
-
-if solucion["paths"]:
-    print("Caminos encontrados a los objetivos:")
-    print(f"Pasos Necesarios: {len(solucion['paths'])}")
-    print(f"Nodos explorados: {solucion['nodos_explorados']}")
-    print(f"Profundidad máxima del árbol: {solucion['profundidad_maxima']}")
-    print(f"Tiempo de cómputo: {solucion['tiempo_computo']} (S)")
-    print(f"\nCAMINO:\n{solucion['paths']}")
-else:
-    print("No se encontraron caminos para todos los objetivos.")
-"""

@@ -275,36 +275,3 @@ class BusquedaAmplitud():
             "expanded_nodes": self.final_nodes[1:]
         }
 
-
-
-
-
-
-"""entrada1 =  [
-    [0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [0, 1, 1, 0, 0, 0, 4, 0, 0, 0],
-    [2, 1, 1, 0, 1, 0, 1, 0, 1, 0],
-    [0, 3, 3, 0, 4, 0, 0, 0, 4, 0],
-    [0, 1, 1, 0, 1, 1, 1, 1, 1, 0],
-    [0, 0, 0, 0, 1, 1, 0, 0, 0, 6],
-    [5, 1, 1, 1, 1, 1, 0, 1, 1, 1],
-    [0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
-    [0, 1, 0, 1, 0, 1, 1, 1, 0, 1],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
-]
-
-motor = BusquedaAmplitud(entrada1)
-solucion = motor.solve()
-
-
-# Imprimimos los caminos encontrados
-print("Caminos encontrados a los objetivos:")
-print(f"Pasos Necesarios: {len(solucion["path"])}")
-print(f"Nodos explorados: {solucion['explored_nodes']}")
-print(f"Profundidad máxima del árbol: {solucion['max_depth']}")
-print(f"Tiempo de cómputo: {solucion['computation_time']} (S)")
-print(f"\nCAMINO:\n{solucion["path"]}")
-print(f"\n\ntree:\n{solucion["tree"]}")
-print(f"\n\nodos_expandidos:\n{solucion["expanded_nodes"]}")
-
-"""

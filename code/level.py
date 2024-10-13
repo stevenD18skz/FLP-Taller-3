@@ -45,7 +45,7 @@ class Level:
         self.init_wait = -1 #Manejador de tiempo para la animacino dibujar arbol
         self.init_final = -1 #Manejador de tiempo para la animacino mostrar camino
         self.chat = 0 #Manejador de tiempo para  "arrow_alpha"
-        self.time_wait = 0.1
+        self.time_wait = 1.5
     
 
 
@@ -103,7 +103,7 @@ class Level:
         def dibujar_cuadro(color, tupla, grosor, costo):
             pygame.draw.rect(self.display_surface, color, pygame.Rect(tupla[0], tupla[1], CUADRADO_SIZE, CUADRADO_SIZE))
             pygame.draw.rect(self.display_surface, VERDE, pygame.Rect(tupla[0], tupla[1], CUADRADO_SIZE, CUADRADO_SIZE), grosor)
-            self.crear_texto(str(costo), 12, tupla)
+            self.crear_texto(str(costo), 24, tupla)
 
 
         def dibujar_nodos(ln, ulitma_profundidad):
@@ -188,7 +188,7 @@ class Level:
 
             posicion_cuadro = centrar_en_casilla(hijo)
             pygame.draw.rect(self.display_surface, SQUARE_COLOR, pygame.Rect(posicion_cuadro[0], posicion_cuadro[1], CUADRADO_SIZE, CUADRADO_SIZE))
-            self.crear_texto(str(costo[0]) if costo else "", 12, posicion_cuadro)
+            self.crear_texto(str(costo[0]) if costo else "", 24, posicion_cuadro)
 
             if  direccion:
                 tamano_flecha = obtener_tamano_flecha(direccion, alpha=escalar)
@@ -311,6 +311,7 @@ class YSortCameraGroup(pygame.sprite.Group):
         for sprite in sprites_ordenados:
             #dibujar las areas para debug
 
+            """
             if isinstance(sprite, Player):
                 pygame.draw.rect(self.display_surface, ROJO, sprite.hitbox)
                 pygame.draw.rect(self.display_surface, (40, 48, 48), sprite.rect)
@@ -326,7 +327,7 @@ class YSortCameraGroup(pygame.sprite.Group):
             else:
                 pygame.draw.rect(self.display_surface, (40, 48, 48), sprite.rect)
                 pygame.draw.rect(self.display_surface, (100, 255, 100), sprite.activacion)
-            
+            """
 
             # Dibuja la imagen del sprite
             self.display_surface.blit(sprite.image, sprite.rect.topleft)

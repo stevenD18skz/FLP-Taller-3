@@ -50,8 +50,8 @@ class CostSearch():
             0: 1,   # Espacio libre
             1: float('inf'),  # Pared (inaccesible)
             2: 1,   # Punto de inicio
-            3: 8,   # Tráfico medio
-            4: 15,  # Tráfico pesado
+            3: 5,   # Tráfico medio
+            4: 10,  # Tráfico pesado
             5: 1,   # Pasajero
             6: 1    # Objetivo
         }
@@ -284,31 +284,3 @@ class CostSearch():
 
 
 
-"""
-entrada1 =  [
-    [0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [0, 1, 1, 0, 0, 0, 4, 0, 0, 0],
-    [2, 1, 1, 0, 1, 0, 1, 0, 1, 0],
-    [0, 3, 3, 0, 4, 0, 0, 0, 4, 0],
-    [0, 1, 1, 0, 1, 1, 1, 1, 1, 0],
-    [0, 0, 0, 0, 1, 1, 0, 0, 0, 6],
-    [5, 1, 1, 1, 1, 1, 0, 1, 1, 1],
-    [0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
-    [0, 1, 0, 1, 0, 1, 1, 1, 0, 1],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
-]
-
-motor = CostSearch(entrada1)
-solucion = motor.solve()
-
-
-print("Caminos encontrados a los objetivos:")
-print(f"Costo: {solucion["total_cost"]}")
-print(f"Nodos explorados: {solucion['explored_nodes']}")
-print(f"Profundidad máxima del árbol: {solucion['max_depth']}")
-print(f"Tiempo de cómputo: {solucion['computation_time']} (S)")
-print(f"\nCAMINO:\n{solucion["path"]}")
-#print(f"\n\ntree:\n{solucion["tree"]}")
-#print(f"\n\nodos_expandidos:\n{solucion["expanded_nodes"]}")
-
-"""

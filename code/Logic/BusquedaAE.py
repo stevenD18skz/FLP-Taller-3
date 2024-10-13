@@ -149,19 +149,24 @@ class BusquedaAE():
         """
         # Inicializa la cola de prioridad, el árbol de búsqueda y la lista de nodos visitados
         priority_queue = []
-        tree = [(self.distancia_manhattan(start, self.passenger), start, [], False, "start")]
-        heapq.heappush(priority_queue, (self.distancia_manhattan(start, self.passenger), start, [], False, "start"))
+        f_inicial = self.distancia_manhattan(start, self.passenger)
+        tree = [(0 + f_inicial, start, [], False, "start")]
+        heapq.heappush(priority_queue, (0 + f_inicial, 0, f_inicial, start, [], False, "start"))
         visited = [(start, False)]
+
+        # f() g() h() node path estado direction
+
 
         self.explored_nodes += 1
         self.max_depth += 1
 
         # Bucle principal de búsqueda
         while priority_queue:
-            current_cost, current_node, path, picked_up_passenger, direction_name = heapq.heappop(priority_queue)
+            f_cost, g_cost, h_cost, current_node, path, picked_up_passenger, direction_name = heapq.heappop(priority_queue)
+
             x, y = current_node
             next_index = 0
-            expanded_node_info = [current_node, [], [], picked_up_passenger, [], current_cost, []]
+            expanded_node_info = [current_node, [], [], picked_up_passenger, [], f_cost, []]
 
 
             for i, (dx, dy) in enumerate(self.MOVEMENTS):
@@ -175,18 +180,21 @@ class BusquedaAE():
 
                         has_passenger = True if next_node == self.passenger and not picked_up_passenger else picked_up_passenger
 
-                        
-                        next_cost = current_cost + self.COSTS[grid[next_x][next_y]] + self.distancia_manhattan(next_node, self.goal if has_passenger else self.passenger)
 
 
-                        heapq.heappush(priority_queue, (next_cost, next_node, next_path, has_passenger, next_direction_name))
-                        tree = self.add_node(tree, path, next_cost, next_node, has_passenger, next_direction_name)
+                        next_g_cost = g_cost + self.COSTS[grid[next_x][next_y]]
+                        next_h_cost = self.distancia_manhattan(next_node, self.goal if has_passenger else self.passenger)
+                        next_f_cost = next_g_cost + next_h_cost
+
+
+                        heapq.heappush(priority_queue,  (next_f_cost, next_g_cost, next_h_cost, next_node, next_path, has_passenger, next_direction_name))
+                        tree = self.add_node(tree, path, next_f_cost, next_node, has_passenger, next_direction_name)
                         visited.append((next_node, has_passenger))
 
                         expanded_node_info[1].append(next_node)
                         expanded_node_info[2].append(next_direction_name)
                         expanded_node_info[4].append(has_passenger)
-                        expanded_node_info[6].append(next_cost)
+                        expanded_node_info[6].append(next_f_cost)
 
 
                         self.explored_nodes += 1
@@ -194,7 +202,7 @@ class BusquedaAE():
 
                         if next_node == goal and picked_up_passenger:
                             self.final_nodes.append([expanded_node_info])
-                            return tree, next_path, next_cost
+                            return tree, next_path, next_f_cost
 
                         next_index += 1
 
@@ -287,38 +295,3 @@ class BusquedaAE():
             "computation_time": f"{computation_time:.5f} seconds",
             "expanded_nodes": self.final_nodes
         }
-
-
-
-
-
-"""
-entrada1 =  [
-    [0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [0, 1, 1, 0, 0, 0, 4, 0, 0, 0],
-    [2, 1, 1, 0, 1, 0, 1, 0, 1, 0],
-    [0, 3, 3, 0, 4, 0, 0, 0, 4, 0],
-    [0, 1, 1, 0, 1, 1, 1, 1, 1, 0],
-    [0, 0, 0, 0, 1, 1, 0, 0, 0, 6],
-    [5, 1, 1, 1, 1, 1, 0, 1, 1, 1],
-    [0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
-    [0, 1, 0, 1, 0, 1, 1, 1, 0, 1],
-    [0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
-]
-
-motor = BusquedaCosto(entrada1)
-solucion = motor.solucionar()
-
-# Imprimimos los caminos encontrados
-if solucion["paths"]:
-    print("Caminos encontrados a los objetivos:")
-    # Imprimimos las métricas
-    print(f"Costo: {solucion["costo"]}")
-    print(f"Nodos explorados: {solucion['nodos_explorados']}")
-    print(f"Profundidad máxima del árbol: {solucion['profundidad_maxima']}")
-    print(f"Tiempo de cómputo: {solucion['tiempo_computo']} (S)")
-    print(f"\nCAMINO:\n{solucion["paths"]}")
-    print(f"\n\nARBOL:\n{solucion["arbol"]}")
-else:
-    print("No se encontraron caminos para todos los objetivos.")
-"""
