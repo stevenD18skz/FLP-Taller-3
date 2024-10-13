@@ -63,6 +63,12 @@ class Game:
         self.clock = pygame.time.Clock()
         self.level = Level()
 
+        # Variable para almacenar la solución del algoritmo
+        self.solution = None  # Esto se actualizará cuando se ejecute un algoritmo
+
+        # Condición para mostrar el recuadro con la información
+        self.show_solution_info = False  # Cambia a True cuando quieras mostrar la información
+
         # Configuración de botones
         self.algorithm_choice = 'No informada'
         self.selected_algorithm_button = None  # Para almacenar el botón de algoritmo seleccionado
@@ -78,9 +84,12 @@ class Game:
             Button('REINICIAR', 650, 580, 100, 40, font_size=24, color=LIGHT_GRAY),
             Button('Subir archivo', 800, 580, 150, 40, font_size=24, color=LIGHT_GRAY)
         ]
+
+    
+        self.level.setMap(ALFile("C:/Users/braya/Desktop/FLP-Taller-3/entrada1.txt"))
         
-        #self.level.setMap(ALFile("C:/Users/braya/Desktop/FLP-Taller-3/entrada1.txt"))
         self.update_button_states()
+
 
 
     def update_button_states(self):
@@ -114,6 +123,30 @@ class Game:
 
 
 
+    def display_solution_info(self, surface):
+        if self.show_solution_info and self.solution:
+            # Dibuja el recuadro de información
+            info_rect = pygame.Rect(650, 350, 380, 200)  # Define el tamaño del recuadro
+            pygame.draw.rect(surface, LIGHT_GRAY, info_rect)
+            pygame.draw.rect(surface, BORDER_COLOR, info_rect, 2)  # Dibujar el borde del recuadro
+
+            # Renderizar texto de solución
+            font = pygame.font.Font(None, 24)
+            info_lines = [
+                f"Caminos encontrados a los objetivos:",
+                f"Costo: {self.solution.get('total_cost', "----")}",
+                f"Nodos explorados: {self.solution['explored_nodes']}",
+                f"Profundidad máxima del árbol: {self.solution['max_depth']}",
+                f"Tiempo de cómputo: {self.solution['computation_time']} (S)",
+                f"CAMINO: {self.solution['path']}"
+            ]
+
+            # Dibujar cada línea de texto en el recuadro
+            for i, line in enumerate(info_lines):
+                text_surface = font.render(line, True, BLACK)
+                surface.blit(text_surface, (660, 360 + i * 30))  # Posicionar cada línea de texto
+
+
 
     def run(self):
         while True:
@@ -132,15 +165,20 @@ class Game:
                             elif button.text in ['Amplitud', 'Costo uniforme', 'Profundidad evitando ciclos', 'Avara', 'A*']:
                                 self.selected_algorithm_button = button.text
                                 self.level.ejecutarAlgoritmo(button.text)
+                                self.solution = self.level.solucion
+                                self.show_solution_info = True  # Mostrar el recuadro con la información
 
                             elif button.text == 'Subir archivo':
                                 self.upload_file()
 
                             elif button.text == 'REINICIAR':
                                 self.level.create_map()
+                                self.show_solution_info = False  # Ocultar el recuadro al reiniciar
+                                self.solution = None
+                                self.algorithm_choice = 'No informada'
+                                self.selected_algorithm_button = None
 
                             self.update_button_states()
-
 
             # Dibujar los botones y actualizar la pantalla
             self.screen.fill(GRAY)
@@ -148,6 +186,9 @@ class Game:
             
             for button in self.buttons:
                 button.draw(self.screen)
+
+            # Mostrar información de la solución si existe
+            self.display_solution_info(self.screen)
 
             pygame.display.update()
             self.clock.tick(FPS)
@@ -162,6 +203,7 @@ class Game:
             filetypes=(("Archivos de texto", "*.txt"), ("Todos los archivos", "*.*"))
         )
         root.destroy()
+
 
         if file_path:
             mapa = ALFile(file_path)

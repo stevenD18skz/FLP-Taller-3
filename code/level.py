@@ -45,7 +45,7 @@ class Level:
         self.init_wait = -1 #Manejador de tiempo para la animacino dibujar arbol
         self.init_final = -1 #Manejador de tiempo para la animacino mostrar camino
         self.chat = 0 #Manejador de tiempo para  "arrow_alpha"
-        self.time_wait = 2
+        self.time_wait = 0.1
     
 
 
@@ -99,7 +99,7 @@ class Level:
 
 
 
-    def crear_caminos_arbol(self):
+    def crear_caminos_arbol(self): 
         def dibujar_cuadro(color, tupla, grosor, costo):
             pygame.draw.rect(self.display_surface, color, pygame.Rect(tupla[0], tupla[1], CUADRADO_SIZE, CUADRADO_SIZE))
             pygame.draw.rect(self.display_surface, VERDE, pygame.Rect(tupla[0], tupla[1], CUADRADO_SIZE, CUADRADO_SIZE), grosor)
@@ -169,7 +169,7 @@ class Level:
         time_animation = min(1, (time.time() - self.init_final) / (self.time_wait*3))
 
         if time_animation == 1:
-            self.player.movimientos = self.solucion["path"]
+            self.player.iniciar_caminata(self.solucion["path"])
             self.init_final = -1
 
 
@@ -214,9 +214,6 @@ class Level:
     
 
 
-
-
-
     def create_map(self):
         layout = self.mapa
         graphics = import_folder(path_main + 'graphics/objects')
@@ -227,7 +224,7 @@ class Level:
             3: ["snorlax_dormido", "object"],
             4: ["snorlax_despierto", "object"],
             5: ["net", "passager"],
-            6: ["meta", "goal"],
+            6: ["Shroomish", "goal"],
         }
 
         """     
@@ -268,9 +265,16 @@ class Level:
 
     def reiniciar(self):
         self.create_map()
+        self.motor = None
+
+        self.all_ya = []
+        self.all_expandir = []
         self.solucion = None
-        self.all_expandir = None
-        self.all_ya = None
+
+        self.init_wait = -1
+        self.init_final = -1 
+        self.chat = 0 
+        self.time_wait = 0.1
 
 
 
@@ -308,13 +312,16 @@ class YSortCameraGroup(pygame.sprite.Group):
             #dibujar las areas para debug
 
             if isinstance(sprite, Player):
-                pygame.draw.rect(self.display_surface, (255, 0, 0), sprite.hitbox)
+                pygame.draw.rect(self.display_surface, ROJO, sprite.hitbox)
                 pygame.draw.rect(self.display_surface, (40, 48, 48), sprite.rect)
             
             elif not isinstance(sprite, Player) and sprite.sprite_type == "passager":
                 #pygame.draw.rect(self.display_surface, (255, 0, 0), sprite.hitbox)
                 pygame.draw.rect(self.display_surface, (40, 48, 48), sprite.rect)
                 pygame.draw.rect(self.display_surface, (100, 255, 100), sprite.activacion)
+            
+            elif not isinstance(sprite, Player) and sprite.sprite_type == "particule":
+                pass
             
             else:
                 pygame.draw.rect(self.display_surface, (40, 48, 48), sprite.rect)

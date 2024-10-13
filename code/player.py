@@ -31,6 +31,7 @@ class Player(pygame.sprite.Sprite):
         # Animación de inicio
         self.is_starting = False  # Estado de animación inicial
         self.scale_factor = 1.0  # Factor de escalado
+        self.scale_count = 0.01
     
 
 
@@ -50,46 +51,43 @@ class Player(pygame.sprite.Sprite):
 
     def start_animation(self):
         """Animación inicial que escala el sprite hacia arriba y luego lo vuelve a su tamaño original."""
-        if self.is_starting:
-            # Aumentar el tamaño del sprite
-            self.scale_factor += 0.05
 
-            # Escalar la imagen
-            new_size = (int(self.original_size[0] * self.scale_factor), int(self.original_size[1] * self.scale_factor))
-            self.image = pygame.transform.scale(pygame.image.load(path_main + 'graphics/objects/lapras.png').convert_alpha(), new_size)
+        # Aumentar el tamaño del sprite
+        self.scale_factor += self.scale_count
 
-            # Actualizar la posición del rectángulo para que el sprite permanezca centrado
-            self.rect = self.image.get_rect(center=self.rect.center)
+        # Escalar la imagen
+        new_size = (int(self.original_size[0] * self.scale_factor), int(self.original_size[1] * self.scale_factor))
+        self.image = pygame.transform.scale(pygame.image.load(path_main + 'graphics/objects/lapras.png').convert_alpha(), new_size)
+
+        # Actualizar la posición del rectángulo para que el sprite permanezca centrado
+        self.rect = self.image.get_rect(center=self.rect.center)
+        self.hitbox = self.rect.inflate(0, 0)
+
+        # Volver al tamaño original después de alcanzar el tamaño máximo
+        if self.scale_factor >= 1.5:
+            self.scale_count = self.scale_count * -1
+
+
+        elif self.scale_factor <= 1:
+            self.is_starting = False  # Fin de la animación de inicio
+            self.scale_factor = 1.0  # Resetear el factor de escala
+
+            # Restablecer el tamaño original del sprite
+            self.image = pygame.transform.scale(pygame.image.load(path_main + 'graphics/objects/lapras.png').convert_alpha(), self.original_size)
+            self.rect = self.save_pos_b
             self.hitbox = self.rect.inflate(0, 0)
-
-            # Volver al tamaño original después de alcanzar el tamaño máximo
-            if self.scale_factor >= 1.5:
-                self.is_starting = False  # Fin de la animación de inicio
-                self.in_movimiento = False
-                self.movimientos.pop(0)
-                self.scale_factor = 1.0  # Resetear el factor de escala
-                # Restablecer el tamaño original del sprite
-                self.image = pygame.transform.scale(pygame.image.load(path_main + 'graphics/objects/lapras.png').convert_alpha(), self.original_size)
-                self.rect = self.save_pos_b
-                self.hitbox = self.rect.inflate(0, 0)
 
 
 
 
 
     def input(self):
-        if self.in_movimiento or self.is_starting:
+        if self.is_starting:
             return
 
         if self.movimientos != []:
-            #print(self.movimientos)
             # Tomar el siguiente movimiento de la lista
             self.movimiento_actual = self.movimientos[0][1]
-
-            # Establecer la dirección basada en el movimiento
-            if self.movimiento_actual.lower() in ["start"]:
-                self.is_starting = True
-                self.save_pos_b = self.rect
 
             if self.movimiento_actual.lower() in ['left', "izquierda"]:
                 self.status = 'left'
@@ -111,7 +109,16 @@ class Player(pygame.sprite.Sprite):
             # Comenzar movimiento
             self.in_movimiento = True
             self.meta_pos = self.movimientos[0][0][::-1]
+        
+        else:
+            self.status = 'down_idle'
+            
 
+
+    def iniciar_caminata(self, camino):
+        self.movimientos = camino
+        self.is_starting = True
+        self.save_pos_b = self.rect
 
 
 
@@ -161,23 +168,22 @@ class Player(pygame.sprite.Sprite):
 
     def collision(self):
         for sprite in self.obstacle_sprites:
-            if sprite.activacion.colliderect(self.hitbox):
+            if sprite.sprite_type == "particule":
+                pass
+
+            elif sprite.activacion.colliderect(self.hitbox):
                 print("llegue a una meta" + sprite.sprite_type)
                 sprite.animation = True
                 sprite.activacion.width = 0
                 sprite.activacion.height = 0
 
           
-          
-
-
 
     def update(self):
         if self.is_starting:
             self.start_animation()
             return
-
-
+        
         self.get_status()
         self.animate()
         self.input()

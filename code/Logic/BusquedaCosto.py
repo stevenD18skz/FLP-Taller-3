@@ -284,8 +284,6 @@ class CostSearch():
 
 
 
-
-
 """
 entrada1 =  [
     [0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -300,19 +298,17 @@ entrada1 =  [
     [0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
 ]
 
-motor = BusquedaCosto(entrada1)
-solucion = motor.solucionar()
+motor = CostSearch(entrada1)
+solucion = motor.solve()
 
-# Imprimimos los caminos encontrados
-if solucion["paths"]:
-    print("Caminos encontrados a los objetivos:")
-    # Imprimimos las métricas
-    print(f"Costo: {solucion["costo"]}")
-    print(f"Nodos explorados: {solucion['nodos_explorados']}")
-    print(f"Profundidad máxima del árbol: {solucion['profundidad_maxima']}")
-    print(f"Tiempo de cómputo: {solucion['tiempo_computo']} (S)")
-    print(f"\nCAMINO:\n{solucion["paths"]}")
-    print(f"\n\nARBOL:\n{solucion["arbol"]}")
-else:
-    print("No se encontraron caminos para todos los objetivos.")
+
+print("Caminos encontrados a los objetivos:")
+print(f"Costo: {solucion["total_cost"]}")
+print(f"Nodos explorados: {solucion['explored_nodes']}")
+print(f"Profundidad máxima del árbol: {solucion['max_depth']}")
+print(f"Tiempo de cómputo: {solucion['computation_time']} (S)")
+print(f"\nCAMINO:\n{solucion["path"]}")
+#print(f"\n\ntree:\n{solucion["tree"]}")
+#print(f"\n\nodos_expandidos:\n{solucion["expanded_nodes"]}")
+
 """
