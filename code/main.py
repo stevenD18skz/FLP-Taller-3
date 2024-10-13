@@ -18,7 +18,7 @@ BLUE = (0, 0, 255)  # Color azul para selección de algoritmos
 
 # Clase para crear botones
 class Button:
-    def __init__(self, text, x, y, width, height, font_size=36, color=LIGHT_GRAY, border_color=BORDER_COLOR, border_width=2):
+    def __init__(self, text, x, y, width, height, font_size=36, color=LIGHT_GRAY, border_color=BORDER_COLOR, border_width=2, selected=False):
         self.text = text
         self.rect = pygame.Rect(x, y, width, height)
         self.color = color
@@ -26,7 +26,7 @@ class Button:
         self.border_width = border_width
         self.font = pygame.font.Font(None, font_size)
         self.active = True
-        self.selected = False  # Estado de selección del botón
+        self.selected = selected # Estado de selección del botón
 
     def draw(self, surface):
         # Cambiar el color del botón según su estado de selección
@@ -66,8 +66,9 @@ class Game:
         # Configuración de botones
         self.algorithm_choice = 'No informada'
         self.selected_algorithm_button = None  # Para almacenar el botón de algoritmo seleccionado
+
         self.buttons = [
-            Button('No informada', 650, 40, 150, 40, font_size=24, color=LIGHT_GRAY),
+            Button('No informada', 650, 40, 150, 40, font_size=24, color=LIGHT_GRAY, selected=False),
             Button('Informada', 810, 40, 150, 40, font_size=24, color=LIGHT_GRAY),
             Button('Amplitud', 650, 110, 150, 40, font_size=18, color=LIGHT_GRAY),
             Button('Costo uniforme', 650, 170, 150, 40, font_size=18, color=LIGHT_GRAY),
@@ -78,7 +79,7 @@ class Game:
             Button('Subir archivo', 800, 580, 150, 40, font_size=24, color=LIGHT_GRAY)
         ]
         
-        self.level.setMap(ALFile("C:/Users/braya/Desktop/FLP-Taller-3/entrada1.txt"))
+        #self.level.setMap(ALFile("C:/Users/braya/Desktop/FLP-Taller-3/entrada1.txt"))
         self.update_button_states()
 
 
@@ -99,27 +100,19 @@ class Game:
                 button.active = True
             for button in self.buttons[5:7]:  # Avara, A*
                 button.active = False
+
         elif self.algorithm_choice == 'Informada':
             for button in self.buttons[2:5]:  # Amplitud, Costo uniforme, Profundidad evitando ciclos
                 button.active = False
             for button in self.buttons[5:7]:  # Avara, A*
                 button.active = True
+        
 
 
-    def handle_button_selection(self, selected_button):
-        # Lógica para cambiar el borde del botón según la selección de "Informada" o "No informada"
-        if selected_button.text in ['No informada', 'Informada']:
-            self.algorithm_choice = selected_button.text
-            for button in self.buttons[:2]:  # Actualizar solo los botones de No informada e Informada
-                button.selected = (button == selected_button)
-            self.update_button_states()
+        for button in self.buttons:
+            button.selected = button.text in [self.selected_algorithm_button, self.algorithm_choice]
 
-        # Lógica para seleccionar el algoritmo
-        elif selected_button.text in ['Amplitud', 'Costo uniforme', 'Profundidad evitando ciclos', 'Avara', 'A*']:
-            if self.selected_algorithm_button:
-                self.selected_algorithm_button.selected = False  # Desactivar selección previa
-            selected_button.selected = True
-            self.selected_algorithm_button = selected_button
+
 
 
     def run(self):
@@ -132,19 +125,22 @@ class Game:
                     x, y = pygame.mouse.get_pos()
 
                     for button in self.buttons:
-                        if button.is_clicked((x, y)):
-                            if button.text in ['No informada', 'Informada', 'Amplitud', 'Costo uniforme', 'Profundidad evitando ciclos', 'Avara', 'A*']:
-                                self.handle_button_selection(button)
+                        if button.is_clicked((x, y)) and self.level.init_wait == -1 and self.level.init_final == -1:
+                            if button.text in ['No informada', 'Informada']:
+                                self.algorithm_choice = button.text
+
+                            elif button.text in ['Amplitud', 'Costo uniforme', 'Profundidad evitando ciclos', 'Avara', 'A*']:
+                                self.selected_algorithm_button = button.text
+                                self.level.ejecutarAlgoritmo(button.text)
 
                             elif button.text == 'Subir archivo':
                                 self.upload_file()
-                                self.update_button_states()
 
                             elif button.text == 'REINICIAR':
                                 self.level.create_map()
 
-                            else:
-                                self.level.ejecutarAlgoritmo(button.text)
+                            self.update_button_states()
+
 
             # Dibujar los botones y actualizar la pantalla
             self.screen.fill(GRAY)

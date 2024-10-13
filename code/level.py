@@ -10,6 +10,10 @@ from player import Player
 from Logic.BusquedaAmplitud import BusquedaAmplitud
 from Logic.BusquedaCosto import CostSearch
 from Logic.BusquedaProfundidad import BusquedaProfundidad
+from Logic.BusquedaAvara import BusquedaAvara
+from Logic.BusquedaAE import BusquedaAE
+
+
 
 
 class Level:
@@ -24,6 +28,7 @@ class Level:
 
         #CONTROLADORES DE LOS ALGORITMOS
         self.mapa = None
+        self.motor = None
 
         # Variables para la animación de texto
         self.text_alpha = 255  # Opacidad inicial
@@ -37,38 +42,28 @@ class Level:
         self.all_expandir = []
         self.solucion = None
 
+        self.init_wait = -1 #Manejador de tiempo para la animacino dibujar arbol
+        self.init_final = -1 #Manejador de tiempo para la animacino mostrar camino
         self.chat = 0 #Manejador de tiempo para  "arrow_alpha"
-        self.init_wait = -1 #Manejador de tiempo para la animaciones
-        self.init_final = -1
-        self.time_wait = 0.25
+        self.time_wait = 2
+    
+
+
+    def crear_texto(self, text, tam, tupla):
+        self.font = pygame.font.SysFont(None, tam)
+
+        text_surface = self.font.render(text, True, TEXT_COLOR)
+        text_surface.set_alpha(self.text_alpha)  # Ajustar la transparencia
+
+        text_rect = text_surface.get_rect(center=(tupla[0] + CUADRADO_SIZE // 2, tupla[1] + CUADRADO_SIZE // 2))
+
+        self.display_surface.blit(text_surface, text_rect)
 
 
 
     def loading_screen(self):
-        screen_width = 640
-        screen_height = 640
-
-        # Colores
-        BLACK = (0, 0, 0)
-        WHITE = (255, 255, 255)
-        
-        # Fuente
-        font = pygame.font.Font(None, 50)
-
-        # Dibujar el recuadro negro con bordes redondeados
-        rect_width = 640
-        rect_height = 640
-        rect_x = (screen_width - rect_width) // 2
-        rect_y = (screen_height - rect_height) // 2
-        pygame.draw.rect(self.display_surface, BLACK, (rect_x, rect_y, rect_width, rect_height), border_radius=25)
-
-        # Crear el texto "esperando entrada"
-        text_surface = font.render("esperando entrada", True, WHITE)
-        text_surface.set_alpha(self.text_alpha)  # Ajustar la transparencia
-        text_rect = text_surface.get_rect(center=(screen_width // 2, screen_height // 2))
-
-        # Dibujar el texto
-        self.display_surface.blit(text_surface, text_rect)
+        pygame.draw.rect(self.display_surface, BLACK, (0, 0, 640, 640), border_radius=25)
+        self.crear_texto("esperando entrada", 50, (320 - CUADRADO_SIZE, 320 - CUADRADO_SIZE))
 
         # Control de la animación (aparecer/desaparecer)
         if self.fading_out:
@@ -89,23 +84,27 @@ class Level:
             "Amplitud": BusquedaAmplitud,
             "Costo uniforme": CostSearch,
             "Profundidad evitando ciclos": BusquedaProfundidad,
-            "Avara": None,
-            "A*": None,
+            "Avara": BusquedaAvara,
+            "A*": BusquedaAE,
         }
-
-        motor = algoritmos[eleccion](self.mapa)
-        self.solucion = motor.solucionar()
+        
+        self.motor = algoritmos[eleccion](self.mapa)
+        self.solucion = self.motor.solve()
 
         self.init_wait = time.time()
         self.chat = time.time()
-        self.all_expandir = self.solucion["nodos_expandidos"]
-
+        self.all_expandir = self.solucion["expanded_nodes"]
 
 
 
 
 
     def crear_caminos_arbol(self):
+        def dibujar_cuadro(color, tupla, grosor, costo):
+            pygame.draw.rect(self.display_surface, color, pygame.Rect(tupla[0], tupla[1], CUADRADO_SIZE, CUADRADO_SIZE))
+            pygame.draw.rect(self.display_surface, VERDE, pygame.Rect(tupla[0], tupla[1], CUADRADO_SIZE, CUADRADO_SIZE), grosor)
+            self.crear_texto(str(costo), 12, tupla)
+
 
         def dibujar_nodos(ln, ulitma_profundidad):
             for i, n in enumerate(ln):
@@ -115,32 +114,17 @@ class Level:
                 SQUARE_COLOR_HIJO = ROJO if not ulitma_profundidad else AZUL
                 ESCALAR = 1 if not ulitma_profundidad else self.arrow_alpha
 
-                inicio, hijos, direcciones, up_pasajero, *costo = n
+                inicio, hijos, direcciones, up_pasajero, up_hijo, *costo = n
 
-                grosor_borde = 16 if up_pasajero else 1
-                BORDER_COLOR = VERDE
-
-                posicion_cuadro = centrar_en_casilla(inicio)
-                pygame.draw.rect(self.display_surface, SQUARE_COLOR, pygame.Rect(posicion_cuadro[0], posicion_cuadro[1], CUADRADO_SIZE, CUADRADO_SIZE))
-                pygame.draw.rect(self.display_surface, BORDER_COLOR, pygame.Rect(posicion_cuadro[0], posicion_cuadro[1], CUADRADO_SIZE, CUADRADO_SIZE), grosor_borde)
-
-
-
-                TEXT_COLOR = (255, 255, 255)
-                font = pygame.font.SysFont(None, 12)  # Puedes ajustar el tamaño
-
-                text = font.render(str(costo[0]) if costo else "", True, TEXT_COLOR)
-                text_rect = text.get_rect(center=(posicion_cuadro[0] + CUADRADO_SIZE / 2, posicion_cuadro[1] + CUADRADO_SIZE / 2))
-                self.display_surface.blit(text, text_rect)
-
-
+                borde = 16 if up_pasajero else 1
+                posicion_nodo = centrar_en_casilla(inicio)
+                dibujar_cuadro(SQUARE_COLOR, posicion_nodo, borde, costo[0] if costo else "")
 
 
                 for direction in direcciones:
                     tamano_flecha = obtener_tamano_flecha(direction, alpha=ESCALAR)
-                    centro_flecha = calcular_posicion_flecha(posicion_cuadro, direction, tamano_flecha[1] if direction in ["arriba", "abajo"] else tamano_flecha[0])
+                    centro_flecha = calcular_posicion_flecha(posicion_nodo, direction, tamano_flecha[1] if direction in ["arriba", "abajo"] else tamano_flecha[0])
                     pygame.draw.rect(self.display_surface, ARROW_COLOR, pygame.Rect(centro_flecha[0], centro_flecha[1], tamano_flecha[0], tamano_flecha[1]))
-
 
                 if  ulitma_profundidad:
                     self.arrow_alpha = min(1, (time.time() - self.chat) / self.time_wait) #esto solo toma valores entre 0 - 1, este valor llega de 0 a 1 en 3 segufnods
@@ -148,16 +132,10 @@ class Level:
 
                 if self.arrow_alpha == 1 or ESCALAR == 1:
                     for i, hijo in enumerate(hijos):
-                        centro_hijo = centrar_en_casilla(hijo)
-                        pygame.draw.rect(self.display_surface, SQUARE_COLOR_HIJO, pygame.Rect(centro_hijo[0], centro_hijo[1], CUADRADO_SIZE, CUADRADO_SIZE))
-
-                        
-                        text = font.render(str(costo[1][i]) if costo else "", True, TEXT_COLOR)
-                        text_rect_hijo = text.get_rect(center=(centro_hijo[0] + CUADRADO_SIZE / 2, centro_hijo[1] + CUADRADO_SIZE / 2))
-                        self.display_surface.blit(text, text_rect_hijo)
+                        borde_hijo = 16 if up_hijo[i] else 1
+                        posicion_hijo = centrar_en_casilla(hijo)
+                        dibujar_cuadro(SQUARE_COLOR_HIJO, posicion_hijo, borde_hijo, costo[1][i] if costo else "")
             
-
-
 
         if self.init_wait == -1:
             return
@@ -171,8 +149,8 @@ class Level:
 
             self.all_ya = self.all_ya + self.all_expandir[0]
             self.all_expandir.pop(0)
-
-
+            
+            
         if self.all_expandir == []:
             self.init_wait = -1
             self.init_final = time.time()
@@ -185,47 +163,39 @@ class Level:
 
 
     def camino_final(self):
-
         if self.init_final == -1:
             return
         
-        time_animation = min(1, (time.time() - self.init_final) / (self.time_wait*2))
+        time_animation = min(1, (time.time() - self.init_final) / (self.time_wait*3))
 
         if time_animation == 1:
-            self.player.movimientos = self.solucion["paths"]
+            self.player.movimientos = self.solucion["path"]
             self.init_final = -1
-        
 
 
-        lista = self.solucion["paths"]
+        for i, n in enumerate(self.solucion["path"]):
+            hijo, direccion, *costo = n
 
-        inicio_d = lista[0][1]
+            color_mapping = {
+                self.motor.start: AZUL,
+                self.motor.passenger: VERDE,
+                self.motor.goal: VERDE
+            }
 
-        #if inicio_d == "abajo":
-        #    inicio = lista[0][0] - 
-
-
-
-
-        for i, n in enumerate(self.solucion["paths"]):
-            SQUARE_COLOR = ROJO
+            SQUARE_COLOR = color_mapping.get(hijo, ROJO)
             ARROW_COLOR = ROJO
             escalar = 1
 
-            #((3, 0), 'abajo')
-            hijo, direccion = n
-
             posicion_cuadro = centrar_en_casilla(hijo)
             pygame.draw.rect(self.display_surface, SQUARE_COLOR, pygame.Rect(posicion_cuadro[0], posicion_cuadro[1], CUADRADO_SIZE, CUADRADO_SIZE))
+            self.crear_texto(str(costo[0]) if costo else "", 12, posicion_cuadro)
+
+            if  direccion:
+                tamano_flecha = obtener_tamano_flecha(direccion, alpha=escalar)
+                centro_flecha = calcular_posicion_flecha_final(posicion_cuadro, direccion, tamano_flecha[1] if direccion in ["arriba", "abajo"] else tamano_flecha[0])
+                pygame.draw.rect(self.display_surface, ARROW_COLOR, pygame.Rect(centro_flecha[0], centro_flecha[1], tamano_flecha[0], tamano_flecha[1 ]))
 
 
-            tamano_flecha = obtener_tamano_flecha(direccion, alpha=escalar)
-            centro_flecha = calcular_posicion_flecha_final(posicion_cuadro, direccion, tamano_flecha[1] if direccion in ["arriba", "abajo"] else tamano_flecha[0])
-            pygame.draw.rect(self.display_surface, ARROW_COLOR, pygame.Rect(centro_flecha[0], centro_flecha[1], tamano_flecha[0], tamano_flecha[1 ]))
-
-            """
-            [((3, 0), 'abajo'), ((4, 0), 'abajo'), ((5, 0), 'abajo'), ((6, 0), 'abajo'), ((5, 0), 'arriba'), ((4, 0), 'arriba'), ((3, 0), 'arriba'), ((3, 1), 'derecha'), ((3, 2), 'derecha'), ((3, 3), 'derecha'), ((3, 4), 'derecha'), ((3, 5), 'derecha'), ((3, 6), 'derecha'), ((3, 7), 'derecha'), ((3, 8), 'derecha'), ((3, 9), 'derecha'), ((4, 9), 'abajo'), ((5, 9), 'abajo')]
-            """
 
        
 
@@ -307,6 +277,7 @@ class Level:
     def setMap(self, map):
         self.mapa = map
         self.create_map()
+        self.text_alpha = 255
 
 
 

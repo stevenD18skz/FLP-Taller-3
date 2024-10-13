@@ -1,8 +1,8 @@
+import heapq
 import time
 
 
-
-class BusquedaProfundidad():
+class BusquedaAE():
     def __init__(self, grid):
         """
         Constructor de la clase CostSearch.
@@ -22,6 +22,7 @@ class BusquedaProfundidad():
         goal (tuple): Coordenadas del objetivo.
         explored_nodes (int): Número de nodos explorados.
         max_depth (int): Profundidad máxima alcanzada durante la búsqueda.
+        COSTS (dict): Mapa de costos para los diferentes tipos de terreno.
         final_nodes (list): Lista de nodos finales (solución).
         """
         
@@ -44,8 +45,20 @@ class BusquedaProfundidad():
         self.explored_nodes = 0  # Contador de nodos explorados
         self.max_depth = 0  # Profundidad máxima alcanzada
 
+        # Mapa de costos para los diferentes tipos de terreno
+        self.COSTS = {
+            0: 1,   # Espacio libre
+            1: float('inf'),  # Pared (inaccesible)
+            2: 1,   # Punto de inicio
+            3: 8,   # Tráfico medio
+            4: 15,  # Tráfico pesado
+            5: 1,   # Pasajero
+            6: 1    # Objetivo
+        }
+
         # Datos para la visualización del árbol de búsqueda
         self.final_nodes = []  # Nodos finales (solución)
+
 
 
 
@@ -63,6 +76,11 @@ class BusquedaProfundidad():
             for x, value in enumerate(row):  # Itera sobre los valores en cada fila
                 if value == object_value:  # Si el valor coincide con el objeto buscado
                     return (y, x)  # Retorna las coordenadas (y, x)
+
+        
+                
+    def distancia_manhattan(self, A, B):
+        return abs(A[0] - B[0]) + abs(A[1] - B[1])
 
 
 
@@ -83,7 +101,7 @@ class BusquedaProfundidad():
 
 
 
-    def add_node(self, tree, path, node, picked_up_passenger, next_direction_name):
+    def add_node(self, tree, path, next_cost, node, picked_up_passenger, next_direction_name):
         """
         Añade un nodo al árbol de búsqueda en la posición indicada por el path.
 
@@ -100,21 +118,21 @@ class BusquedaProfundidad():
         """
         # Si el path está vacío, añade el nuevo nodo como un hijo del nodo raíz
         if not path:
-            tree[0][1].append((node, [], picked_up_passenger, next_direction_name))
+            tree[0][2].append((next_cost, node, [], picked_up_passenger, next_direction_name))
             return tree
 
         # Navega por el árbol usando el path y añade el nodo en la ubicación correcta
-        subtree = tree[0][1]
+        subtree = tree[0][2]
         for i, index in enumerate(path):
-            subtree = subtree[index][1]
+            subtree = subtree[index][2]
             # Cuando se llega a la última posición en el path, se agrega el nuevo nodo
             if i + 1 == len(path):
-                subtree.append((node, [], picked_up_passenger, next_direction_name))
+                subtree.append((next_cost, node, [], picked_up_passenger, next_direction_name))
         return tree
 
 
 
-    def search_deep(self, grid, start, goal):
+    def search_A(self, grid, start, goal):
         """
         Realiza una búsqueda de costo mínimo en el grid desde un nodo inicial hasta el nodo objetivo.
 
@@ -131,8 +149,8 @@ class BusquedaProfundidad():
         """
         # Inicializa la cola de prioridad, el árbol de búsqueda y la lista de nodos visitados
         priority_queue = []
-        tree = [(start, [], False, "start")]
-        priority_queue.append((start, [], False, "start"))
+        tree = [(self.distancia_manhattan(start, self.passenger), start, [], False, "start")]
+        heapq.heappush(priority_queue, (self.distancia_manhattan(start, self.passenger), start, [], False, "start"))
         visited = [(start, False)]
 
         self.explored_nodes += 1
@@ -140,15 +158,12 @@ class BusquedaProfundidad():
 
         # Bucle principal de búsqueda
         while priority_queue:
-            current_node, path, picked_up_passenger, dir_name = priority_queue.pop(0)
-            x, y = current_node
-
+            current_cost, current_node, path, picked_up_passenger, direction_name = heapq.heappop(priority_queue)
             x, y = current_node
             next_index = 0
-            expanded_node_info = [current_node, [], [], picked_up_passenger, []]
-            hijos_del_nodo = []
+            expanded_node_info = [current_node, [], [], picked_up_passenger, [], current_cost, []]
 
-            
+
             for i, (dx, dy) in enumerate(self.MOVEMENTS):
                 next_x, next_y = x + dx, y + dy
 
@@ -156,31 +171,36 @@ class BusquedaProfundidad():
                     if ((next_x, next_y), picked_up_passenger) not in visited:
                         next_node = (next_x, next_y)
                         next_path = path + [next_index]
-                        next_dir_name = self.DIRECTIONS[i]
+                        next_direction_name = self.DIRECTIONS[i]
 
                         has_passenger = True if next_node == self.passenger and not picked_up_passenger else picked_up_passenger
 
-                        hijos_del_nodo.append((next_node, next_path, has_passenger, next_dir_name))
-                        tree = self.add_node(tree, path, next_node, has_passenger, next_dir_name)
-                        visited.append(((next_node), has_passenger))
+                        
+                        next_cost = current_cost + self.COSTS[grid[next_x][next_y]] + self.distancia_manhattan(next_node, self.goal if has_passenger else self.passenger)
+
+
+                        heapq.heappush(priority_queue, (next_cost, next_node, next_path, has_passenger, next_direction_name))
+                        tree = self.add_node(tree, path, next_cost, next_node, has_passenger, next_direction_name)
+                        visited.append((next_node, has_passenger))
 
                         expanded_node_info[1].append(next_node)
-                        expanded_node_info[2].append(next_dir_name)
+                        expanded_node_info[2].append(next_direction_name)
                         expanded_node_info[4].append(has_passenger)
+                        expanded_node_info[6].append(next_cost)
+
 
                         self.explored_nodes += 1
                         self.max_depth = max(self.max_depth, (len(next_path) + 1))
-  
+
                         if next_node == goal and picked_up_passenger:
                             self.final_nodes.append([expanded_node_info])
-                            return tree, next_path
+                            return tree, next_path, next_cost
 
                         next_index += 1
-            
-            priority_queue = hijos_del_nodo + priority_queue
+
             self.final_nodes.append([expanded_node_info])
 
-        return tree, []
+        return tree, [], 0
 
 
 
@@ -198,12 +218,12 @@ class BusquedaProfundidad():
         """
         result = []
         try:
-            coord, children, has_passenger, direction_name = node
+            cost, coord, children, has_passenger, direction_name = node
         except:
-            coord, children, has_passenger, direction_name = node[0]
+            cost, coord, children, has_passenger, direction_name = node[0]
 
         connector = "--> " if is_last else "|-- "
-        result.append(f"{prefix}{connector}{coord} [Passenger? {has_passenger}] [Direction: {direction_name}]")
+        result.append(f"{prefix}{connector}{coord} [cost: {cost}] [Passenger? {has_passenger}] [Direction: {direction_name}]")
 
         if children:
             new_prefix = prefix + ("    " if is_last else "|   ")
@@ -226,14 +246,14 @@ class BusquedaProfundidad():
         list: Una lista de tuplas que contiene las coordenadas del nodo, la dirección y el costo en cada paso.
         """
         node = final_tree[0]
-        coord, children, has_passenger, direction_name = node
-        output = [(self.start, "")]
+        cost, coord, children, has_passenger, direction_name = node
+        output = [(self.start, "", 0)]
 
-        children = node[1]
+        children = node[2]
         for i, step in enumerate(path):
             node = children[step]
-            coord, children, has_passenger, direction_name = node
-            output.append((coord, direction_name))
+            cost, coord, children, has_passenger, direction_name = node
+            output.append((coord, direction_name, cost))
 
         return output
 
@@ -254,13 +274,14 @@ class BusquedaProfundidad():
             - "expanded_nodes": Información sobre los nodos expandidos en la búsqueda.
         """
         start_time = time.time()
-        final_tree, path = self.search_deep(self.grid, self.start, self.goal)
+        final_tree, path, total_cost = self.search_A(self.grid, self.start, self.goal)
         end_time = time.time()
         computation_time = end_time - start_time
 
         return {
             "tree": self.print_classic_tree(final_tree),
             "path": self.generate_path_output(final_tree, path),
+            "total_cost": total_cost,
             "explored_nodes": self.explored_nodes,
             "max_depth": self.max_depth,
             "computation_time": f"{computation_time:.5f} seconds",
@@ -271,31 +292,33 @@ class BusquedaProfundidad():
 
 
 
-
 """
 entrada1 =  [
     [0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [0, 1, 1, 0, 0, 0, 4, 0, 0, 0],
     [2, 1, 1, 0, 1, 0, 1, 0, 1, 0],
-    [0, 6, 3, 0, 4, 0, 0, 0, 4, 0],
-    [0, 1, 0, 0, 1, 1, 1, 1, 1, 0],
-    [0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
+    [0, 3, 3, 0, 4, 0, 0, 0, 4, 0],
+    [0, 1, 1, 0, 1, 1, 1, 1, 1, 0],
+    [0, 0, 0, 0, 1, 1, 0, 0, 0, 6],
     [5, 1, 1, 1, 1, 1, 0, 1, 1, 1],
     [0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
     [0, 1, 0, 1, 0, 1, 1, 1, 0, 1],
     [0, 0, 0, 1, 0, 0, 0, 0, 0, 1]
 ]
 
-motor = BusquedaProfundidad(entrada1)
+motor = BusquedaCosto(entrada1)
 solucion = motor.solucionar()
 
+# Imprimimos los caminos encontrados
 if solucion["paths"]:
     print("Caminos encontrados a los objetivos:")
-    print(f"Pasos Necesarios: {len(solucion['paths'])}")
+    # Imprimimos las métricas
+    print(f"Costo: {solucion["costo"]}")
     print(f"Nodos explorados: {solucion['nodos_explorados']}")
     print(f"Profundidad máxima del árbol: {solucion['profundidad_maxima']}")
     print(f"Tiempo de cómputo: {solucion['tiempo_computo']} (S)")
-    print(f"\nCAMINO:\n{solucion['paths']}")
+    print(f"\nCAMINO:\n{solucion["paths"]}")
+    print(f"\n\nARBOL:\n{solucion["arbol"]}")
 else:
     print("No se encontraron caminos para todos los objetivos.")
 """

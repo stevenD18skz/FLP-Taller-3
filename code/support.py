@@ -5,6 +5,25 @@ from os.path import splitext
 from csv import reader
 import pygame
 
+
+
+CASILLA_SIZE = 64
+CUADRADO_SIZE = 32
+CUADRADO_SIZE = 32
+FLECHA_ANCHO = 16
+FLECHA_ALTO_VERTICAL = 32
+TEXT_COLOR = (255, 255, 255)
+
+
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+ROJO = (255, 0, 0)
+VERDE = (0, 255, 0)
+AZUL = (0, 0, 255)
+AMARILLO = (255, 255, 0)
+
+
+
 """
 Importa un archivo CSV que contiene un diseño de terreno y lo convierte en una lista bidimensional.
 
@@ -64,17 +83,6 @@ def ALFile(ruta_archivo=""):
     
     return mapa
 
-
-CASILLA_SIZE = 64
-CUADRADO_SIZE = 32
-CUADRADO_SIZE = 32
-FLECHA_ANCHO = 16
-FLECHA_ALTO_VERTICAL = 32
-
-ROJO = (255, 0, 0)
-VERDE = (0, 255, 0)
-AZUL = (0, 0, 255)
-AMARILLO = (255, 255, 0)
 
 
 # Función para calcular la posición central de una casilla
