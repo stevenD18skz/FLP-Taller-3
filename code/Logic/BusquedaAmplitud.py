@@ -140,9 +140,6 @@ class BusquedaAmplitud():
         priority_queue.append((start, [], False, "start"))
         visited = [(start, False)]
 
-        self.explored_nodes += 1
-        self.max_depth += 1
-
         # Bucle principal de búsqueda
         while priority_queue:
             if self.carry_depth == len(priority_queue[0][1]):
@@ -155,7 +152,13 @@ class BusquedaAmplitud():
             next_index = 0
             expanded_node_info = [current_node, [], [], picked_up_passenger, []]
 
+            self.explored_nodes += 1
+            
+            if current_node == goal and picked_up_passenger:
+                self.final_nodes.append([expanded_node_info])
+                return tree, path
 
+            
             for i, (dx, dy) in enumerate(self.MOVEMENTS):
                 next_x, next_y = x + dx, y + dy
 
@@ -177,12 +180,8 @@ class BusquedaAmplitud():
                         expanded_node_info[4].append(has_passenger)
 
 
-                        self.explored_nodes += 1
-                        self.max_depth = max(self.max_depth, (len(next_path) + 1))
-
-                        if next_node == goal and picked_up_passenger:
-                            self.final_nodes.append([expanded_node_info])
-                            return tree, next_path
+                        
+                        self.max_depth = max(self.max_depth, (len(next_path)))
 
                         next_index += 1
 
@@ -211,7 +210,7 @@ class BusquedaAmplitud():
             coord, children, has_passenger, direction_name = node[0]
 
         connector = "--> " if is_last else "|-- "
-        result.append(f"{prefix}{connector}{coord} [Passenger? {has_passenger}] [Direction: {direction_name}]")
+        result.append(f"{prefix}{connector}{coord} ")#[Passenger? {has_passenger}] [Direction: {direction_name}]")
 
         if children:
             new_prefix = prefix + ("    " if is_last else "|   ")
@@ -265,6 +264,8 @@ class BusquedaAmplitud():
         final_tree, path = self.buscar_amplitud(self.grid, self.start, self.goal)
         end_time = time.time()
         computation_time = end_time - start_time
+
+        print(self.print_classic_tree(final_tree))
 
         return {
             "tree": self.print_classic_tree(final_tree),

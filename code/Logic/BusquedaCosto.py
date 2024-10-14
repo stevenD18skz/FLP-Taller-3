@@ -149,9 +149,6 @@ class CostSearch():
         heapq.heappush(priority_queue, (0, start, [], False, "start"))
         visited = [(start, False)]
 
-        self.explored_nodes += 1
-        self.max_depth += 1
-
         # Bucle principal de búsqueda
         while priority_queue:
             current_cost, current_node, path, picked_up_passenger, direction_name = heapq.heappop(priority_queue)
@@ -159,6 +156,11 @@ class CostSearch():
             next_index = 0
             expanded_node_info = [current_node, [], [], picked_up_passenger, [], current_cost, []]
 
+
+            self.explored_nodes += 1
+            if current_node == goal and picked_up_passenger:
+                self.final_nodes.append([expanded_node_info])
+                return tree, path, current_cost
 
             for i, (dx, dy) in enumerate(self.MOVEMENTS):
                 next_x, next_y = x + dx, y + dy
@@ -183,12 +185,9 @@ class CostSearch():
                         expanded_node_info[6].append(next_cost)
 
 
-                        self.explored_nodes += 1
-                        self.max_depth = max(self.max_depth, (len(next_path) + 1))
+                        self.max_depth = max(self.max_depth, (len(next_path)))
 
-                        if next_node == goal and picked_up_passenger:
-                            self.final_nodes.append([expanded_node_info])
-                            return tree, next_path, next_cost
+
 
                         next_index += 1
 
@@ -271,6 +270,7 @@ class CostSearch():
         final_tree, path, total_cost = self.search_cost(self.grid, self.start, self.goal)
         end_time = time.time()
         computation_time = end_time - start_time
+        print(self.print_classic_tree(final_tree))
 
         return {
             "tree": self.print_classic_tree(final_tree),

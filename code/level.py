@@ -45,7 +45,7 @@ class Level:
         self.init_wait = -1 #Manejador de tiempo para la animacino dibujar arbol
         self.init_final = -1 #Manejador de tiempo para la animacino mostrar camino
         self.chat = 0 #Manejador de tiempo para  "arrow_alpha"
-        self.time_wait = 1.5
+        self.time_wait = 0.3
     
 
 
@@ -210,7 +210,7 @@ class Level:
         self.crear_caminos_arbol()
         self.camino_final()
 
-        debug(f"{self.player.status} === {self.player.rect} === {self.player.movimiento_actual}")
+        #debug(f"{self.player.status} === {self.player.rect} === {self.player.movimiento_actual}")
     
 
 
@@ -220,10 +220,9 @@ class Level:
 
         llave_nombre = {
             1: ["pasto", "object"],
-            2: ["lapras", "object"],
             3: ["snorlax_dormido", "object"],
             4: ["snorlax_despierto", "object"],
-            5: ["net", "passager"],
+            5: ["pokeball", "passager"],
             6: ["Shroomish", "goal"],
         }
 
@@ -252,14 +251,16 @@ class Level:
                             (x, y),
                             [self.visible_sprites],
                             self.obstacle_sprites, 
-                            (TILESIZE, TILESIZE))
+                            (TILESIZE, TILESIZE)
+                        )
                     
                     else:
                         surf = pygame.transform.scale(graphics[llave_nombre[int(col)][0]], (TILESIZE, TILESIZE))
                         Tile((x,y),
                              [self.visible_sprites,self.obstacle_sprites],
                              llave_nombre[int(col)][1],
-                             surf)
+                             surf
+                        )
 
 
 

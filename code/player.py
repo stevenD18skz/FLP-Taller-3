@@ -9,7 +9,7 @@ class Player(pygame.sprite.Sprite):
         super().__init__(groups)
         # Graphics display
         self.original_size = size
-        self.image = pygame.transform.scale(pygame.image.load(path_main + 'graphics/objects/lapras.png').convert_alpha(), size)
+        self.image = pygame.transform.scale(pygame.image.load(path_main + 'graphics/player/down_idle/idle_down.png').convert_alpha(), size)
         self.rect = self.image.get_rect(topleft=pos)
         self.hitbox = self.rect.inflate(0, 0)
 
@@ -22,7 +22,7 @@ class Player(pygame.sprite.Sprite):
         # Movimiento
         self.in_movimiento = False
         self.direction = pygame.math.Vector2(0, 0)
-        self.speed = 8 #velocidad tiene que ser en potencia de 2
+        self.speed = 4 #velocidad tiene que ser en potencia de 2
         self.obstacle_sprites = obstacle_sprites
         self.movimientos = []
         self.movimiento_actual = None
@@ -57,7 +57,7 @@ class Player(pygame.sprite.Sprite):
 
         # Escalar la imagen
         new_size = (int(self.original_size[0] * self.scale_factor), int(self.original_size[1] * self.scale_factor))
-        self.image = pygame.transform.scale(pygame.image.load(path_main + 'graphics/objects/lapras.png').convert_alpha(), new_size)
+        self.image = pygame.transform.scale(pygame.image.load(path_main + 'graphics/player/down_idle/idle_down.png').convert_alpha(), new_size)
 
         # Actualizar la posición del rectángulo para que el sprite permanezca centrado
         self.rect = self.image.get_rect(center=self.rect.center)
@@ -73,7 +73,7 @@ class Player(pygame.sprite.Sprite):
             self.scale_factor = 1.0  # Resetear el factor de escala
 
             # Restablecer el tamaño original del sprite
-            self.image = pygame.transform.scale(pygame.image.load(path_main + 'graphics/objects/lapras.png').convert_alpha(), self.original_size)
+            self.image = pygame.transform.scale(pygame.image.load(path_main + 'graphics/player/down_idle/idle_down.png').convert_alpha(), self.original_size)
             self.rect = self.save_pos_b
             self.hitbox = self.rect.inflate(0, 0)
 

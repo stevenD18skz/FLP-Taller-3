@@ -86,7 +86,7 @@ class Game:
         ]
 
     
-        self.level.setMap(ALFile("C:/Users/braya/Desktop/FLP-Taller-3/entrada1.txt"))
+        self.level.setMap(ALFile("C:/Users/braya/Desktop/FLP-Taller-3/map/Prueba1.txt"))
         
         self.update_button_states()
 
@@ -133,11 +133,11 @@ class Game:
             # Renderizar texto de solución
             font = pygame.font.Font(None, 24)
             info_lines = [
-                f"Caminos encontrados a los objetivos:",
-                f"Costo: {self.solution.get('total_cost', "----")}",
+                f"Caminos encontrados con {self.selected_algorithm_button}:",
                 f"Nodos explorados: {self.solution['explored_nodes']}",
                 f"Profundidad máxima del árbol: {self.solution['max_depth']}",
                 f"Tiempo de cómputo: {self.solution['computation_time']} (S)",
+                f"Costo: {self.solution.get('total_cost', "----")}",
                 f"CAMINO: {self.solution['path']}"
             ]
 
@@ -217,3 +217,7 @@ class Game:
 if __name__ == '__main__':
     game = Game()
     game.run()
+
+
+#error al subir un archivo si ya se subio uno previamente
+#el auto activa la amicaion del goal inluco antes de tenre el pasajero

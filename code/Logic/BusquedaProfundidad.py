@@ -148,7 +148,13 @@ class BusquedaProfundidad():
             expanded_node_info = [current_node, [], [], picked_up_passenger, []]
             hijos_del_nodo = []
 
-            
+
+            self.explored_nodes += 1
+            if current_node == goal and picked_up_passenger:
+                self.final_nodes.append([expanded_node_info])
+                return tree, path
+
+
             for i, (dx, dy) in enumerate(self.MOVEMENTS):
                 next_x, next_y = x + dx, y + dy
 
@@ -168,12 +174,8 @@ class BusquedaProfundidad():
                         expanded_node_info[2].append(next_dir_name)
                         expanded_node_info[4].append(has_passenger)
 
-                        self.explored_nodes += 1
-                        self.max_depth = max(self.max_depth, (len(next_path) + 1))
-  
-                        if next_node == goal and picked_up_passenger:
-                            self.final_nodes.append([expanded_node_info])
-                            return tree, next_path
+                        
+                        self.max_depth = max(self.max_depth, (len(next_path)))
 
                         next_index += 1
             

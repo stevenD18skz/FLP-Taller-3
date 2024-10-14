@@ -168,6 +168,12 @@ class BusquedaAE():
             next_index = 0
             expanded_node_info = [current_node, [], [], picked_up_passenger, [], f_cost, []]
 
+            self.explored_nodes += 1
+            if current_node == goal and picked_up_passenger:
+                self.final_nodes.append([expanded_node_info])
+                return tree, path, g_cost
+
+
 
             for i, (dx, dy) in enumerate(self.MOVEMENTS):
                 next_x, next_y = x + dx, y + dy
@@ -197,12 +203,9 @@ class BusquedaAE():
                         expanded_node_info[6].append(next_f_cost)
 
 
-                        self.explored_nodes += 1
+                        
                         self.max_depth = max(self.max_depth, (len(next_path) + 1))
 
-                        if next_node == goal and picked_up_passenger:
-                            self.final_nodes.append([expanded_node_info])
-                            return tree, next_path, next_f_cost
 
                         next_index += 1
 
