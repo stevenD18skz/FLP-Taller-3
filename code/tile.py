@@ -40,16 +40,23 @@ class Tile(pygame.sprite.Sprite):
 		
 
 
+
 	def desaparecer_animation(self):
 		if self.animation:
-			#self.particule = Particle(self.rect.center, self.auxiliar, self.frames['nova']) if not self.particule else self.particule
+
+			if self.sprite_type != "object":
+				self.particule = Particle(self.rect.center, self.auxiliar, self.frames['nova'])
 
 			if self.alpha > 0:
 				self.alpha -= 5
 				self.image = self.original_image.copy()
 				self.image.set_alpha(self.alpha)
+
 			else:
 				self.kill()
+				if self.sprite_type != "object":
+					self.particule.kill()
+
 
 
 	def update(self):
@@ -62,44 +69,38 @@ class Tile(pygame.sprite.Sprite):
 class Particle(pygame.sprite.Sprite):
 	def __init__(self, pos, groups, frames):
 		super().__init__(groups)
-		self.velocity = pygame.math.Vector2(random.uniform(-1, 1), random.uniform(-1, 1)) * 2  # Velocidad en dirección aleatoria
 		self.sprite_type = "particule"
-
-		self.life = 100  # Duración de la partícula
-		self.alpha = 255  # Transparencia inicial
-		self.exist = False
-
 		self.frame_index = 0
 		self.animation_speed = 0.1
 		self.frames = frames
 		self.image = self.frames[self.frame_index]
-		
 		self.rect = self.image.get_rect(center=pos)
+
+		
+		self.life = 100  # Duración de la partícula
+		self.exist = False
 
 
 	def animate(self):
+		print("hla")
 		self.frame_index += self.animation_speed
 		if self.frame_index >= len(self.frames):
 			self.frame_index = 0
-			self.kill()
+
 		else:
 			self.image = self.frames[int(self.frame_index)]
 
+
+
 	def update(self):
 		if self.exist:
-
 			# Desvanecer la partícula gradualmente
 			self.life -= 1
 			if self.life > 0:
-				self.alpha -= 0# 255 // self.life  # Reducir el alpha gradualmente
-				self.image.set_alpha(self.alpha)
 				self.animate()
 
 			else:
-				self.life = 30
-				self.exist = False
-				self.alpha = 255
-				self.kill()  # Eliminar la partícula cuando su vida se acabe
+				self.kill()
 
 
 

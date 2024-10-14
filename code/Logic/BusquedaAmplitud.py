@@ -162,8 +162,6 @@ class BusquedaAmplitud():
             has_passenger = True if current_node == self.passenger and not picked_up_passenger else picked_up_passenger
             picked_up_passenger = has_passenger
 
-            print("hola")
-
 
             
             for i, (dx, dy) in enumerate(self.MOVEMENTS):
@@ -272,7 +270,6 @@ class BusquedaAmplitud():
         end_time = time.time()
         computation_time = end_time - start_time
 
-        print(self.print_classic_tree(final_tree))
 
         return {
             "tree": self.print_classic_tree(final_tree),

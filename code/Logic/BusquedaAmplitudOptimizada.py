@@ -265,7 +265,6 @@ class BusquedaAmplitud():
         end_time = time.time()
         computation_time = end_time - start_time
 
-        print(self.print_classic_tree(final_tree))
 
         return {
             "tree": self.print_classic_tree(final_tree),

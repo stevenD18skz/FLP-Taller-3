@@ -65,6 +65,7 @@ class Game:
 
         # Variable para almacenar la solución del algoritmo
         self.solution = None  # Esto se actualizará cuando se ejecute un algoritmo
+        self.mapa_eleccion = None
 
         # Condición para mostrar el recuadro con la información
         self.show_solution_info = False  # Cambia a True cuando quieras mostrar la información
@@ -86,7 +87,7 @@ class Game:
         ]
 
     
-        self.level.setMap(ALFile("C:/Users/braya/Desktop/FLP-Taller-3/map/Prueba1.txt"))
+        #self.level.setMap(ALFile("C:/Users/braya/Desktop/FLP-Taller-3/map/Prueba1.txt"))
         
         self.update_button_states()
 
@@ -141,6 +142,8 @@ class Game:
                 f"CAMINO: {self.solution['path']}"
             ]
 
+            self.guardar_solucion(self.solution['tree'])
+
             # Dibujar cada línea de texto en el recuadro
             for i, line in enumerate(info_lines):
                 text_surface = font.render(line, True, BLACK)
@@ -173,11 +176,13 @@ class Game:
                                 self.upload_file()
 
                             elif button.text == 'REINICIAR':
-                                self.level.create_map()
-                                self.show_solution_info = False  # Ocultar el recuadro al reiniciar
+                                self.show_solution_info = False
                                 self.solution = None
                                 self.algorithm_choice = 'No informada'
                                 self.selected_algorithm_button = None
+
+                                self.level = Level()
+                                self.level.setMap(self.mapa_eleccion)
 
                             self.update_button_states()
 
@@ -207,11 +212,17 @@ class Game:
 
 
         if file_path:
-            mapa = ALFile(file_path)
-            self.level.setMap(mapa)
+            self.mapa_eleccion = ALFile(file_path)
+            self.level.setMap(self.mapa_eleccion)
 
         pygame.display.set_mode((self.screen.get_width(), self.screen.get_height()))
         pygame.event.clear()
+
+
+    def guardar_solucion(self, solucion_outPut):
+        with open('./arbol_busqueda.txt', 'w') as file:
+            file.write(solucion_outPut)
+
 
 
 if __name__ == '__main__':
@@ -219,5 +230,4 @@ if __name__ == '__main__':
     game.run()
 
 
-#error al subir un archivo si ya se subio uno previamente
 #el auto activa la amicaion del goal inluco antes de tenre el pasajero

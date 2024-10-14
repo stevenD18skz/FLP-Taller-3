@@ -270,7 +270,6 @@ class CostSearch():
         final_tree, path, total_cost = self.search_cost(self.grid, self.start, self.goal)
         end_time = time.time()
         computation_time = end_time - start_time
-        print(self.print_classic_tree(final_tree))
 
         return {
             "tree": self.print_classic_tree(final_tree),
