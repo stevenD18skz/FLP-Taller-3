@@ -7,7 +7,7 @@ from debug import debug
 from support import *
 from player import Player
 
-from Logic.BusquedaAmplitud import BusquedaAmplitud
+from Logic.BusquedaAmplitudOptimizada import BusquedaAmplitud
 from Logic.BusquedaCosto import CostSearch
 from Logic.BusquedaProfundidad import BusquedaProfundidad
 from Logic.BusquedaAvara import BusquedaAvara
@@ -45,7 +45,7 @@ class Level:
         self.init_wait = -1 #Manejador de tiempo para la animacino dibujar arbol
         self.init_final = -1 #Manejador de tiempo para la animacino mostrar camino
         self.chat = 0 #Manejador de tiempo para  "arrow_alpha"
-        self.time_wait = 0.3
+        self.time_wait = 0.1
     
 
 

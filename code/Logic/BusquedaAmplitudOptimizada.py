@@ -137,8 +137,8 @@ class BusquedaAmplitud():
         # Inicializa la cola de prioridad, el árbol de búsqueda y la lista de nodos visitados
         priority_queue = []
         tree = [(start, [], False, "start")]
-        priority_queue.append((start, [], False, "start", [])) #nodo, hijos, estado, direecion, ascendetes
-
+        priority_queue.append((start, [], False, "start"))
+        visited = [(start, False)]
 
         # Bucle principal de búsqueda
         while priority_queue:
@@ -147,7 +147,7 @@ class BusquedaAmplitud():
                 self.final_nodes.append(self.current_nodes)
                 self.current_nodes = []
 
-            current_node, path, picked_up_passenger, dir_name, ascendentes = priority_queue.pop(0)
+            current_node, path, picked_up_passenger, dir_name = priority_queue.pop(0)
             x, y = current_node
             next_index = 0
             expanded_node_info = [current_node, [], [], picked_up_passenger, []]
@@ -157,30 +157,23 @@ class BusquedaAmplitud():
             if current_node == goal and picked_up_passenger:
                 self.final_nodes.append([expanded_node_info])
                 return tree, path
-            
-
-            has_passenger = True if current_node == self.passenger and not picked_up_passenger else picked_up_passenger
-            picked_up_passenger = has_passenger
-
-            print("hola")
-
 
             
             for i, (dx, dy) in enumerate(self.MOVEMENTS):
                 next_x, next_y = x + dx, y + dy
 
                 if self.is_valid(next_x, next_y, grid):
-                    if ((next_x, next_y), picked_up_passenger) not in ascendentes:
+                    if ((next_x, next_y), picked_up_passenger) not in visited:
                         next_node = (next_x, next_y)
                         next_path = path + [next_index]
                         next_direction_name = self.DIRECTIONS[i]
 
 
-                        next_ascends = ascendentes + [(current_node, has_passenger)]
+                        has_passenger = True if next_node == self.passenger and not picked_up_passenger else picked_up_passenger
 
-                        priority_queue.append((next_node, next_path, has_passenger, next_direction_name, next_ascends))
+                        priority_queue.append((next_node, next_path, has_passenger, next_direction_name))
                         tree = self.add_node(tree, path, next_node, has_passenger, next_direction_name)
-                        #visited.append((next_node, has_passenger))
+                        visited.append((next_node, has_passenger))
 
                         expanded_node_info[1].append(next_node)
                         expanded_node_info[2].append(next_direction_name)

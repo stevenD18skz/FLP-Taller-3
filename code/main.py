@@ -134,7 +134,7 @@ class Game:
             font = pygame.font.Font(None, 24)
             info_lines = [
                 f"Caminos encontrados con {self.selected_algorithm_button}:",
-                f"Nodos explorados: {self.solution['explored_nodes']}",
+                f"Nodos expandidos: {self.solution['explored_nodes']}",
                 f"Profundidad máxima del árbol: {self.solution['max_depth']}",
                 f"Tiempo de cómputo: {self.solution['computation_time']} (S)",
                 f"Costo: {self.solution.get('total_cost', "----")}",
