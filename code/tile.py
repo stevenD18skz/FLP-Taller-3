@@ -64,7 +64,7 @@ class Tile(pygame.sprite.Sprite):
 	def setAnimation(self, valor):
 		self.animation = valor
 		
-		self.particule = Particle(self.rect.center, self.auxiliar, self.frames['heal'])
+		self.particule = Particle(self.rect.center, self.auxiliar, self.frames['nova'])
 		self.particule.exist = True
 
 

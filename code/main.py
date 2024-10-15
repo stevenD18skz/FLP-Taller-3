@@ -17,6 +17,52 @@ ORANGE = (255, 112, 40)  # Color naranja para selección de "Informada/No inform
 BLUE = (0, 0, 255)  # Color azul para selección de algoritmos
 
 
+class InputBox:
+    def __init__(self, x, y, w, h, font_size=24, text=''):
+        self.rect = pygame.Rect(x, y, w, h)
+        self.color = BLACK
+        self.text = text
+        self.font = pygame.font.Font(None, font_size)
+        self.txt_surface = self.font.render(text, True, self.color)
+        self.active = False
+        self.color_inactive = BLACK
+        self.color_active = ORANGE
+        self.color = self.color_inactive
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            # Si el usuario hace clic en el campo de entrada
+            if self.rect.collidepoint(event.pos):
+                self.active = not self.active
+            else:
+                self.active = False
+            # Cambiar el color del campo de entrada
+            self.color = self.color_active if self.active else self.color_inactive
+        if event.type == pygame.KEYDOWN:
+            if self.active:
+                if event.key == pygame.K_RETURN:
+                    self.text = ''  # Limpiar el campo de texto si se presiona Enter
+                elif event.key == pygame.K_BACKSPACE:
+                    self.text = self.text[:-1]  # Eliminar el último carácter
+                else:
+                    # Solo permitir números en el campo de entrada
+                    if event.unicode.isdigit():
+                        self.text += event.unicode
+                self.txt_surface = self.font.render(self.text, True, self.color)
+
+    def draw(self, screen):
+        # Dibujar el campo de texto
+        pygame.draw.rect(screen, LIGHT_GRAY, self.rect, 0)
+        pygame.draw.rect(screen, self.color, self.rect, 2)
+        screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
+
+    def get_value(self):
+        try:
+            return int(self.text) if self.text != '' else 0  # Devolver 0 si está vacío
+        except ValueError:
+            return 0
+
+
 # Clase para crear botones
 class Button:
     def __init__(self, text, x, y, width, height, font_size=36, color=LIGHT_GRAY, border_color=BORDER_COLOR, border_width=2, selected=False):
@@ -79,7 +125,7 @@ class Game:
             Button('Informada', 810, 40, 150, 40, font_size=24, color=LIGHT_GRAY),
             Button('Amplitud', 650, 110, 150, 40, font_size=18, color=LIGHT_GRAY),
             Button('Costo uniforme', 650, 170, 150, 40, font_size=18, color=LIGHT_GRAY),
-            Button('Profundidad evitando ciclos', 650, 230, 150, 40, font_size=18, color=LIGHT_GRAY),
+            Button('Profundidad evitando ciclos', 650, 230, 150, 40, font_size=15, color=LIGHT_GRAY),
             Button('Avara', 810, 110, 150, 40, font_size=18, color=LIGHT_GRAY),
             Button('A*', 810, 170, 150, 40, font_size=18, color=LIGHT_GRAY),
             Button('REINICIAR', 650, 580, 100, 40, font_size=24, color=LIGHT_GRAY),
@@ -87,8 +133,8 @@ class Game:
         ]
 
     
-        #self.level.setMap(ALFile("C:/Users/braya/Desktop/FLP-Taller-3/map/Prueba1.txt"))
-        
+        self.input_box = InputBox(810, 230, 100, 40, font_size=24)
+
         self.update_button_states()
 
 
@@ -103,6 +149,12 @@ class Game:
         # Activar todos los botones
         for button in self.buttons:
             button.active = True
+
+        if self.solution: 
+            for button in self.buttons[:-2]:
+                button.active = False
+            return
+
 
         # Actualizar botones según el algoritmo seleccionado
         if self.algorithm_choice == 'No informada':
@@ -126,7 +178,7 @@ class Game:
 
     def display_solution_info(self, surface):
         # Dibuja el recuadro de información
-        info_rect = pygame.Rect(650, 350, 380, 200)  # Define el tamaño del recuadro
+        info_rect = pygame.Rect(650, 300, 380, 250)  # Define el tamaño del recuadro
         pygame.draw.rect(surface, LIGHT_GRAY, info_rect)
         pygame.draw.rect(surface, BORDER_COLOR, info_rect, 2)  # Dibujar el borde del recuadro
         
@@ -143,13 +195,12 @@ class Game:
                 f"Costo: {self.solution.get('total_cost', "----")}",
                 f"CAMINO: {self.solution['path']}"
             ]
-
             self.guardar_solucion(self.solution['tree'])
 
             # Dibujar cada línea de texto en el recuadro
             for i, line in enumerate(info_lines):
                 text_surface = font.render(line, True, BLACK)
-                surface.blit(text_surface, (660, 360 + i * 30))  # Posicionar cada línea de texto
+                surface.blit(text_surface, (660, 310 + i * 30))  # Posicionar cada línea de texto
 
 
 
@@ -159,20 +210,29 @@ class Game:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+
+                    
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     x, y = pygame.mouse.get_pos()
+                    print(x ,y)
 
                     for button in self.buttons:
-                        if button.is_clicked((x, y)) and self.level.init_wait == -1 and self.level.init_final == -1:
+                        if button.is_clicked((x, y)):# and self.level.init_wait == -1 and self.level.init_final == -1:
                             if button.text in ['No informada', 'Informada']:
                                 self.algorithm_choice = button.text
 
                             elif button.text in ['Amplitud', 'Costo uniforme', 'Profundidad evitando ciclos', 'Avara', 'A*']:
                                 self.selected_algorithm_button = button.text
-                                self.level.ejecutarAlgoritmo(button.text)
+                                valor = self.input_box.get_value()  # Obtener el valor numérico del input
+                                self.level.ejecutarAlgoritmo(button.text, valor)
                                 self.solution = self.level.solucion
 
                             elif button.text == 'Subir archivo':
+                                self.solution = None
+                                self.algorithm_choice = 'No informada'
+                                self.selected_algorithm_button = None
+
+                                self.level = Level()
                                 self.upload_file()
 
                             elif button.text == 'REINICIAR':
@@ -185,12 +245,21 @@ class Game:
 
                             self.update_button_states()
 
+
+                # Manejar eventos del campo de texto
+                self.input_box.handle_event(event)
+
+
             # Dibujar los botones y actualizar la pantalla
             self.screen.fill(GRAY)
             self.level.run()
             
             for button in self.buttons:
                 button.draw(self.screen)
+
+
+            # Dibujar el campo de entrada
+            self.input_box.draw(self.screen)
 
             # Mostrar información de la solución si existe
             self.display_solution_info(self.screen)

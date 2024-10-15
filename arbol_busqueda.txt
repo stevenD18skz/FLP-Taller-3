@@ -1,78 +1,91 @@
---> (5, 3) 
-    |-- (4, 3) 
-    |   --> (3, 3) 
-    |       |-- (2, 3) 
-    |       |   --> (1, 3) 
-    |       |       --> (1, 4) 
-    |       |           --> (1, 5) 
-    |       |               --> (1, 6) 
-    |       |                   --> (1, 7) 
-    |       |                       --> (1, 8) 
-    |       |                           --> (1, 9) 
-    |       |-- (3, 2) 
-    |       |   --> (3, 1) 
-    |       |       --> (3, 0) 
-    |       |           --> (2, 0) 
-    |       |               --> (1, 0) 
-    |       |                   --> (0, 0) 
-    |       --> (3, 4) 
-    |           --> (3, 5) 
-    |               |-- (2, 5) 
-    |               --> (3, 6) 
-    |                   --> (3, 7) 
-    |                       |-- (2, 7) 
-    |                       --> (3, 8) 
-    |                           --> (3, 9) 
-    |                               --> (2, 9) 
-    |-- (5, 2) 
-    |   --> (5, 1) 
-    |       --> (5, 0) 
-    |           |-- (4, 0) 
-    |           --> (6, 0) 
-    |               --> (7, 0) 
-    |                   --> (8, 0) 
-    |                       --> (9, 0) 
-    |                           --> (9, 1) 
-    |                               --> (9, 2) 
-    |                                   --> (8, 2) 
-    |                                       --> (7, 2) 
-    |                                           --> (7, 3) 
-    |                                               --> (7, 4) 
-    |                                                   --> (8, 4) 
-    |                                                       --> (9, 4) 
-    --> (5, 4) 
-        --> (5, 5) 
-            --> (5, 6) 
-                |-- (6, 6) 
-                |   --> (7, 6) 
-                |       --> (7, 7) 
-                |           --> (7, 8) 
-                |               --> (8, 8) 
-                |                   --> (9, 8) 
-                |                       |-- (9, 7) 
-                |                       |   --> (9, 6) 
-                |                       |       --> (9, 5) 
-                |                       |           --> (9, 4) 
-                |                       |               |-- (8, 4) 
-                |                       |               |   --> (7, 4) 
-                |                       |               |       --> (7, 3) 
-                |                       |               |           --> (7, 2) 
-                |                       |               |               --> (8, 2) 
-                |                       |               |                   --> (9, 2) 
-                |                       |               |                       --> (9, 1) 
-                |                       |               |                           --> (9, 0) 
-                |                       |               |                               --> (8, 0) 
-                |                       |               --> (9, 5) 
-                |                       |                   --> (9, 6) 
-                |                       |                       --> (9, 7) 
-                |                       |                           --> (9, 8) 
-                |                       |                               |-- (8, 8) 
-                |                       |                               |   --> (7, 8) 
-                |                       |                               |       --> (7, 7) 
-                |                       |                               |           --> (7, 6) 
-                |                       |                               --> (9, 9) 
-                |                       --> (9, 9) 
-                --> (5, 7) 
-                    --> (5, 8) 
-                        --> (5, 9) 
-                            --> (4, 9) 
+--> (2, 0) [cost: 0] [Passenger? False] [Direction: start]
+    |-- (1, 0) [cost: 1] [Passenger? False] [Direction: arriba]
+    |   --> (0, 0) [cost: 2] [Passenger? False] [Direction: arriba]
+    --> (3, 0) [cost: 1] [Passenger? False] [Direction: abajo]
+        |-- (4, 0) [cost: 2] [Passenger? False] [Direction: abajo]
+        |   --> (5, 0) [cost: 3] [Passenger? False] [Direction: abajo]
+        |       |-- (6, 0) [cost: 4] [Passenger? True] [Direction: abajo]
+        |       |   |-- (5, 0) [cost: 5] [Passenger? True] [Direction: arriba]
+        |       |   |   |-- (4, 0) [cost: 6] [Passenger? True] [Direction: arriba]
+        |       |   |   |   --> (3, 0) [cost: 7] [Passenger? True] [Direction: arriba]
+        |       |   |   |       |-- (2, 0) [cost: 8] [Passenger? True] [Direction: arriba]
+        |       |   |   |       |   --> (1, 0) [cost: 9] [Passenger? True] [Direction: arriba]
+        |       |   |   |       |       --> (0, 0) [cost: 10] [Passenger? True] [Direction: arriba]
+        |       |   |   |       --> (3, 1) [cost: 11] [Passenger? True] [Direction: derecha]
+        |       |   |   --> (5, 1) [cost: 6] [Passenger? True] [Direction: derecha]
+        |       |   |       --> (5, 2) [cost: 7] [Passenger? True] [Direction: derecha]
+        |       |   |           --> (5, 3) [cost: 8] [Passenger? True] [Direction: derecha]
+        |       |   |               --> (4, 3) [cost: 9] [Passenger? True] [Direction: arriba]
+        |       |   |                   --> (3, 3) [cost: 10] [Passenger? True] [Direction: arriba]
+        |       |   |                       |-- (2, 3) [cost: 11] [Passenger? True] [Direction: arriba]
+        |       |   |                       |   --> (1, 3) [cost: 12] [Passenger? True] [Direction: arriba]
+        |       |   |                       |       --> (1, 4) [cost: 13] [Passenger? True] [Direction: derecha]
+        |       |   |                       |           --> (1, 5) [cost: 14] [Passenger? True] [Direction: derecha]
+        |       |   |                       |               |-- (2, 5) [cost: 15] [Passenger? True] [Direction: abajo]
+        |       |   |                       |               |   --> (3, 5) [cost: 16] [Passenger? True] [Direction: abajo]
+        |       |   |                       |               |       --> (3, 6) [cost: 17] [Passenger? True] [Direction: derecha]
+        |       |   |                       |               |           --> (3, 7) [cost: 18] [Passenger? True] [Direction: derecha]
+        |       |   |                       |               |               |-- (2, 7) [cost: 19] [Passenger? True] [Direction: arriba]
+        |       |   |                       |               |               |   --> (1, 7) [cost: 20] [Passenger? True] [Direction: arriba]
+        |       |   |                       |               |               |       --> (1, 8) [cost: 21] [Passenger? True] [Direction: derecha]
+        |       |   |                       |               |               |           --> (1, 9) [cost: 22] [Passenger? True] [Direction: derecha]
+        |       |   |                       |               |               |               --> (2, 9) [cost: 23] [Passenger? True] [Direction: abajo]
+        |       |   |                       |               |               |                   --> (3, 9) [cost: 24] [Passenger? True] [Direction: abajo]
+        |       |   |                       |               |               |                       --> (4, 9) [cost: 25] [Passenger? True] [Direction: abajo]
+        |       |   |                       |               |               |                           --> (5, 9) [cost: 26] [Passenger? True] [Direction: abajo]
+        |       |   |                       |               |               --> (3, 8) [cost: 25] [Passenger? True] [Direction: derecha]
+        |       |   |                       |               --> (1, 6) [cost: 21] [Passenger? True] [Direction: derecha]
+        |       |   |                       |-- (3, 2) [cost: 14] [Passenger? True] [Direction: izquierda]
+        |       |   |                       --> (3, 4) [cost: 17] [Passenger? True] [Direction: derecha]
+        |       |   --> (7, 0) [cost: 5] [Passenger? True] [Direction: abajo]
+        |       |       --> (8, 0) [cost: 6] [Passenger? True] [Direction: abajo]
+        |       |           --> (9, 0) [cost: 7] [Passenger? True] [Direction: abajo]
+        |       |               --> (9, 1) [cost: 8] [Passenger? True] [Direction: derecha]
+        |       |                   --> (9, 2) [cost: 9] [Passenger? True] [Direction: derecha]
+        |       |                       --> (8, 2) [cost: 10] [Passenger? True] [Direction: arriba]
+        |       |                           --> (7, 2) [cost: 11] [Passenger? True] [Direction: arriba]
+        |       |                               --> (7, 3) [cost: 12] [Passenger? True] [Direction: derecha]
+        |       |                                   --> (7, 4) [cost: 13] [Passenger? True] [Direction: derecha]
+        |       |                                       --> (8, 4) [cost: 14] [Passenger? True] [Direction: abajo]
+        |       |                                           --> (9, 4) [cost: 15] [Passenger? True] [Direction: abajo]
+        |       |                                               --> (9, 5) [cost: 16] [Passenger? True] [Direction: derecha]
+        |       |                                                   --> (9, 6) [cost: 17] [Passenger? True] [Direction: derecha]
+        |       |                                                       --> (9, 7) [cost: 18] [Passenger? True] [Direction: derecha]
+        |       |                                                           --> (9, 8) [cost: 19] [Passenger? True] [Direction: derecha]
+        |       |                                                               --> (8, 8) [cost: 20] [Passenger? True] [Direction: arriba]
+        |       |                                                                   --> (7, 8) [cost: 21] [Passenger? True] [Direction: arriba]
+        |       |                                                                       --> (7, 7) [cost: 22] [Passenger? True] [Direction: izquierda]
+        |       |                                                                           --> (7, 6) [cost: 23] [Passenger? True] [Direction: izquierda]
+        |       |                                                                               --> (6, 6) [cost: 24] [Passenger? True] [Direction: arriba]
+        |       |                                                                                   --> (5, 6) [cost: 25] [Passenger? True] [Direction: arriba]
+        |       |                                                                                       --> (5, 7) [cost: 26] [Passenger? True] [Direction: derecha]
+        |       |                                                                                           --> (5, 8) [cost: 27] [Passenger? True] [Direction: derecha]
+        |       --> (5, 1) [cost: 4] [Passenger? False] [Direction: derecha]
+        |           --> (5, 2) [cost: 5] [Passenger? False] [Direction: derecha]
+        |               --> (5, 3) [cost: 6] [Passenger? False] [Direction: derecha]
+        |                   --> (4, 3) [cost: 7] [Passenger? False] [Direction: arriba]
+        |                       --> (3, 3) [cost: 8] [Passenger? False] [Direction: arriba]
+        |                           |-- (2, 3) [cost: 9] [Passenger? False] [Direction: arriba]
+        |                           |   --> (1, 3) [cost: 10] [Passenger? False] [Direction: arriba]
+        |                           |       --> (1, 4) [cost: 11] [Passenger? False] [Direction: derecha]
+        |                           |           --> (1, 5) [cost: 12] [Passenger? False] [Direction: derecha]
+        |                           |               |-- (2, 5) [cost: 13] [Passenger? False] [Direction: abajo]
+        |                           |               |   --> (3, 5) [cost: 14] [Passenger? False] [Direction: abajo]
+        |                           |               |       --> (3, 6) [cost: 15] [Passenger? False] [Direction: derecha]
+        |                           |               |           --> (3, 7) [cost: 16] [Passenger? False] [Direction: derecha]
+        |                           |               |               |-- (2, 7) [cost: 17] [Passenger? False] [Direction: arriba]
+        |                           |               |               |   --> (1, 7) [cost: 18] [Passenger? False] [Direction: arriba]
+        |                           |               |               |       --> (1, 8) [cost: 19] [Passenger? False] [Direction: derecha]
+        |                           |               |               |           --> (1, 9) [cost: 20] [Passenger? False] [Direction: derecha]
+        |                           |               |               |               --> (2, 9) [cost: 21] [Passenger? False] [Direction: abajo]
+        |                           |               |               |                   --> (3, 9) [cost: 22] [Passenger? False] [Direction: abajo]
+        |                           |               |               |                       --> (4, 9) [cost: 23] [Passenger? False] [Direction: abajo]
+        |                           |               |               |                           --> (5, 9) [cost: 24] [Passenger? False] [Direction: abajo]
+        |                           |               |               |                               --> (5, 8) [cost: 25] [Passenger? False] [Direction: izquierda]
+        |                           |               |               |                                   --> (5, 7) [cost: 26] [Passenger? False] [Direction: izquierda]
+        |                           |               |               |                                       --> (5, 6) [cost: 27] [Passenger? False] [Direction: izquierda]
+        |                           |               |               --> (3, 8) [cost: 23] [Passenger? False] [Direction: derecha]
+        |                           |               --> (1, 6) [cost: 19] [Passenger? False] [Direction: derecha]
+        |                           --> (3, 4) [cost: 15] [Passenger? False] [Direction: derecha]
+        --> (3, 1) [cost: 5] [Passenger? False] [Direction: derecha]
+            --> (3, 2) [cost: 9] [Passenger? False] [Direction: derecha]

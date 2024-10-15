@@ -45,7 +45,7 @@ class Level:
         self.init_wait = -1 #Manejador de tiempo para la animacino dibujar arbol
         self.init_final = -1 #Manejador de tiempo para la animacino mostrar camino
         self.chat = 0 #Manejador de tiempo para  "arrow_alpha"
-        self.time_wait = 0.025
+        self.time_wait = 0
     
 
 
@@ -82,7 +82,7 @@ class Level:
 
 
 
-    def ejecutarAlgoritmo(self, eleccion):
+    def ejecutarAlgoritmo(self, eleccion, valor = 0):
         algoritmos = {
             "Amplitud": BusquedaAmplitud,
             "Costo uniforme": CostSearch,
@@ -90,6 +90,10 @@ class Level:
             "Avara": BusquedaAvara,
             "A*": BusquedaAE,
         }
+        print("============")
+        print(valor)
+
+        self.time_wait = valor * 0.1
         
         self.motor = algoritmos[eleccion](self.mapa)
         self.solucion = self.motor.solve()
@@ -97,6 +101,10 @@ class Level:
         self.init_wait = time.time()
         self.chat = time.time()
         self.all_expandir = self.solucion["expanded_nodes"]
+
+        if self.time_wait == 0:
+            self.init_wait = -1
+            self.player.iniciar_caminata(self.solucion["path"])
 
 
 
