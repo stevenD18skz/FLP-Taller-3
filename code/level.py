@@ -45,7 +45,7 @@ class Level:
         self.init_wait = -1 #Manejador de tiempo para la animacino dibujar arbol
         self.init_final = -1 #Manejador de tiempo para la animacino mostrar camino
         self.chat = 0 #Manejador de tiempo para  "arrow_alpha"
-        self.time_wait = 0.1
+        self.time_wait = 0.025
     
 
 
@@ -79,6 +79,9 @@ class Level:
 
 
 
+
+
+
     def ejecutarAlgoritmo(self, eleccion):
         algoritmos = {
             "Amplitud": BusquedaAmplitud,
@@ -94,8 +97,6 @@ class Level:
         self.init_wait = time.time()
         self.chat = time.time()
         self.all_expandir = self.solucion["expanded_nodes"]
-
-
 
 
 
@@ -199,6 +200,8 @@ class Level:
 
        
 
+
+
     def run(self):
         if self.mapa == None:
             self.loading_screen()
@@ -261,21 +264,6 @@ class Level:
                              llave_nombre[int(col)][1],
                              surf
                         )
-
-
-
-    def reiniciar(self):
-        self.create_map()
-        self.motor = None
-
-        self.all_ya = []
-        self.all_expandir = []
-        self.solucion = None
-
-        self.init_wait = -1
-        self.init_final = -1 
-        self.chat = 0 
-        self.time_wait = 0.1
 
 
 

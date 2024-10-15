@@ -22,7 +22,7 @@ class Player(pygame.sprite.Sprite):
         # Movimiento
         self.in_movimiento = False
         self.direction = pygame.math.Vector2(0, 0)
-        self.speed = 4 #velocidad tiene que ser en potencia de 2
+        self.speed = 8 #velocidad tiene que ser en potencia de 2
         self.obstacle_sprites = obstacle_sprites
         self.movimientos = []
         self.movimiento_actual = None
@@ -171,11 +171,16 @@ class Player(pygame.sprite.Sprite):
             if sprite.sprite_type == "particule":
                 pass
 
+
             elif sprite.activacion.colliderect(self.hitbox):
-                print("llegue a una meta" + sprite.sprite_type)
-                sprite.animation = True
-                sprite.activacion.width = 0
-                sprite.activacion.height = 0
+
+                aun_esta_pasajero = any(obj.sprite_type == "passager" for obj in self.obstacle_sprites)
+
+                if not (sprite.sprite_type == "goal" and aun_esta_pasajero):
+                    print("llegue a una meta" + sprite.sprite_type)
+                    sprite.setAnimation(True)
+                    sprite.activacion.width = 0
+                    sprite.activacion.height = 0
 
           
 

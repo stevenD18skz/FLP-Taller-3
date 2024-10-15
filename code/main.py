@@ -4,6 +4,7 @@ from settings import *
 from level import Level
 from tkinter import Tk, filedialog
 from support import *
+from tkinter import messagebox
 
 # Definimos algunos colores
 WHITE = (255, 255, 255)
@@ -68,7 +69,6 @@ class Game:
         self.mapa_eleccion = None
 
         # Condición para mostrar el recuadro con la información
-        self.show_solution_info = False  # Cambia a True cuando quieras mostrar la información
 
         # Configuración de botones
         self.algorithm_choice = 'No informada'
@@ -125,11 +125,13 @@ class Game:
 
 
     def display_solution_info(self, surface):
-        if self.show_solution_info and self.solution:
-            # Dibuja el recuadro de información
-            info_rect = pygame.Rect(650, 350, 380, 200)  # Define el tamaño del recuadro
-            pygame.draw.rect(surface, LIGHT_GRAY, info_rect)
-            pygame.draw.rect(surface, BORDER_COLOR, info_rect, 2)  # Dibujar el borde del recuadro
+        # Dibuja el recuadro de información
+        info_rect = pygame.Rect(650, 350, 380, 200)  # Define el tamaño del recuadro
+        pygame.draw.rect(surface, LIGHT_GRAY, info_rect)
+        pygame.draw.rect(surface, BORDER_COLOR, info_rect, 2)  # Dibujar el borde del recuadro
+        
+        if self.solution:
+
 
             # Renderizar texto de solución
             font = pygame.font.Font(None, 24)
@@ -162,7 +164,6 @@ class Game:
 
                     for button in self.buttons:
                         if button.is_clicked((x, y)) and self.level.init_wait == -1 and self.level.init_final == -1:
-                            print("click")
                             if button.text in ['No informada', 'Informada']:
                                 self.algorithm_choice = button.text
 
@@ -170,13 +171,11 @@ class Game:
                                 self.selected_algorithm_button = button.text
                                 self.level.ejecutarAlgoritmo(button.text)
                                 self.solution = self.level.solucion
-                                self.show_solution_info = True  # Mostrar el recuadro con la información
 
                             elif button.text == 'Subir archivo':
                                 self.upload_file()
 
                             elif button.text == 'REINICIAR':
-                                self.show_solution_info = False
                                 self.solution = None
                                 self.algorithm_choice = 'No informada'
                                 self.selected_algorithm_button = None
@@ -210,10 +209,20 @@ class Game:
         )
         root.destroy()
 
+        if not file_path:
+            # Mostrar advertencia si no se selecciona un archivo
+            messagebox.showwarning("Advertencia", "No seleccionaste un archivo de mapa.")
+            return
 
-        if file_path:
-            self.mapa_eleccion = ALFile(file_path)
-            self.level.setMap(self.mapa_eleccion)
+        try:
+            analizar_mapa = ALFile(file_path)
+        except:
+            # Mostrar error si hay un problema al analizar el archivo
+            messagebox.showerror("Error", "Archivo de mapa inválido. Por favor, selecciona un archivo válido.")
+            return
+
+        self.mapa_eleccion = analizar_mapa
+        self.level.setMap(analizar_mapa)
 
         pygame.display.set_mode((self.screen.get_width(), self.screen.get_height()))
         pygame.event.clear()
@@ -229,5 +238,3 @@ if __name__ == '__main__':
     game = Game()
     game.run()
 
-
-#el auto activa la amicaion del goal inluco antes de tenre el pasajero

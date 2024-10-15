@@ -50,8 +50,8 @@ class CostSearch():
             0: 1,   # Espacio libre
             1: float('inf'),  # Pared (inaccesible)
             2: 1,   # Punto de inicio
-            3: 5,   # Tráfico medio
-            4: 10,  # Tráfico pesado
+            3: 4,   # Tráfico medio
+            4: 7,  # Tráfico pesado
             5: 1,   # Pasajero
             6: 1    # Objetivo
         }

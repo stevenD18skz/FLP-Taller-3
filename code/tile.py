@@ -44,8 +44,6 @@ class Tile(pygame.sprite.Sprite):
 	def desaparecer_animation(self):
 		if self.animation:
 
-			if self.sprite_type != "object":
-				self.particule = Particle(self.rect.center, self.auxiliar, self.frames['nova'])
 
 			if self.alpha > 0:
 				self.alpha -= 5
@@ -63,6 +61,14 @@ class Tile(pygame.sprite.Sprite):
 		self.desaparecer_animation()
 
 
+	def setAnimation(self, valor):
+		self.animation = valor
+		
+		self.particule = Particle(self.rect.center, self.auxiliar, self.frames['heal'])
+		self.particule.exist = True
+
+
+
 
 
 
@@ -71,7 +77,7 @@ class Particle(pygame.sprite.Sprite):
 		super().__init__(groups)
 		self.sprite_type = "particule"
 		self.frame_index = 0
-		self.animation_speed = 0.1
+		self.animation_speed = 0.02
 		self.frames = frames
 		self.image = self.frames[self.frame_index]
 		self.rect = self.image.get_rect(center=pos)
@@ -82,7 +88,6 @@ class Particle(pygame.sprite.Sprite):
 
 
 	def animate(self):
-		print("hla")
 		self.frame_index += self.animation_speed
 		if self.frame_index >= len(self.frames):
 			self.frame_index = 0
