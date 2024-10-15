@@ -10,30 +10,27 @@ Puedes instalar las dependencias utilizando el siguiente comando:
 bash
 Copiar código
 pip install pygame
-Instrucciones de Uso
-Ejecutar la aplicación:
 
-Abre una terminal y navega a la carpeta del proyecto.
-Ejecuta el siguiente comando:
-bash
-Copiar código
-python main.py
-Interfaz de Usuario:
 
-# GUIA
+# Ejecutar la aplicación:
+ejecutar el archivo main.py
+
+## Interfaz de Usuario:
+
 Al iniciar la aplicación, se abrirá una ventana con la interfaz gráfica.
 "Subir Archivo": Haz clic en este botón para seleccionar un archivo de entrada que contenga los datos necesarios para la visualización del algoritmo.
 Seleccionar Algoritmo: Usa los botones para elegir el algoritmo de búsqueda que deseas visualizar.
 Ver Animación: Una vez seleccionado el algoritmo, la animación de la solución se mostrará en la pantalla.
 Reiniciar: Puedes hacer clic en el botón de reinicio para volver al estado inicial y cargar un nuevo archivo o cambiar el algoritmo.\
+Input: selecciona el nivel de velocidad de la animacion de expansion del arbol, recomendado es 10, para visualizarlo bien, 0 en caso de no querrer verlo
 
-# Archivos del Proyecto
+## Archivos del Proyecto
 main.py: Archivo principal que ejecuta la aplicación.
 Logic/: Carpeta que contiene las implementaciones de los algoritmos de búsqueda.
 Graphics/: Archivos de imagen y otros recursos para la visualización.
 README.txt: Este archivo.
 
-# Algoritmos Implementados
+## Algoritmos Implementados
 Búsqueda amplitud 
 Búsqueda por profundidad 
 Búsqueda por costo

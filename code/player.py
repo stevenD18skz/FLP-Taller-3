@@ -31,7 +31,7 @@ class Player(pygame.sprite.Sprite):
         # Animación de inicio
         self.is_starting = False  # Estado de animación inicial
         self.scale_factor = 1.0  # Factor de escalado
-        self.scale_count = 0.01
+        self.scale_count = 0.07
     
 
 
@@ -177,7 +177,6 @@ class Player(pygame.sprite.Sprite):
                 aun_esta_pasajero = any(obj.sprite_type == "passager" for obj in self.obstacle_sprites)
 
                 if not (sprite.sprite_type == "goal" and aun_esta_pasajero):
-                    print("llegue a una meta" + sprite.sprite_type)
                     sprite.setAnimation(True)
                     sprite.activacion.width = 0
                     sprite.activacion.height = 0

@@ -58,7 +58,7 @@ class InputBox:
 
     def get_value(self):
         try:
-            return int(self.text) if self.text != '' else 0  # Devolver 0 si está vacío
+            return int(self.text) if self.text != '' else 8  # Devolver 0 si está vacío
         except ValueError:
             return 0
 
@@ -113,6 +113,7 @@ class Game:
         # Variable para almacenar la solución del algoritmo
         self.solution = None  # Esto se actualizará cuando se ejecute un algoritmo
         self.mapa_eleccion = None
+        self.font = pygame.font.SysFont(None, 18)
 
         # Condición para mostrar el recuadro con la información
 
@@ -133,11 +134,15 @@ class Game:
         ]
 
     
-        self.input_box = InputBox(810, 230, 100, 40, font_size=24)
+        self.input_box = InputBox(810, 230, 150, 40, font_size=24)
 
         self.update_button_states()
 
 
+    def draw_text(self, surface, text, x, y, font):
+        # Dibujar el texto en la pantalla
+        text_surface = font.render(text, True, BLACK)
+        surface.blit(text_surface, (x, y))
 
     def update_button_states(self):
         # Si no hay mapa, desactivar todos los botones excepto el de subir archivo
@@ -214,7 +219,6 @@ class Game:
                     
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     x, y = pygame.mouse.get_pos()
-                    print(x ,y)
 
                     for button in self.buttons:
                         if button.is_clicked((x, y)):# and self.level.init_wait == -1 and self.level.init_final == -1:
@@ -263,6 +267,9 @@ class Game:
 
             # Mostrar información de la solución si existe
             self.display_solution_info(self.screen)
+            self.draw_text(self.screen, "Velocidad de animación del árbol (s/100), 0 para no ver animacion", 810, 278, self.font)
+            self.draw_text(self.screen, "0 para no ver animacion", 810, 288, self.font)
+
 
             pygame.display.update()
             self.clock.tick(FPS)

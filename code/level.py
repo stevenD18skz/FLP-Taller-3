@@ -82,7 +82,7 @@ class Level:
 
 
 
-    def ejecutarAlgoritmo(self, eleccion, valor = 0):
+    def ejecutarAlgoritmo(self, eleccion, valor = 10):
         algoritmos = {
             "Amplitud": BusquedaAmplitud,
             "Costo uniforme": CostSearch,
@@ -90,10 +90,11 @@ class Level:
             "Avara": BusquedaAvara,
             "A*": BusquedaAE,
         }
-        print("============")
+
+
         print(valor)
 
-        self.time_wait = valor * 0.1
+        self.time_wait = valor * 0.01
         
         self.motor = algoritmos[eleccion](self.mapa)
         self.solucion = self.motor.solve()
